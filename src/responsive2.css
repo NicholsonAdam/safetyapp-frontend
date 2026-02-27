@@ -1,0 +1,309 @@
+/* ============================================================
+   DESKTOP DEFAULT
+   ============================================================ */
+.desktop .left-panel {
+  flex: 0 0 380px;
+  width: 380px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.desktop .right-panel {
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   MOBILE + TABLET BASE LAYOUT
+   ============================================================ */
+@media (max-width: 1700px) {
+
+  /* Stack layout vertically */
+  .layout-container {
+    flex-direction: column !important;
+    min-height: auto !important;
+  }
+
+  /* Override desktop left panel */
+  .desktop .left-panel {
+    width: 100% !important;
+    flex: none !important;
+    height: auto !important;
+    position: relative !important;
+    top: 0 !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Override desktop right panel */
+  .desktop .right-panel {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 1rem !important;
+    background-size: cover !important;
+    background-position: center !important;
+    overflow-y: visible !important;
+  }
+
+  .hero-hide-mobile {
+    background-image: none !important;
+  }
+
+  /* Dashboard button fix */
+  .dashboard-mobile-buttons {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+    height: auto !important;
+  }
+}
+
+/* ============================================================
+   DASHBOARD — HIDE LEFT PANEL
+   ============================================================ */
+@media (max-width: 1700px) {
+  .mobile.dashboard-page .left-panel {
+    display: none !important;
+  }
+
+  .mobile.dashboard-page .right-panel {
+    width: 100% !important;
+    flex: none !important;
+  }
+}
+
+/* ============================================================
+   DASHBOARD — FULLSCREEN HERO IMAGE
+   ============================================================ */
+@media (max-width: 1700px) {
+  .mobile.dashboard-page .right-panel {
+    background-size: contain !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: black !important;
+
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: 100vh !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-top: 2rem !important;
+  }
+}
+
+/* ============================================================
+   DASHBOARD — MOBILE BUTTON LAYOUT
+   ============================================================ */
+@media (max-width: 1700px) {
+  .mobile.dashboard-page .dashboard-mobile-buttons {
+    position: relative !important;
+    margin: 1rem auto !important;
+    display: block !important;
+    width: 90% !important;
+    max-width: 350px !important;
+  }
+}
+
+/* ============================================================
+   FORM PAGES — HIDE LEFT PANEL
+   ============================================================ */
+@media (max-width: 1700px) {
+  .mobile.bbs-page .left-panel,
+  .mobile.nearmiss-page .left-panel,
+  .mobile.support-page .left-panel,
+  .mobile.inspection-page .left-panel,
+  .mobile.huddle-page .left-panel {
+    display: none !important;
+  }
+
+  .mobile.bbs-page .right-panel,
+  .mobile.nearmiss-page .right-panel,
+  .mobile.support-page .right-panel,
+  .mobile.inspection-page .right-panel,
+  .mobile.huddle-page .right-panel {
+    width: 100% !important;
+    flex: none !important;
+    min-height: 100vh !important;
+  }
+}
+
+/* ============================================================
+   FORM PAGES — CENTER CONTENT
+   ============================================================ */
+@media (max-width: 1700px) {
+  .mobile.bbs-page .right-panel,
+  .mobile.nearmiss-page .right-panel,
+  .mobile.support-page .right-panel,
+  .mobile.inspection-page .right-panel,
+  .mobile.huddle-page .right-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-top: 2rem !important;
+  }
+}
+
+/* ============================================================
+   FORM PAGES — TRUE FULL-PAGE BACKGROUND (SCROLLS FULL HEIGHT)
+   ============================================================ */
+@media (max-width: 1700px) {
+
+  /* Apply background to the full scroll container */
+  .layout-container.mobile.bbs-page,
+  .layout-container.mobile.nearmiss-page,
+  .layout-container.mobile.support-page,
+  .layout-container.mobile.inspection-page,
+  .layout-container.mobile.huddle-page {
+    background-image: inherit !important;
+    background-size: cover !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-color: black !important;
+
+    min-height: 100% !important;
+    height: auto !important;
+  }
+
+  /* Remove background from right-panel so it doesn't override */
+  .mobile.bbs-page .right-panel,
+  .mobile.nearmiss-page .right-panel,
+  .mobile.support-page .right-panel,
+  .mobile.inspection-page .right-panel,
+  .mobile.huddle-page .right-panel {
+    background-image: none !important;
+  }
+}
+
+/* Center the admin dashboard button on mobile */
+@media (max-width: 1700px) {
+  .mobile.dashboard-page .dashboard-mobile-buttons {
+    left: 0 !important;
+    right: 0 !important;
+  }
+}
+
+/* ============================================================
+   ADMIN PAGES — SAFE MOBILE IMPROVEMENTS (NON-DESTRUCTIVE)
+   ============================================================ */
+@media (max-width: 1700px) {
+
+  /* Make admin cards wrap cleanly */
+  .admin-card-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+    justify-content: center !important;
+  }
+
+  .admin-card {
+    width: 90% !important;
+    max-width: 350px !important;
+  }
+
+  /* Smooth horizontal scrolling for wide tables */
+  .admin-table-wrapper {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .admin-table-wrapper table {
+    width: max-content !important;
+    min-width: 100% !important;
+  }
+
+  /* Slightly reduce padding so headers fit better */
+  table th,
+  table td {
+    white-space: nowrap !important;
+    padding: 0.5rem !important;
+  }
+}
+
+/* ============================================================
+   ADMIN PAGES — TIGHTER MOBILE OPTIMIZATION (SAFE)
+   ============================================================ */
+@media (max-width: 900px) {
+
+  /* Slightly smaller text for headers and cells */
+  table th,
+  table td {
+    font-size: 0.85rem !important;
+    padding: 0.35rem !important;
+  }
+
+  /* Allow headers to wrap if absolutely necessary */
+  table th {
+    white-space: normal !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Force table to never exceed viewport width */
+  .admin-table-wrapper {
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Prevent table from forcing horizontal scroll beyond content */
+  .admin-table-wrapper table {
+    width: max-content !important;
+    min-width: 100% !important;
+    table-layout: auto !important;
+  }
+
+  /* Make admin cards stack tighter */
+  .admin-card {
+    width: 95% !important;
+    max-width: 320px !important;
+  }
+}
+
+/* ============================================================
+   ADMIN PAGES — MAXIMUM SAFE MOBILE OPTIMIZATION
+   ============================================================ */
+@media (max-width: 700px) {
+
+  /* Force table to shrink as much as possible */
+  .admin-table-wrapper table {
+    table-layout: auto !important;
+    width: 100% !important;
+  }
+
+  /* Allow headers to wrap instead of forcing horizontal scroll */
+  table th {
+    white-space: normal !important;
+    font-size: 0.75rem !important;
+    line-height: 1.1 !important;
+    padding: 0.25rem !important;
+  }
+
+  /* Tighten table cells */
+  table td {
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+    white-space: normal !important;
+  }
+
+  /* Ensure table scrolls smoothly when needed */
+  .admin-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-width: 100% !important;
+  }
+
+  /* Prevent any fixed-width columns from blowing out the layout */
+  table th,
+  table td {
+    max-width: 120px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
