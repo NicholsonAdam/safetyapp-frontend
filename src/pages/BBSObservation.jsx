@@ -159,25 +159,6 @@ const handleSubmit = async (e) => {
           />
         </div>
 
-        {/* ADDITIONAL OBSERVERS */}
-        <div>
-          <label style={{ fontWeight: "bold" }}>Additional Observers (Employee IDs) (add multiples by separating with a comma)</label>
-          <input
-            type="text"
-            name="additional_observers"
-            placeholder="e.g., 123456"
-            value={form.additional_observers}
-            onChange={handleChange}
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              marginTop: "0.3rem",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
-
         {/* AREA DROPDOWN */}
         <div>
           <label style={{ fontWeight: "bold" }}>Area</label>
