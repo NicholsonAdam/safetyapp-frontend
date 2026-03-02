@@ -391,7 +391,7 @@ ${selectedRecord.observer_comments || "—"}
 
 Photo:
 ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0 
-  ? `${API_BASE}/uploads/${selectedRecord.photo_paths[0]}`
+  ? `${API_BASE.replace('/api', '')}/uploads/${selectedRecord.photo_paths[0]}`
   : "None attached"}
 
 ============================================================
@@ -1258,7 +1258,7 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
                 <strong>Photo:</strong>
                 <div style={{ marginTop: "0.5rem" }}>
                   <img
-                    src={`${API_BASE}/uploads/${selectedRecord.photo_paths[0]}`}
+                    src={`${API_BASE.replace('/api', '')}/uploads/${selectedRecord.photo_paths[0]}`}
                     alt="BBS"
                     style={{
                       maxWidth: "100%",
@@ -1660,7 +1660,7 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
           }}
         >
           <img
-            src={`${API_BASE}/uploads/${photoViewer}`}
+            src={`${API_BASE.replace('/api', '')}/uploads/${photoViewer}`}
             alt="Full View"
             style={{
               width: "80vw",
