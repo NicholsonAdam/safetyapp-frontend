@@ -44,7 +44,7 @@ export default function ContactSupport() {
         Contact Support
       </h1>
 
-      <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ marginTop: "1rem" }}>
 
         <div style={{ marginBottom: "1rem" }}>
           <label><strong>Date</strong></label><br />
@@ -85,6 +85,7 @@ export default function ContactSupport() {
           <label><strong>Photo (optional)</strong></label><br />
           <input
             type="file"
+            name="photo"
             accept="image/*"
             onChange={(e) => setPhoto(e.target.files[0])}
           />
