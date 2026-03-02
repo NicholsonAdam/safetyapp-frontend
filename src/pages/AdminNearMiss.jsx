@@ -1271,7 +1271,7 @@ export default function AdminNearMiss() {
               <strong>Photo:</strong>
               <div style={{ marginTop: "0.5rem" }}>
                 <img
-                  src={`${import.meta.env.VITE_API_URL}/uploads/${editableRecord.photo_path}`}
+                  src={`${import.meta.env.VITE_API_URL.replace('/api', '')}/uploads/${editableRecord.photo_path}`}
                   alt="Near Miss"
                   style={{
                     maxWidth: "100%",
@@ -1637,7 +1637,7 @@ export default function AdminNearMiss() {
           }}
         >
           <img
-            src={`${import.meta.env.VITE_API_URL}/uploads/${photoViewer}`}
+            src={`${import.meta.env.VITE_API_URL.replace('/api', '')}/uploads/${photoViewer}`}
             alt="Full View"
             style={{
               width: "80vw",
