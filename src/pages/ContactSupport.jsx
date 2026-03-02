@@ -9,7 +9,7 @@ export default function ContactSupport() {
   const [photo, setPhoto] = useState(null);
   const [message, setMessage] = useState("");
 
-  const API_URL = `${import.meta.env.VITE_API_URL}/api/support`;
+  const API_URL = `${import.meta.env.VITE_API_URL}/support`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
