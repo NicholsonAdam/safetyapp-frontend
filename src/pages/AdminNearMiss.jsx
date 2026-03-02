@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function AdminNearMiss() {
   const navigate = useNavigate();
-  const API_URL = `${import.meta.env.VITE_API_URL}/api/nearmiss`;
+  const API_URL = `${import.meta.env.VITE_API_URL}/nearmiss`;
 
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
