@@ -16,7 +16,7 @@ export default function NearMissForm() {
   const [photo, setPhoto] = useState(null);
   const [message, setMessage] = useState("");
 
-  const API_URL = `${import.meta.env.VITE_API_URL}/api/nearmiss`;
+  const API_URL = `${import.meta.env.VITE_API_URL}/nearmiss`;
 
   const departments = [
     "Body Prep",
