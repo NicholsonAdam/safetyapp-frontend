@@ -111,7 +111,7 @@ const [createForm, setCreateForm] = useState({
   const fetchInspections = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/api/inspection`);
+      const res = await fetch(`${API_BASE}/inspection`);
       const data = await res.json();
       setRecords(data);
     } catch (err) {
@@ -230,7 +230,7 @@ const handleCreateSubmit = async (e) => {
   });
 
   try {
-    const res = await fetch(`${API_BASE}/api/inspection`, {
+    const res = await fetch(`${API_BASE}/inspection`, {
       method: "POST",
       body: fd,
     });

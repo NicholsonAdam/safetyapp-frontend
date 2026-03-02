@@ -85,7 +85,7 @@ export default function AdminBBS() {
   const fetchBBS = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/api/bbs`);
+      const res = await fetch(`${API_BASE}/bbs`);
       const data = await res.json();
       setRecords(data);
     } catch (err) {
@@ -201,7 +201,7 @@ useEffect(() => {
   // =========================
   const updateStatus = async (id, newStatus) => {
     try {
-      const res = await fetch(`${API_BASE}/api/bbs/${id}`, {
+      const res = await fetch(`${API_BASE}/bbs/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -290,7 +290,7 @@ useEffect(() => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/bbs`, {
+      const res = await fetch(`${API_BASE}/bbs`, {
         method: "POST",
         body: fd,
       });
