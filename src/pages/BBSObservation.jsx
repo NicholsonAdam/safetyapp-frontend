@@ -80,7 +80,7 @@ const handleSubmit = async (e) => {
   });
 
   try {
-    const res = await fetch("http://localhost:3000/api/bbs", {
+    const res = await fetch("https://safetyapp-backend-xq88.onrender.com/api/bbs", {
       method: "POST",
       body: fd,
     });
