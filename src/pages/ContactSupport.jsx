@@ -26,9 +26,7 @@ export default function ContactSupport() {
     if (photo) formData.append("photo", photo);
 
     try {
-      await axios.post(`${API_URL}/create`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post(`${API_URL}/create`, formData);
 
       setMessage("Support request submitted successfully");
       setDate("");
