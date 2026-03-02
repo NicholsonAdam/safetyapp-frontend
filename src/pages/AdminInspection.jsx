@@ -839,7 +839,6 @@ const handleCreateSubmit = async (e) => {
             return (
               <div key={qKey} style={{ marginBottom: "0.6rem" }}>
                 <strong>{questionTitles[idx]}:</strong> {selectedRecord[qKey] || "—"}
-                {selectedRecord[qKey] || "—"}{" "}
                 <br />
                 <span>
                   <strong>Corrected:</strong>{" "}
