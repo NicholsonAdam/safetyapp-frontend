@@ -20,6 +20,7 @@ export default function AdminNearMiss() {
 
   const [showCreatePanel, setShowCreatePanel] = useState(false);
   const [createForm, setCreateForm] = useState({
+    inspector_id: "",
     date: "",
     department: "",
     location: "",
@@ -298,6 +299,7 @@ export default function AdminNearMiss() {
     e.preventDefault();
     try {
       const formData = new FormData();
+      formData.append("inspector_id", createForm.inspector_id);
       formData.append("department", createForm.department);
       formData.append("location", createForm.location);
       formData.append("date", createForm.date);
@@ -340,6 +342,25 @@ export default function AdminNearMiss() {
       });
     } catch (err) {
       console.error("Create Near Miss Error:", err);
+    }
+  };
+
+  const autoFillLeaderId = async () => {
+    if (!createForm.inspector_id) return;
+
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/employees/id/${createForm.inspector_id}`
+      );
+
+      if (res.data && res.data.leader_id) {
+        setCreateForm((prev) => ({
+          ...prev,
+          leader_id: res.data.leader_id,
+        }));
+      }
+    } catch (err) {
+      console.error("Leader lookup failed:", err);
     }
   };
 
@@ -1365,11 +1386,28 @@ export default function AdminNearMiss() {
             </div>
 
             <div style={{ marginTop: "0.6rem" }}>
+              <label><strong>Submitter ID</strong></label>
+              <input
+                type="text"
+                name="inspector_id"
+                value={createForm.inspector_id}
+                onChange={handleCreateChange}
+                onBlur={autoFillLeaderId}   // <-- this will auto-fill Leader ID
+                style={{
+                  width: "100%",
+                  padding: "0.4rem",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  marginTop: "0.2rem",
+                }}
+              />
+            </div>
+
+            <div style={{ marginTop: "0.6rem" }}>
               <label>
                 <strong>Department</strong>
               </label>
-              <input
-                type="text"
+              <select
                 name="department"
                 value={createForm.department}
                 onChange={handleCreateChange}
@@ -1380,7 +1418,19 @@ export default function AdminNearMiss() {
                   border: "1px solid #ccc",
                   marginTop: "0.2rem",
                 }}
-              />
+              >
+                <option value="">Select Department</option>
+                <option value="Body Prep">Body Prep</option>
+                <option value="Press">Press</option>
+                <option value="Glazeline">Glazeline</option>
+                <option value="LGV">LGV</option>
+                <option value="Glaze Prep">Glaze Prep</option>
+                <option value="Kiln">Kiln</option>
+                <option value="Sorting">Sorting</option>
+                <option value="Rectifying">Rectifying</option>
+                <option value="Administration">Administration</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
             </div>
 
             <div style={{ marginTop: "0.6rem" }}>
@@ -1463,16 +1513,13 @@ export default function AdminNearMiss() {
               <label>
                 <strong>Report Types (comma separated)</strong>
               </label>
-              <input
-                type="text"
-                value={createForm.report_types.join(", ")}
+              <select
+                name="report_types"
+                value={createForm.report_types[0] || ""}
                 onChange={(e) =>
                   setCreateForm((prev) => ({
                     ...prev,
-                    report_types: e.target.value
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
+                    report_types: [e.target.value],
                   }))
                 }
                 style={{
@@ -1482,7 +1529,12 @@ export default function AdminNearMiss() {
                   border: "1px solid #ccc",
                   marginTop: "0.2rem",
                 }}
-              />
+              >
+                <option value="">Select Type</option>
+                <option value="Near Miss">Near Miss</option>
+                <option value="Concern">Concern</option>
+                <option value="Improvement">Improvement</option>
+              </select>
             </div>
 
             <div style={{ marginTop: "0.6rem" }}>
