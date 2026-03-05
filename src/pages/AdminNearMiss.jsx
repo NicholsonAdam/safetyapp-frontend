@@ -20,11 +20,12 @@ export default function AdminNearMiss() {
 
   const [showCreatePanel, setShowCreatePanel] = useState(false);
   const [createForm, setCreateForm] = useState({
-    inspector_id: "",
     date: "",
     department: "",
     location: "",
     shift: "",
+    observer_id: "",
+    observer_name: "",
     leader_id: "",
     additional_team: "",
     report_types: [],
@@ -299,22 +300,20 @@ export default function AdminNearMiss() {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("inspector_id", createForm.inspector_id);
+      formData.append("observer_id", createForm.observer_id);
+      formData.append("observer_name", createForm.observer_name);
       formData.append("department", createForm.department);
       formData.append("location", createForm.location);
       formData.append("date", createForm.date);
-      formData.append("additionalTeam", createForm.additional_team || "");
-      formData.append(
-        "reportTypes",
-        JSON.stringify(createForm.report_types || [])
-      );
-      formData.append("description", createForm.description || "");
-      formData.append("actionsTaken", createForm.actions_taken || "");
-      formData.append("suggestion", createForm.suggestion || "");
-      formData.append("followup", createForm.followup || "no");
-      formData.append("status", createForm.status || "Open");
-      formData.append("shift", createForm.shift || "");
-      formData.append("leaderId", createForm.leader_id || "");
+      formData.append("shift", createForm.shift);
+      formData.append("additionalTeam", createForm.additional_team);
+      formData.append("reportTypes", JSON.stringify(createForm.report_types));
+      formData.append("description", createForm.description);
+      formData.append("actionsTaken", createForm.actions_taken);
+      formData.append("suggestion", createForm.suggestion);
+      formData.append("followup", createForm.followup);
+      formData.append("status", createForm.status);
+
       if (createForm.photo) {
         formData.append("photo", createForm.photo);
       }
@@ -345,22 +344,22 @@ export default function AdminNearMiss() {
     }
   };
 
-  const autoFillLeaderId = async () => {
-    if (!createForm.inspector_id) return;
+  const autoFillObserverInfo = async () => {
+    if (!createForm.observer_id) return;
 
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/employees/id/${createForm.inspector_id}`
+        `${import.meta.env.VITE_API_URL}/employees/id/${createForm.observer_id}`
       );
 
-      if (res.data && res.data.leader_id) {
+      if (res.data) {
         setCreateForm((prev) => ({
           ...prev,
-          leader_id: res.data.leader_id,
+          observer_name: res.data.name || "",
         }));
       }
     } catch (err) {
-      console.error("Leader lookup failed:", err);
+      console.error("Employee lookup failed:", err);
     }
   };
 
@@ -1389,10 +1388,10 @@ export default function AdminNearMiss() {
               <label><strong>Submitter ID</strong></label>
               <input
                 type="text"
-                name="inspector_id"
-                value={createForm.inspector_id}
+                name="observer_id"
+                value={createForm.observer_id}
                 onChange={handleCreateChange}
-                onBlur={autoFillLeaderId}   // <-- this will auto-fill Leader ID
+                onBlur={autoFillObserverInfo}
                 style={{
                   width: "100%",
                   padding: "0.4rem",
@@ -1400,6 +1399,7 @@ export default function AdminNearMiss() {
                   border: "1px solid #ccc",
                   marginTop: "0.2rem",
                 }}
+
               />
             </div>
 
