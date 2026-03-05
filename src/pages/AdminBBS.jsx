@@ -8,6 +8,7 @@ export default function AdminBBS() {
 
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [departments, setDepartments] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("date");
@@ -121,6 +122,21 @@ export default function AdminBBS() {
 
   useEffect(() => {
     fetchBBS();
+  }, []);
+
+  useEffect(() => {
+    const loadDepartments = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/employees`);
+        const data = await res.json();
+        const unique = [...new Set(data.map(e => e.department))];
+        setDepartments(unique);
+      } catch (err) {
+        console.error("Error loading departments:", err);
+      }
+    };
+
+    loadDepartments();
   }, []);
 
   // Close filter dropdowns when clicking outside
@@ -267,14 +283,6 @@ useEffect(() => {
     fd.append("observer_id", createForm.observer_id);
     fd.append("observer_name", createForm.observer_name);
 
-    // Additional observers: simple comma-separated string
-    const additionalArray = (createForm.additional_observers || "")
-      .split(",")
-      .map((id) => id.trim())
-      .filter((id) => id !== "");
-    fd.append("additional_observers", createForm.additional_observers);
-    fd.append("additional_observers_array", JSON.stringify(additionalArray));
-
     // All other fields
     const keysToSend = [
       "date",
@@ -374,7 +382,7 @@ const handleExportEmail = () => {
 Date: ${formatDate(selectedRecord.date)}       Observer: ${selectedRecord.observer_name} (${selectedRecord.observer_id})
 Department: ${selectedRecord.area}             Area: ${selectedRecord.job_area}
 
-Shift: ${selectedRecord.shift}                 Additional Obs: ${selectedRecord.additional_observers || "—"}
+Shift: ${selectedRecord.shift}                 
 Job Task: ${selectedRecord.job_task}           Status: ${selectedRecord.status}
 
 ------------------------------------------------------------
@@ -1405,28 +1413,9 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
 
             <div>
               <label>
-                <strong>Additional Observers (IDs, comma separated)</strong>
-              </label>
-              <input
-                type="text"
-                name="additional_observers"
-                value={createForm.additional_observers}
-                onChange={handleCreateChange}
-                style={{
-                  width: "100%",
-                  padding: "0.4rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-
-            <div>
-              <label>
                 <strong>Area</strong>
               </label>
-              <input
-                type="text"
+              <select
                 name="area"
                 value={createForm.area}
                 onChange={handleCreateChange}
@@ -1436,7 +1425,20 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
                   borderRadius: "4px",
                   border: "1px solid #ccc",
                 }}
-              />
+                required
+              >
+                <option value="">Select Area</option>
+                <option value="Body Prep">Body Prep</option>
+                <option value="Press">Press</option>
+                <option value="Glazeline">Glazeline</option>
+                <option value="Kiln">Kiln</option>
+                <option value="LGV">LGV</option>
+                <option value="Glaze Prep">Glaze Prep</option>
+                <option value="Sorting">Sorting</option>
+                <option value="Rectifying">Rectifying</option>
+                <option value="Administration">Administration</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
             </div>
 
             <div>
