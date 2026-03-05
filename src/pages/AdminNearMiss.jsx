@@ -301,7 +301,6 @@ export default function AdminNearMiss() {
     try {
       const formData = new FormData();
       formData.append("observer_id", createForm.observer_id);
-      formData.append("observer_name", createForm.observer_name);
       formData.append("department", createForm.department);
       formData.append("location", createForm.location);
       formData.append("date", createForm.date);
