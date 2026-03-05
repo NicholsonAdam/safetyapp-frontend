@@ -349,7 +349,7 @@ export default function AdminNearMiss() {
 
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/employees/id/${createForm.observer_id}`
+        `${import.meta.env.VITE_API_URL}/employees/${createForm.observer_id}`
       );
 
       if (res.data) {
