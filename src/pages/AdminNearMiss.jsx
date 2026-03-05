@@ -301,6 +301,7 @@ export default function AdminNearMiss() {
     try {
       const formData = new FormData();
       formData.append("observer_id", createForm.observer_id);
+      formData.append("observer_name", createForm.observer_name);
       formData.append("department", createForm.department);
       formData.append("location", createForm.location);
       formData.append("date", createForm.date);
@@ -328,6 +329,8 @@ export default function AdminNearMiss() {
         department: "",
         location: "",
         shift: "",
+        observer_id: "",
+        observer_name: "",
         leader_id: "",
         additional_team: "",
         report_types: [],
@@ -347,14 +350,17 @@ export default function AdminNearMiss() {
     if (!createForm.observer_id) return;
 
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/employees/${createForm.observer_id}`
+      const base = import.meta.env.VITE_API_URL.replace("/nearmiss", "");
+      const res = await axios.get(`${base}/employees`);
+
+      const emp = res.data.find(
+        (e) => String(e.employee_id) === String(createForm.observer_id)
       );
 
-      if (res.data) {
+      if (emp) {
         setCreateForm((prev) => ({
           ...prev,
-          observer_name: res.data.name || "",
+          observer_name: emp.name || "",
         }));
       }
     } catch (err) {
@@ -1389,8 +1395,10 @@ export default function AdminNearMiss() {
                 type="text"
                 name="observer_id"
                 value={createForm.observer_id}
-                onChange={handleCreateChange}
-                onBlur={autoFillObserverInfo}
+                onChange={(e) => {
+                  handleCreateChange(e);
+                  autoFillObserverInfo();
+                }}
                 style={{
                   width: "100%",
                   padding: "0.4rem",
