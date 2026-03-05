@@ -79,6 +79,30 @@ export default function AdminBBS() {
     photo: null,
   });
 
+  const lookupEmployee = async (id) => {
+    if (!id) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/employees`);
+      const employees = await res.json();
+
+      const emp = employees.find(e => String(e.employee_id) === String(id));
+      if (!emp) return;
+
+      setCreateForm(prev => ({
+        ...prev,
+        observer_id: id,
+        observer_name: emp.name,
+        // these will be used by backend even if not shown in the form yet
+        leader_id: emp.leader_id,
+        leader_name: emp.leader_name,
+        area: emp.department, // optional: auto-fill area from department
+      }));
+    } catch (err) {
+      console.error("Employee lookup failed:", err);
+    }
+  };
+
   // =========================
   // FETCH BBS RECORDS
   // =========================
@@ -419,6 +443,7 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
     leader_name: [],
     area: [],
     shift: [],
+    followup_cotact: [],
   });
   setOpenFilter(null);
 };
@@ -1326,7 +1351,10 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
                 type="text"
                 name="observer_id"
                 value={createForm.observer_id}
-                onChange={handleCreateChange}
+                onChange={(e) => {
+                  handleCreateChange(e);
+                  lookupEmployee(e.target.value);
+                }}
                 style={{
                   width: "100%",
                   padding: "0.4rem",
