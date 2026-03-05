@@ -451,7 +451,7 @@ ${selectedRecord.photo_paths && selectedRecord.photo_paths.length > 0
     leader_name: [],
     area: [],
     shift: [],
-    followup_cotact: [],
+    followup_contact: [],
   });
   setOpenFilter(null);
 };
