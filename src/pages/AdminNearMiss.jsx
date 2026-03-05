@@ -1473,25 +1473,6 @@ export default function AdminNearMiss() {
 
             <div style={{ marginTop: "0.6rem" }}>
               <label>
-                <strong>Leader ID</strong>
-              </label>
-              <input
-                type="text"
-                name="leader_id"
-                value={createForm.leader_id}
-                onChange={handleCreateChange}
-                style={{
-                  width: "100%",
-                  padding: "0.4rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  marginTop: "0.2rem",
-                }}
-              />
-            </div>
-
-            <div style={{ marginTop: "0.6rem" }}>
-              <label>
                 <strong>Additional Team</strong>
               </label>
               <input
