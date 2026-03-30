@@ -11,22 +11,17 @@ export default function Layout({ children }) {
   const isSupportPage = location.pathname === "/support";
   const isInspectionPage = location.pathname === "/inspection";
   const isHuddlePage = location.pathname === "/huddle";
+  const isChangePasswordPage = location.pathname === "/change-password";
 
-  const employee = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("employee"));
-    } catch {
-      return null;
-    }
-  })();
-
-  const showHeroImage = isLoginPage || isDashboardPage;
   const isFormPage =
     isBBSPage ||
     isNearMissPage ||
     isSupportPage ||
     isInspectionPage ||
-    isHuddlePage;
+    isHuddlePage ||
+    isChangePasswordPage;
+
+  const showHeroImage = isLoginPage || isDashboardPage;
 
   const rightPanelBackground = isBBSPage
     ? "/BBS.jpg"
