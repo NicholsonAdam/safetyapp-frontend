@@ -82,6 +82,23 @@ export default function ChangePassword() {
       >
         <h1 className="mobile-title">Change Password</h1>
 
+        <p style={{ 
+            marginTop: "0.5rem",
+            fontSize: "0.9rem",
+            color: "#333",
+            lineHeight: "1.4"
+         }}>
+            Your new password must meet the following requirements:
+            <ul style={{ marginTop: "0.5rem", paddingLeft: "1.2rem" }}>
+                <li>At least 10 characters long</li>
+                <li>Includes at least one uppercase letter</li>
+                <li>Includes at least one lowercase letter</li>
+                <li>Includes at least one number</li>
+                <li>Includes at least one special character</li>
+                <li>Does not contain your name or employee ID</li>
+            </ul>
+        </p>
+
         <form
           onSubmit={handleSubmit}
           className="mobile-stack mobile-full"
