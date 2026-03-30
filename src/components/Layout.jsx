@@ -12,7 +12,13 @@ export default function Layout({ children }) {
   const isInspectionPage = location.pathname === "/inspection";
   const isHuddlePage = location.pathname === "/huddle";
 
-  const employee = JSON.parse(localStorage.getItem("employee"));
+  const employee = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("employee"));
+    } catch {
+      return null;
+    }
+  })();
 
   const showHeroImage = isLoginPage || isDashboardPage;
   const isFormPage =
