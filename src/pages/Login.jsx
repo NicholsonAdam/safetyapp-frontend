@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [employeeId, setEmployeeId] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -13,8 +15,18 @@ export default function Login() {
     setError("");
 
     try {
-      const data = await login(employeeId);
+      const data = await login(employeeId, password);
+
+      // Must change password?
+      if (data.must_change_password) {
+        localStorage.setItem("employee", JSON.stringify(data.employee));
+        return navigate("/change-password");
+      }
+
+      // Normal login
+      localStorage.setItem("token", data.token);
       localStorage.setItem("employee", JSON.stringify(data.employee));
+
       navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Login failed");
@@ -40,7 +52,9 @@ export default function Login() {
           style={{
             marginTop: "1rem",
             display: "flex",
-            alignItems: "center",
+            flexDirection: "column",
+            width: "250px",
+            gap: "1rem",
           }}
         >
           <input
@@ -48,19 +62,29 @@ export default function Login() {
             placeholder="Employee ID"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
-            className="mobile-full mobile-input"
+            className="mobile-input"
             style={{
               padding: "0.5rem",
               fontSize: "1rem",
-              width: "200px",
+            }}
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mobile-input"
+            style={{
+              padding: "0.5rem",
+              fontSize: "1rem",
             }}
           />
 
           <button
             type="submit"
-            className="mobile-full mobile-button"
+            className="mobile-button"
             style={{
-              marginLeft: "1rem",
               padding: "0.5rem 1rem",
               backgroundColor: "#b30000",
               color: "white",

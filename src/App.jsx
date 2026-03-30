@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import ChangePassword from "./pages/ChangePassword";
 import BBSObservation from "./pages/BBSObservation";
 import NearMissForm from "./pages/NearMissForm";
 import ContactSupport from "./pages/ContactSupport";
@@ -23,6 +24,7 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/bbs" element={<BBSObservation />} />
         <Route path="/nearmiss" element={<NearMissForm />} />
         <Route path="/support" element={<ContactSupport />} />

@@ -197,6 +197,39 @@ export default function AdminEmployees() {
         }
       };
 
+      // RESET PASSWORD HANDLER
+        const handleResetPassword = async (employeeId) => {
+          const confirmReset = window.confirm(
+            `Reset password for employee ${employeeId}?`
+          );
+          if (!confirmReset) return;
+
+          try {
+            const response = await fetch(
+              "https://safetyapp-backend-xq88.onrender.com/api/auth/admin/reset-password",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ employeeId }),
+              }
+            );
+
+            if (!response.ok) {
+              alert("Error resetting password");
+              return;
+            }
+
+            const data = await response.json();
+
+            alert(
+              `Password reset.\nTemporary password: ${data.temporary_password}\nUser must change password on next login.`
+            );
+          } catch (err) {
+            console.error("Reset password error:", err);
+            alert("Failed to reset password.");
+          }
+        };
+
   // FILTER + SEARCHED EMPLOYEES
   const filteredEmployees = employees
     .filter((emp) => {
@@ -497,6 +530,7 @@ export default function AdminEmployees() {
                 <th style={thStyle} onClick={() => requestSort("email")}>
                   Email/Phone{getSortIndicator("email")}
                 </th>
+                <th style={thStyle}>Reset Password</th>
                 <th style={{ ...thStyle, width: "220px" }}>Actions</th>
               </tr>
             </thead>
@@ -512,6 +546,23 @@ export default function AdminEmployees() {
                   <td style={tdStyle}>{emp.leader_id}</td>
                   <td style={tdStyle}>{emp.site_admin}</td>
                   <td style={tdStyle}>{emp.email}</td>
+
+                  <td style={tdStyle}>
+                    <button
+                      onClick={() => handleResetPassword(emp.employee_id)}
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        backgroundColor: "#b30000",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </td>
 
                   {/* ACTIONS COLUMN */}
                   <td style={tdStyle}>
