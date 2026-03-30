@@ -40,7 +40,7 @@ export default function Layout({ children }) {
     ? "/huddle.jpg"
     : null;
 
-  const heroImage = showHeroImage ? "/Safety%202026.png" : null;
+  const heroImage = showHeroImage ? "/Safety2026.png" : null;
 
   return (
     <div
