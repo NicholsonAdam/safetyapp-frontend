@@ -233,7 +233,7 @@ export default function Layout({ children }) {
           )}
 
           {/* ADMIN FLOATING BUTTONS */}
-          {isDashboardPage && employee?.site_admin === "yes" && (
+          {isDashboardPage && employee?.site_admin?.toString().toLowerCase() === "yes" && (
             <>
               <button
                 onClick={() => navigate("/admin")}
@@ -290,6 +290,7 @@ export default function Layout({ children }) {
           {isSupportPage && children}
           {isInspectionPage && children}
           {isHuddlePage && children}
+          {isChangePasswordPage && children}
 
           {/* DASHBOARD BUTTONS */}
           {isDashboardPage && (
