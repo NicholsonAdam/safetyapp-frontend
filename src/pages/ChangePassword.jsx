@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import axios from "axios";
@@ -14,9 +14,11 @@ export default function ChangePassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  if (!employee) {
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (!employee) {
+      navigate("/login");
+    }
+  }, [employee, navigate]);
 
   const validatePassword = (pw) => {
     const minLength = pw.length >= 10;
