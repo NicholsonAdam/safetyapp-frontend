@@ -13,6 +13,14 @@ export default function Layout({ children }) {
   const isHuddlePage = location.pathname === "/huddle";
   const isChangePasswordPage = location.pathname === "/change-password";
 
+  const employee = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("employee"));
+    } catch {
+      return null;
+    }
+  })();
+
   const isFormPage =
     isBBSPage ||
     isNearMissPage ||
