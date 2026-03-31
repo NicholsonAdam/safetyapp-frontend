@@ -49,7 +49,8 @@
     background-image: none !important;
   }
 
-  .dashboard-mobile-buttons {
+  /* 🔥 MOBILE-ONLY BUTTON OVERRIDE */
+  .mobile .dashboard-mobile-buttons {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -60,7 +61,7 @@
 }
 
 /* ============================================================
-   DASHBOARD — HIDE LEFT PANEL
+   DASHBOARD — HIDE LEFT PANEL (MOBILE ONLY)
    ============================================================ */
 @media (max-width: 1700px) {
   .mobile.dashboard-page .left-panel {
@@ -74,7 +75,7 @@
 }
 
 /* ============================================================
-   DASHBOARD — FULLSCREEN HERO IMAGE
+   DASHBOARD — FULLSCREEN HERO IMAGE (MOBILE ONLY)
    ============================================================ */
 @media (max-width: 1700px) {
   .mobile.dashboard-page .right-panel {
@@ -96,7 +97,7 @@
 }
 
 /* ============================================================
-   DASHBOARD — MOBILE BUTTON LAYOUT
+   DASHBOARD — MOBILE BUTTON LAYOUT (MOBILE ONLY)
    ============================================================ */
 @media (max-width: 1700px) {
   .mobile.dashboard-page .dashboard-mobile-buttons {
@@ -109,7 +110,7 @@
 }
 
 /* ============================================================
-   FORM PAGES — HIDE LEFT PANEL
+   FORM PAGES — HIDE LEFT PANEL (MOBILE ONLY)
    ============================================================ */
 @media (max-width: 1700px) {
   .mobile.bbs-page .left-panel,
@@ -132,7 +133,7 @@
 }
 
 /* ============================================================
-   FORM PAGES — CENTER CONTENT
+   FORM PAGES — CENTER CONTENT (MOBILE ONLY)
    ============================================================ */
 @media (max-width: 1700px) {
   .mobile.bbs-page .right-panel,
@@ -149,7 +150,7 @@
 }
 
 /* ============================================================
-   FORM PAGES — TRUE FULL-PAGE BACKGROUND (SCROLLS FULL HEIGHT)
+   FORM PAGES — TRUE FULL-PAGE BACKGROUND (MOBILE ONLY)
    ============================================================ */
 @media (max-width: 1700px) {
 
