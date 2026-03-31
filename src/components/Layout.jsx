@@ -1,8 +1,25 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 🔥 NEW: device mode state
+  const [deviceMode, setDeviceMode] = useState("desktop");
+
+  // 🔥 NEW: detect desktop vs mobile by input type (not width)
+  useEffect(() => {
+    const updateMode = () => {
+      const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      setDeviceMode(isDesktop ? "desktop" : "mobile");
+    };
+
+    updateMode();
+    window.addEventListener("resize", updateMode);
+
+    return () => window.removeEventListener("resize", updateMode);
+  }, []);
 
   const isLoginPage = location.pathname.toLowerCase() === "/login";
   const isDashboardPage = location.pathname === "/dashboard";
@@ -47,15 +64,13 @@ export default function Layout({ children }) {
 
   return (
     <div
-      className={`layout-container ${window.innerWidth <= 1700 ? "mobile" : "desktop"} ${
-        isDashboardPage ? "dashboard-page" : ""}
-          ${isBBSPage ? "bbs-page" : ""}
-          ${isNearMissPage ? "nearmiss-page" : ""}
-          ${isSupportPage ? "support-page" : ""}
-          ${isInspectionPage ? "inspection-page" : ""}
-          ${isHuddlePage ? "huddle-page" : ""}
-        `}
-
+      className={`layout-container ${deviceMode} ${
+        isDashboardPage ? "dashboard-page" : ""
+      } ${isBBSPage ? "bbs-page" : ""} ${isNearMissPage ? "nearmiss-page" : ""} ${
+        isSupportPage ? "support-page" : ""
+      } ${isInspectionPage ? "inspection-page" : ""} ${
+        isHuddlePage ? "huddle-page" : ""
+      }`}
       style={{
         display: "flex",
         minHeight: "100vh",
