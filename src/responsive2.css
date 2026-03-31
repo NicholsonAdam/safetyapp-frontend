@@ -19,14 +19,14 @@
    ============================================================ */
 @media (max-width: 1700px) {
 
-  /* Stack layout vertically */
-  .layout-container {
+  /* Stack layout vertically ONLY for mobile */
+  .layout-container.mobile {
     flex-direction: column !important;
     min-height: auto !important;
   }
 
-  /* Override desktop left panel */
-  .desktop .left-panel {
+  /* Override left panel ONLY in mobile mode */
+  .mobile .left-panel {
     width: 100% !important;
     flex: none !important;
     height: auto !important;
@@ -35,8 +35,8 @@
     padding-bottom: 1rem !important;
   }
 
-  /* Override desktop right panel */
-  .desktop .right-panel {
+  /* Override right panel ONLY in mobile mode */
+  .mobile .right-panel {
     width: 100% !important;
     min-height: auto !important;
     padding: 1rem !important;
@@ -49,7 +49,6 @@
     background-image: none !important;
   }
 
-  /* Dashboard button fix */
   .dashboard-mobile-buttons {
     position: relative !important;
     top: auto !important;
