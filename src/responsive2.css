@@ -17,7 +17,7 @@
 /* ============================================================
    MOBILE + TABLET BASE LAYOUT
    ============================================================ */
-@media (max-width: 1024px) {
+@media (max-width: 1700px) {
 
   /* Stack layout vertically ONLY for mobile */
   .layout-container.mobile {
@@ -26,7 +26,7 @@
   }
 
   /* Override left panel ONLY in mobile mode */
-  .mobile .left-panel {
+  .layout-container.mobile .left-panel {
     width: 100% !important;
     flex: none !important;
     height: auto !important;
@@ -36,7 +36,7 @@
   }
 
   /* Override right panel ONLY in mobile mode */
-  .mobile .right-panel {
+  .layout-container.mobile .right-panel {
     width: 100% !important;
     min-height: auto !important;
     padding: 1rem !important;
@@ -45,12 +45,12 @@
     overflow-y: visible !important;
   }
 
-  .hero-hide-mobile {
+  .layout-container.mobile .hero-hide-mobile {
     background-image: none !important;
   }
 
   /* 🔥 MOBILE-ONLY BUTTON OVERRIDE */
-  .mobile .dashboard-mobile-buttons {
+  .layout-container.mobile .dashboard-mobile-buttons {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -63,12 +63,12 @@
 /* ============================================================
    DASHBOARD — HIDE LEFT PANEL (MOBILE ONLY)
    ============================================================ */
-@media (max-width: 1024px) {
-  .mobile.dashboard-page .left-panel {
+@media (max-width: 1700px) {
+  .layout-container.mobile.dashboard-page .left-panel {
     display: none !important;
   }
 
-  .mobile.dashboard-page .right-panel {
+  .layout-container.mobile.dashboard-page .right-panel {
     width: 100% !important;
     flex: none !important;
   }
@@ -77,8 +77,8 @@
 /* ============================================================
    DASHBOARD — FULLSCREEN HERO IMAGE (MOBILE ONLY)
    ============================================================ */
-@media (max-width: 1024px) {
-  .mobile.dashboard-page .right-panel {
+@media (max-width: 1700px) {
+  .layout-container.mobile.dashboard-page .right-panel {
     background-size: contain !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
@@ -99,8 +99,8 @@
 /* ============================================================
    DASHBOARD — MOBILE BUTTON LAYOUT (MOBILE ONLY)
    ============================================================ */
-@media (max-width: 1024px) {
-  .mobile.dashboard-page .dashboard-mobile-buttons {
+@media (max-width: 1700px) {
+  .layout-container.mobile.dashboard-page .dashboard-mobile-buttons {
     position: relative !important;
     margin: 1rem auto !important;
     display: block !important;
@@ -112,20 +112,20 @@
 /* ============================================================
    FORM PAGES — HIDE LEFT PANEL (MOBILE ONLY)
    ============================================================ */
-@media (max-width: 1024px) {
-  .mobile.bbs-page .left-panel,
-  .mobile.nearmiss-page .left-panel,
-  .mobile.support-page .left-panel,
-  .mobile.inspection-page .left-panel,
-  .mobile.huddle-page .left-panel {
+@media (max-width: 1700px) {
+  .layout-container.mobile.bbs-page .left-panel,
+  .layout-container.mobile.nearmiss-page .left-panel,
+  .layout-container.mobile.support-page .left-panel,
+  .layout-container.mobile.inspection-page .left-panel,
+  .layout-container.mobile.huddle-page .left-panel {
     display: none !important;
   }
 
-  .mobile.bbs-page .right-panel,
-  .mobile.nearmiss-page .right-panel,
-  .mobile.support-page .right-panel,
-  .mobile.inspection-page .right-panel,
-  .mobile.huddle-page .right-panel {
+  .layout-container.mobile.bbs-page .right-panel,
+  .layout-container.mobile.nearmiss-page .right-panel,
+  .layout-container.mobile.support-page .right-panel,
+  .layout-container.mobile.inspection-page .right-panel,
+  .layout-container.mobile.huddle-page .right-panel {
     width: 100% !important;
     flex: none !important;
     min-height: 100vh !important;
@@ -135,12 +135,12 @@
 /* ============================================================
    FORM PAGES — CENTER CONTENT (MOBILE ONLY)
    ============================================================ */
-@media (max-width: 1024px) {
-  .mobile.bbs-page .right-panel,
-  .mobile.nearmiss-page .right-panel,
-  .mobile.support-page .right-panel,
-  .mobile.inspection-page .right-panel,
-  .mobile.huddle-page .right-panel {
+@media (max-width: 1700px) {
+  .layout-container.mobile.bbs-page .right-panel,
+  .layout-container.mobile.nearmiss-page .right-panel,
+  .layout-container.mobile.support-page .right-panel,
+  .layout-container.mobile.inspection-page .right-panel,
+  .layout-container.mobile.huddle-page .right-panel {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -152,7 +152,7 @@
 /* ============================================================
    FORM PAGES — TRUE FULL-PAGE BACKGROUND (MOBILE ONLY)
    ============================================================ */
-@media (max-width: 1024px) {
+@media (max-width: 1700px) {
 
   /* Apply background to the full scroll container */
   .layout-container.mobile.bbs-page,
@@ -171,18 +171,18 @@
   }
 
   /* Remove background from right-panel so it doesn't override */
-  .mobile.bbs-page .right-panel,
-  .mobile.nearmiss-page .right-panel,
-  .mobile.support-page .right-panel,
-  .mobile.inspection-page .right-panel,
-  .mobile.huddle-page .right-panel {
+  .layout-container.mobile.bbs-page .right-panel,
+  .layout-container.mobile.nearmiss-page .right-panel,
+  .layout-container.mobile.support-page .right-panel,
+  .layout-container.mobile.inspection-page .right-panel,
+  .layout-container.mobile.huddle-page .right-panel {
     background-image: none !important;
   }
 }
 
 /* Center the admin dashboard button on mobile */
-@media (max-width: 1024px) {
-  .mobile.dashboard-page .dashboard-mobile-buttons {
+@media (max-width: 1700px) {
+  .layout-container.mobile.dashboard-page .dashboard-mobile-buttons {
     left: 0 !important;
     right: 0 !important;
   }
@@ -191,36 +191,36 @@
 /* ============================================================
    ADMIN PAGES — SAFE MOBILE IMPROVEMENTS (NON-DESTRUCTIVE)
    ============================================================ */
-@media (max-width: 1024px) {
+@media (max-width: 1700px) {
 
   /* Make admin cards wrap cleanly */
-  .admin-card-container {
+  .layout-container.mobile .admin-card-container {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 1rem !important;
     justify-content: center !important;
   }
 
-  .admin-card {
+  .layout-container.mobile .admin-card {
     width: 90% !important;
     max-width: 350px !important;
   }
 
   /* Smooth horizontal scrolling for wide tables */
-  .admin-table-wrapper {
+  .layout-container.mobile .admin-table-wrapper {
     width: 100% !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }
 
-  .admin-table-wrapper table {
+  .layout-container.mobile .admin-table-wrapper table {
     width: max-content !important;
     min-width: 100% !important;
   }
 
   /* Slightly reduce padding so headers fit better */
-  table th,
-  table td {
+  .layout-container.mobile table th,
+  .layout-container.mobile table td {
     white-space: nowrap !important;
     padding: 0.5rem !important;
   }
@@ -232,20 +232,20 @@
 @media (max-width: 900px) {
 
   /* Slightly smaller text for headers and cells */
-  table th,
-  table td {
+  .layout-container.mobile table th,
+  .layout-container.mobile table td {
     font-size: 0.85rem !important;
     padding: 0.35rem !important;
   }
 
   /* Allow headers to wrap if absolutely necessary */
-  table th {
+  .layout-container.mobile table th {
     white-space: normal !important;
     line-height: 1.2 !important;
   }
 
   /* Force table to never exceed viewport width */
-  .admin-table-wrapper {
+  .layout-container.mobile .admin-table-wrapper {
     overflow-x: auto !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -253,14 +253,14 @@
   }
 
   /* Prevent table from forcing horizontal scroll beyond content */
-  .admin-table-wrapper table {
+  .layout-container.mobile .admin-table-wrapper table {
     width: max-content !important;
     min-width: 100% !important;
     table-layout: auto !important;
   }
 
   /* Make admin cards stack tighter */
-  .admin-card {
+  .layout-container.mobile .admin-card {
     width: 95% !important;
     max-width: 320px !important;
   }
@@ -272,13 +272,13 @@
 @media (max-width: 700px) {
 
   /* Force table to shrink as much as possible */
-  .admin-table-wrapper table {
+  .layout-container.mobile .admin-table-wrapper table {
     table-layout: auto !important;
     width: 100% !important;
   }
 
   /* Allow headers to wrap instead of forcing horizontal scroll */
-  table th {
+  .layout-container.mobile table th {
     white-space: normal !important;
     font-size: 0.75rem !important;
     line-height: 1.1 !important;
@@ -286,22 +286,22 @@
   }
 
   /* Tighten table cells */
-  table td {
+  .layout-container.mobile table td {
     font-size: 0.75rem !important;
     padding: 0.25rem !important;
     white-space: normal !important;
   }
 
   /* Ensure table scrolls smoothly when needed */
-  .admin-table-wrapper {
+  .layout-container.mobile .admin-table-wrapper {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     max-width: 100% !important;
   }
 
   /* Prevent any fixed-width columns from blowing out the layout */
-  table th,
-  table td {
+  .layout-container.mobile table th,
+  .layout-container.mobile table td {
     max-width: 120px !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
