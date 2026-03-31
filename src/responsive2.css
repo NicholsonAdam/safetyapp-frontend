@@ -17,7 +17,7 @@
 /* ============================================================
    MOBILE + TABLET BASE LAYOUT
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
 
   /* Stack layout vertically */
   .layout-container {
@@ -63,7 +63,7 @@
 /* ============================================================
    DASHBOARD — HIDE LEFT PANEL
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
   .mobile.dashboard-page .left-panel {
     display: none !important;
   }
@@ -77,7 +77,7 @@
 /* ============================================================
    DASHBOARD — FULLSCREEN HERO IMAGE
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
   .mobile.dashboard-page .right-panel {
     background-size: contain !important;
     background-position: center center !important;
@@ -99,7 +99,7 @@
 /* ============================================================
    DASHBOARD — MOBILE BUTTON LAYOUT
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
   .mobile.dashboard-page .dashboard-mobile-buttons {
     position: relative !important;
     margin: 1rem auto !important;
@@ -112,7 +112,7 @@
 /* ============================================================
    FORM PAGES — HIDE LEFT PANEL
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
   .mobile.bbs-page .left-panel,
   .mobile.nearmiss-page .left-panel,
   .mobile.support-page .left-panel,
@@ -135,7 +135,7 @@
 /* ============================================================
    FORM PAGES — CENTER CONTENT
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
   .mobile.bbs-page .right-panel,
   .mobile.nearmiss-page .right-panel,
   .mobile.support-page .right-panel,
@@ -152,7 +152,7 @@
 /* ============================================================
    FORM PAGES — TRUE FULL-PAGE BACKGROUND (SCROLLS FULL HEIGHT)
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
 
   /* Apply background to the full scroll container */
   .layout-container.mobile.bbs-page,
@@ -181,7 +181,7 @@
 }
 
 /* Center the admin dashboard button on mobile */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
   .mobile.dashboard-page .dashboard-mobile-buttons {
     left: 0 !important;
     right: 0 !important;
@@ -191,7 +191,7 @@
 /* ============================================================
    ADMIN PAGES — SAFE MOBILE IMPROVEMENTS (NON-DESTRUCTIVE)
    ============================================================ */
-@media (max-width: 1700px) {
+@media (max-width: 1200px) {
 
   /* Make admin cards wrap cleanly */
   .admin-card-container {
