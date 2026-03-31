@@ -319,3 +319,15 @@
 .desktop .right-panel {
   overflow-y: auto !important;
 }
+
+/* ============================================================
+   DESKTOP — FIX LAPTOP BUTTON OVERFLOW
+   ============================================================ */
+
+.desktop.dashboard-page .dashboard-mobile-buttons {
+  transform: scale(0.80);
+  transform-origin: top left;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
