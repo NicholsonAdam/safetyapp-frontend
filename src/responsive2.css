@@ -1,4 +1,27 @@
 /* ============================================================
+   GLOBAL SAFETY – PREVENT HORIZONTAL SCROLL ON DESKTOP
+   ============================================================ */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.layout-container {
+  max-width: 100vw;
+  width: 100%;
+  display: flex;
+}
+
+/* Slightly tighter left panel on smaller desktops */
+@media (min-width: 1201px) and (max-width: 1600px) {
+  .desktop .left-panel {
+    flex: 0 0 320px;
+    width: 320px;
+  }
+}
+
+/* ============================================================
    DESKTOP DEFAULT
    ============================================================ */
 .desktop .left-panel {
