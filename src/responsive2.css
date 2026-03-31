@@ -307,3 +307,15 @@
     text-overflow: ellipsis !important;
   }
 }
+/* ============================================================
+   DESKTOP — FIX LAPTOP OVERFLOW
+   ============================================================ */
+
+.desktop .layout-container {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+.desktop .right-panel {
+  overflow-y: auto !important;
+}
