@@ -65,7 +65,7 @@ const handleSubmit = async (e) => {
   const fd = new FormData();
 
   // Logged-in employee info
-  fd.append("observer_id", employee.id);
+  fd.append("observer_id", employee.employee_id);
   fd.append("observer_name", employee.name);
 
   // All form fields
