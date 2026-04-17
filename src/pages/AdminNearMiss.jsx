@@ -358,11 +358,18 @@ export default function AdminNearMiss() {
       );
 
       if (emp) {
-        setCreateForm((prev) => ({
+        setCreateForm(prev => ({
           ...prev,
-          observer_name: emp.name || "",
+          observer_id: createForm.observer_id,
+          observer_name: emp.name,
+
+          // 🔥 ADD THESE THREE LINES
+          leader_id: emp.leader_id,
+          leader_name: emp.leader_name,
+          area: emp.department,   // optional but matches BBS behavior
         }));
       }
+
     } catch (err) {
       console.error("Employee lookup failed:", err);
     }

@@ -53,7 +53,7 @@ export default function NearMissForm() {
     setMessage("");
 
     const formData = new FormData();
-    formData.append("observer_id", employee.id);
+    formData.append("observer_id", employee.employee_id);
     formData.append("observer_name", employee.name);
     formData.append("department", department);
     formData.append("location", location);
