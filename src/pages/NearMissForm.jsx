@@ -69,7 +69,6 @@ export default function NearMissForm() {
 
     try {
       await axios.post(`${API_URL}/create`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
       });
 
       setMessage("Near Miss submitted successfully");
