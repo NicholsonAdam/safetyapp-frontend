@@ -857,7 +857,7 @@ const handleCreateSubmit = async (e) => {
               <strong>Photo:</strong>
               <div style={{ marginTop: "0.5rem" }}>
                 <img
-                  src={`${API_BASE.replace('/api', '')}/uploads/${selectedRecord.photo_path}`}
+                  src={`${API_BASE.replace('/api', '')}/files/${selectedRecord.photo_path}`}
                   alt="Inspection"
                   style={{
                     maxWidth: "100%",
@@ -1114,7 +1114,7 @@ const handleCreateSubmit = async (e) => {
           }}
         >
           <img
-            src={`${API_BASE.replace('/api', '')}/uploads/${photoViewer}`}
+            src={`${API_BASE.replace('/api', '')}/files/${photoViewer}`}
             alt="Full View"
             style={{
               width: "80vw",
