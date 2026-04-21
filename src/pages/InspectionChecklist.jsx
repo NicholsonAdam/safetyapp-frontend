@@ -41,7 +41,7 @@ export default function InspectionChecklist() {
 
     const fd = new FormData();
 
-    fd.append("inspector_id", employee.id);
+    fd.append("inspector_id", employee.employee_id);
     fd.append("inspector_name", employee.name);
 
     Object.keys(form).forEach((key) => {
