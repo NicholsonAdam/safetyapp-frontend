@@ -7,6 +7,7 @@ import BBSObservation from "./pages/BBSObservation";
 import NearMissForm from "./pages/NearMissForm";
 import ContactSupport from "./pages/ContactSupport";
 import SafetyQuiz from "./pages/SafetyQuiz";
+import EmContact from "./pages/EmContact";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminBBS from "./pages/AdminBBS";
@@ -15,6 +16,8 @@ import InspectionChecklist from "./pages/InspectionChecklist";
 import SafetyHuddle from "./pages/SafetyHuddle";
 import AdminHuddle from "./pages/AdminHuddle";
 import AdminInspection from "./pages/AdminInspection";
+
+//this is a blank line to force a change
 
 export default function App() {
   return (
@@ -30,6 +33,7 @@ export default function App() {
         <Route path="/nearmiss" element={<NearMissForm />} />
         <Route path="/support" element={<ContactSupport />} />
         <Route path="/safetyquiz" element={<SafetyQuiz />} />
+        <Route path="/emcontact" element={<EmContact />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/employees" element={<AdminEmployees />} />
         <Route path="/admin/bbs" element={<AdminBBS />} />
