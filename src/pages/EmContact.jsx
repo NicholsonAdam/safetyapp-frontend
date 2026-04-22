@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 
-export default function EmergencyContacts() {
+export default function EmContact() {
   const inHouseContacts = [
     {
       name: "Bridgette Butler",
