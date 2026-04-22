@@ -6,6 +6,7 @@ import ChangePassword from "./pages/ChangePassword";
 import BBSObservation from "./pages/BBSObservation";
 import NearMissForm from "./pages/NearMissForm";
 import ContactSupport from "./pages/ContactSupport";
+import SafetyQuiz from "./pages/SafetyQuiz";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminBBS from "./pages/AdminBBS";
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/bbs" element={<BBSObservation />} />
         <Route path="/nearmiss" element={<NearMissForm />} />
         <Route path="/support" element={<ContactSupport />} />
+        <Route path="/safetyquiz" element={<SafetyQuiz />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/employees" element={<AdminEmployees />} />
         <Route path="/admin/bbs" element={<AdminBBS />} />
