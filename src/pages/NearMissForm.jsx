@@ -33,9 +33,6 @@ export default function NearMissForm() {
 
   const reportTypeOptions = [
     "Near Miss",
-    "Unsafe Condition",
-    "Unsafe Act",
-    "Safety Concern",
     "Safety Improvement Idea",
     "General Safety Communication",
   ];
@@ -99,6 +96,73 @@ export default function NearMissForm() {
         Use this form to report near misses, unsafe conditions, safety concerns,
         or ideas to improve safety. Reporting is encouraged and non-punitive.
       </p>
+
+      {/* Informational Columns */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "2rem",
+          gap: "1rem",
+        }}
+      >
+        {/* Near Miss */}
+        <div
+          style={{
+            flex: 1,
+            backgroundColor: "#ffe6e6",
+            padding: "1rem",
+            borderRadius: "8px",
+            border: "1px solid #b30000",
+          }}
+        >
+          <h3 style={{ marginTop: 0, color: "#b30000" }}>What is a Near Miss?</h3>
+          <p style={{ margin: 0 }}>
+            An unplanned event that did not result in injury, damage, or loss — but
+            had the potential to do so. Example: a pallet falls from a forklift but
+            misses a team member by a few feet.
+          </p>
+        </div>
+
+        {/* Safety Improvement Idea */}
+        <div
+          style={{
+            flex: 1,
+            backgroundColor: "#e6f7ff",
+            padding: "1rem",
+            borderRadius: "8px",
+            border: "1px solid #0077b3",
+          }}
+        >
+          <h3 style={{ marginTop: 0, color: "#0077b3" }}>
+            Safety Improvement Idea
+          </h3>
+          <p style={{ margin: 0 }}>
+            A suggestion that could reduce risk or improve safety performance.
+            Example: adding anti-slip tape to a frequently wet walkway.
+          </p>
+        </div>
+
+        {/* General Safety Communication */}
+        <div
+          style={{
+            flex: 1,
+            backgroundColor: "#fff7e6",
+            padding: "1rem",
+            borderRadius: "8px",
+            border: "1px solid #cc8400",
+          }}
+        >
+          <h3 style={{ marginTop: 0, color: "#cc8400" }}>
+            General Safety Communication
+          </h3>
+          <p style={{ margin: 0 }}>
+            Information that helps raise awareness or prevent issues. Example:
+            notifying Safety about a recurring trip hazard or unclear signage.
+          </p>
+        </div>
+      </div>
+
 
       <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
 
