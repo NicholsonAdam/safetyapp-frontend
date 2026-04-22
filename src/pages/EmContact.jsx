@@ -116,47 +116,75 @@ export default function EmContact() {
         ))}
       </div>
 
-      {/* EXTERNAL CONTACTS */}
-      <h2 style={{ color: "#b30000", marginBottom: "1rem" }}>
+        {/* EXTERNAL CONTACTS */}
+        <h2 style={{ color: "#b30000", marginBottom: "1rem" }}>
         External Emergency Services
-      </h2>
+        </h2>
 
-      <div
+        <div
         style={{
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          padding: "1rem",
-          marginBottom: "2rem",
+            backgroundColor: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "1rem",
+            marginBottom: "2rem",
         }}
-      >
+        >
         {externalContacts.map((c, index) => (
-          <div
+            <div
             key={index}
             style={{
-              padding: "0.8rem 0",
-              borderBottom: index !== externalContacts.length - 1 ? "1px solid #eee" : "none",
+                padding: "0.8rem 0",
+                borderBottom:
+                index !== externalContacts.length - 1 ? "1px solid #eee" : "none",
             }}
-          >
+            >
             <strong>{c.name}</strong>
             <div style={{ marginTop: "0.3rem" }}>
-              {c.emergency && (
+                {c.emergency && (
                 <p style={{ margin: "0.2rem 0" }}>
-                  Emergency: <strong>{c.emergency}</strong>
+                    Emergency: <strong>{c.emergency}</strong>
                 </p>
-              )}
-              {c.nonEmergency && (
+                )}
+                {c.nonEmergency && (
                 <p style={{ margin: "0.2rem 0" }}>
-                  Non‑Emergency: {c.nonEmergency}
+                    Non‑Emergency: {c.nonEmergency}
                 </p>
-              )}
-              {c.phone && (
+                )}
+                {c.phone && (
                 <p style={{ margin: "0.2rem 0" }}>Phone: {c.phone}</p>
-              )}
+                )}
             </div>
-          </div>
+            </div>
         ))}
-      </div>
+        </div>
+
+        {/* EVACUATION MAP / IMAGE SECTION */}
+        <h2 style={{ color: "#b30000", marginBottom: "1rem" }}>
+        Evacuation Route Map
+        </h2>
+
+        <div
+        style={{
+            backgroundColor: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "1rem",
+            marginBottom: "2rem",
+            textAlign: "center",
+        }}
+        >
+        <img
+            src="/evacuation.png"
+            alt="Evacuation Map"
+            style={{
+            width: "100%",
+            maxWidth: "600px",
+            borderRadius: "8px",
+            objectFit: "contain",
+            }}
+        />
+        </div>
     </Layout>
   );
 }
