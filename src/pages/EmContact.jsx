@@ -7,37 +7,37 @@ export default function EmContact() {
       name: "Bridgette Butler",
       title: "Safety Manager",
       phone: "(918) 629-9373",
-      img: "/public/bridgette.jpg", // placeholder
+      img: "/bridgette.jpg", // placeholder
     },
     {
       name: "Todd Carlson",
       title: "Plant Manager",
       phone: "(918) 348-9300",
-      img: "/public/todd.jpg",
+      img: "/todd.jpg",
     },
     {
       name: "Octavio Suarez",
       title: "Technical Director",
       phone: "(918) 770-6035",
-      img: "/public/octavio.jpg",
+      img: "/octavio.jpg",
     },
     {
       name: "Kyle Anderson",
       title: "Maintenance Manager",
       phone: "(918) 351-4656",
-      img: "/public/kyle.jpg",
+      img: "/kyle.jpg",
     },
     {
       name: "Homero Valencia",
       title: "Press Maintenance Manager",
       phone: "(918) 537-0467",
-      img: "/public/logo2.jpg",
+      img: "/logo2.png",
     },
     {
       name: "Luz Aguero",
       title: "Human Resources Manager",
       phone: "(972) 345-7740",
-      img: "/public/luz.jpg",
+      img: "/luz.jpg",
     },
   ];
 
