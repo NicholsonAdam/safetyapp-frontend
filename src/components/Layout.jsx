@@ -30,6 +30,7 @@ export default function Layout({ children }) {
   const isHuddlePage = location.pathname === "/huddle";
   const isChangePasswordPage = location.pathname === "/change-password";
   const isSafetyQuizPage = location.pathname === "/safetyquiz";
+  const isEmContactPage = location.pathname === "/emcontact";
 
   const employee = (() => {
     try {
@@ -46,6 +47,7 @@ export default function Layout({ children }) {
     isInspectionPage ||
     isHuddlePage ||
     isSafetyQuizPage ||
+    isEmContactPage ||
     isChangePasswordPage;
 
   const showHeroImage = isLoginPage || isDashboardPage;
@@ -309,6 +311,7 @@ export default function Layout({ children }) {
           {isHuddlePage && children}
           {isChangePasswordPage && children}
           {isSafetyQuizPage && children}
+          {isEmContactPage && children}
 
           {/* DASHBOARD BUTTONS */}
           {isDashboardPage && (
@@ -433,6 +436,29 @@ export default function Layout({ children }) {
                 Safety Quiz
               </button>
 
+              <button
+                onClick={() => navigate("/emcontact")}
+                className="dashboard-mobile-buttons"
+                style={{
+                  position: "absolute",
+                  top: "675px",
+                  left: "750px",
+                  width: "220px",
+                  height: "60px",
+                  backgroundColor: "white",
+                  color: "#b30000",
+                  border: "2px solid #b30000",
+                  borderRadius: "8px",
+                  fontSize: "1.1rem",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                  transition: "all 0.2s ease-in-out",
+                  zIndex: 5,
+                }}
+              >
+                Emergency Contact List
+              </button>
             </>
           )}
         </div>
