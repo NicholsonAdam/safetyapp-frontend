@@ -30,7 +30,7 @@ export default function Layout({ children }) {
   const isHuddlePage = location.pathname === "/huddle";
   const isChangePasswordPage = location.pathname === "/change-password";
   const isSafetyQuizPage = location.pathname === "/safetyquiz";
-  const isEmContactPage = location.pathname === "/emcontact";
+  const isEmContactPage = location.pathname.toLowerCase().startsWith("/emcontact");
 
   const employee = (() => {
     try {
