@@ -185,6 +185,33 @@ export default function EmContact() {
             }}
         />
         </div>
+
+        {/* EMERGENCY CODES / IMAGE SECTION */}
+        <h2 style={{ color: "#b30000", marginBottom: "1rem" }}>
+        Emergency Codes
+        </h2>
+
+        <div
+        style={{
+            backgroundColor: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "1rem",
+            marginBottom: "2rem",
+            textAlign: "center",
+        }}
+        >
+        <img
+            src="/codes.png"
+            alt="Evacuation Map"
+            style={{
+            width: "100%",
+            maxWidth: "600px",
+            borderRadius: "8px",
+            objectFit: "contain",
+            }}
+        />
+        </div>
     </Layout>
   );
 }
