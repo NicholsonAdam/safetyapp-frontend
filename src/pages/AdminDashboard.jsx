@@ -170,19 +170,20 @@ export default function AdminDashboard() {
           <p style={cardText}>Manage inspection checklists.</p>
         </div>
 
-        {/* SAFETY HUDDLE RECORDS */}
+        {/* SUBMISSION REQUIREMENTS */}
         <div
-          onClick={() => navigate("/admin/huddle")}
-          style={getCardStyle("huddle")}
+          onClick={() => navigate("/admin/submission-requirements")}
+          style={getCardStyle("huddle")}   // you can change the status key later
         >
           <img
-            src="/huddleicon.png"
-            alt="Safety Huddle Icon"
+            src="/analyticsicon.png"
+            alt="Submission Requirements Icon"
             style={{ width: "70px", height: "70px", marginBottom: "0.5rem" }}
           />
-          <h2 style={cardTitle}>Safety Huddle</h2>
-          <p style={cardText}>View huddle reports.</p>
+          <h2 style={cardTitle}>Submission Requirements</h2>
+          <p style={cardText}>Manage monthly submission quotas.</p>
         </div>
+
 
         {/* LEADERSHIP WALK RECORDS */}
         <div

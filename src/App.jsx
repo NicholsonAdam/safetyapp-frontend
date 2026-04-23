@@ -16,8 +16,7 @@ import InspectionChecklist from "./pages/InspectionChecklist";
 import SafetyHuddle from "./pages/SafetyHuddle";
 import AdminHuddle from "./pages/AdminHuddle";
 import AdminInspection from "./pages/AdminInspection";
-
-//this is a blank line to force a change
+import SubmissionRequirements from "./pages/SubmissionRequirements";
 
 export default function App() {
   return (
@@ -42,6 +41,7 @@ export default function App() {
         <Route path="/inspection" element={<InspectionChecklist />} />
         <Route path="/huddle" element={<SafetyHuddle />} />
         <Route path="/admin/inspection" element={<AdminInspection />} />
+        <Route path="/admin/submission-requirements" element={<SubmissionRequirements />} />
       </Routes>
     </BrowserRouter>
   );
