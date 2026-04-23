@@ -61,26 +61,6 @@ export default function SubmissionRequirements() {
   };
 
   // =========================
-  // DELETE ROW
-  // =========================
-  const deleteRequirement = async (employee_id) => {
-    try {
-      await fetch(`${API_BASE}/submission-requirements`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          employee_id,
-          year,
-          month,
-        }),
-      });
-      fetchRequirements();
-    } catch (err) {
-      console.error("Error deleting requirement:", err);
-    }
-  };
-
-  // =========================
   // SORT HANDLER
   // =========================
   const handleSort = (key) => {
@@ -200,7 +180,8 @@ export default function SubmissionRequirements() {
         .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
         .join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -435,7 +416,6 @@ export default function SubmissionRequirements() {
                   <th style={thStyle} onClick={() => handleSort("actual_submissions")}>
                     Progress{getSortIndicator("actual_submissions")}
                   </th>
-                  <th style={thStyle}>Actions</th>
                 </tr>
               </thead>
 
@@ -489,20 +469,6 @@ export default function SubmissionRequirements() {
                         </div>
                       </td>
                       <td style={tdStyle}>
-                        <button
-                          onClick={() => deleteRequirement(r.employee_id)}
-                          style={{
-                            padding: "0.3rem 0.6rem",
-                            backgroundColor: "#b30000",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          Delete Requirement
-                        </button>
                       </td>
                     </tr>
                   );
