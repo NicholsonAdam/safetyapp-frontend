@@ -11,7 +11,7 @@ export default function AdminDashboard() {
     bbs: "notdone",
     nearmiss: "notdone",
     inspection: "notdone",
-    huddle: "repair",
+    submissionrequirements: "done",
     leaderwalk: "inDevelopment",
     analytics: "inDevelopment",
   };
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
         {/* SUBMISSION REQUIREMENTS */}
         <div
           onClick={() => navigate("/admin/submission-requirements")}
-          style={getCardStyle("huddle")}   // you can change the status key later
+          style={getCardStyle("submissionrequirements")}   // you can change the status key later
         >
           <img
             src="/analyticsicon.png"
