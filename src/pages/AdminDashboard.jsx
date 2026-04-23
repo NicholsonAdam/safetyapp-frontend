@@ -11,7 +11,7 @@ export default function AdminDashboard() {
     bbs: "notdone",
     nearmiss: "notdone",
     inspection: "notdone",
-    submissionrequirements: "done",
+    submissionrequirements: "notdone",
     leaderwalk: "inDevelopment",
     analytics: "inDevelopment",
   };
