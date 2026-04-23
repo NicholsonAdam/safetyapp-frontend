@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
@@ -12,20 +12,21 @@ export default function SubmissionRequirements() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
 
+  const [leaderFilter, setLeaderFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "employee_id", direction: "asc" });
+
   // =========================
-  // FETCH REQUIREMENTS
+  // FETCH REQUIREMENTS + PROGRESS
   // =========================
   const fetchRequirements = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/submission-requirements`);
-      const data = await res.json();
-
-      const filtered = data.filter(
-        (r) => r.month === Number(month) && r.year === Number(year)
+      const res = await fetch(
+        `${API_BASE}/submission-requirements/progress?month=${month}&year=${year}`
       );
-
-      setRecords(filtered);
+      const data = await res.json();
+      setRecords(data || []);
     } catch (err) {
       console.error("Error fetching submission requirements:", err);
     } finally {
@@ -35,6 +36,7 @@ export default function SubmissionRequirements() {
 
   useEffect(() => {
     fetchRequirements();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // =========================
@@ -52,7 +54,6 @@ export default function SubmissionRequirements() {
           required_count,
         }),
       });
-
       fetchRequirements();
     } catch (err) {
       console.error("Error updating requirement:", err);
@@ -73,11 +74,140 @@ export default function SubmissionRequirements() {
           month,
         }),
       });
-
       fetchRequirements();
     } catch (err) {
       console.error("Error deleting requirement:", err);
     }
+  };
+
+  // =========================
+  // SORT HANDLER
+  // =========================
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return {
+          key,
+          direction: prev.direction === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const getSortIndicator = (key) => {
+    if (sortConfig.key !== key) return "";
+    return sortConfig.direction === "asc" ? " ▲" : " ▼";
+  };
+
+  // =========================
+  // FILTER + SEARCH + SORTED VIEW
+  // =========================
+  const processedRecords = useMemo(() => {
+    let data = [...records];
+
+    // Leader filter
+    if (leaderFilter) {
+      data = data.filter((r) => r.leader_name === leaderFilter);
+    }
+
+    // Search (employee id or name)
+    if (searchTerm.trim()) {
+      const term = searchTerm.trim().toLowerCase();
+      data = data.filter((r) => {
+        const idMatch = String(r.employee_id || "").toLowerCase().includes(term);
+        const nameMatch = (r.employee_name || "").toLowerCase().includes(term);
+        return idMatch || nameMatch;
+      });
+    }
+
+    // Sort
+    if (sortConfig.key) {
+      data.sort((a, b) => {
+        const aVal = a[sortConfig.key];
+        const bVal = b[sortConfig.key];
+
+        if (aVal == null && bVal != null) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aVal != null && bVal == null) return sortConfig.direction === "asc" ? 1 : -1;
+        if (aVal == null && bVal == null) return 0;
+
+        if (typeof aVal === "number" && typeof bVal === "number") {
+          return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
+        }
+
+        const aStr = String(aVal).toLowerCase();
+        const bStr = String(bVal).toLowerCase();
+        if (aStr < bStr) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aStr > bStr) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return data;
+  }, [records, leaderFilter, searchTerm, sortConfig]);
+
+  // =========================
+  // LEADER OPTIONS
+  // =========================
+  const leaderOptions = useMemo(() => {
+    const set = new Set();
+    records.forEach((r) => {
+      if (r.leader_name) set.add(r.leader_name);
+    });
+    return Array.from(set).sort();
+  }, [records]);
+
+  // =========================
+  // RESET FILTERS
+  // =========================
+  const resetFilters = () => {
+    setLeaderFilter("");
+    setSearchTerm("");
+    setSortConfig({ key: "employee_id", direction: "asc" });
+  };
+
+  // =========================
+  // EXPORT TO EXCEL (CSV)
+  // =========================
+  const exportToExcel = () => {
+    if (!processedRecords.length) return;
+
+    const header = [
+      "Employee ID",
+      "Employee Name",
+      "Leader Name",
+      "Required Count",
+      "Actual Submissions",
+      "Progress (%)",
+    ];
+
+    const rows = processedRecords.map((r) => {
+      const actual = r.actual_submissions || 0;
+      const required = r.required_count || 0;
+      const pct = required > 0 ? ((actual / required) * 100).toFixed(1) : "0.0";
+      return [
+        r.employee_id,
+        r.employee_name,
+        r.leader_name || "",
+        required,
+        actual,
+        pct,
+      ];
+    });
+
+    const csvContent =
+      [header, ...rows]
+        .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const fileMonth = String(month).padStart(2, "0");
+    link.download = `submission_requirements_${fileMonth}_${year}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   // =========================
@@ -154,6 +284,7 @@ export default function SubmissionRequirements() {
         <div
           style={{
             display: "flex",
+            flexWrap: "wrap",
             gap: "1rem",
             alignItems: "center",
             marginBottom: "1.5rem",
@@ -164,7 +295,7 @@ export default function SubmissionRequirements() {
           </label>
           <select
             value={month}
-            onChange={(e) => setMonth(e.target.value)}
+            onChange={(e) => setMonth(Number(e.target.value))}
             style={{
               padding: "0.4rem",
               borderRadius: "6px",
@@ -183,7 +314,7 @@ export default function SubmissionRequirements() {
           </label>
           <select
             value={year}
-            onChange={(e) => setYear(e.target.value)}
+            onChange={(e) => setYear(Number(e.target.value))}
             style={{
               padding: "0.4rem",
               borderRadius: "6px",
@@ -211,6 +342,74 @@ export default function SubmissionRequirements() {
           >
             Load
           </button>
+
+          {/* Leader Filter */}
+          <label style={{ marginLeft: "1rem" }}>
+            <strong>Leader:</strong>
+          </label>
+          <select
+            value={leaderFilter}
+            onChange={(e) => setLeaderFilter(e.target.value)}
+            style={{
+              padding: "0.4rem",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              minWidth: "160px",
+            }}
+          >
+            <option value="">All Leaders</option>
+            {leaderOptions.map((leader) => (
+              <option key={leader} value={leader}>
+                {leader}
+              </option>
+            ))}
+          </select>
+
+          {/* Search */}
+          <input
+            type="text"
+            placeholder="Search by ID or name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "0.4rem",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              flexGrow: 1,
+              minWidth: "200px",
+            }}
+          />
+
+          {/* Reset + Export */}
+          <button
+            onClick={resetFilters}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: "#777",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Reset Filters
+          </button>
+
+          <button
+            onClick={exportToExcel}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: "#008000",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Export to Excel
+          </button>
         </div>
 
         {/* TABLE */}
@@ -221,51 +420,101 @@ export default function SubmissionRequirements() {
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead style={{ position: "sticky", top: 0, background: "#eee" }}>
                 <tr>
-                  <th style={thStyle}>Employee</th>
-                  <th style={thStyle}>Leader</th>
-                  <th style={thStyle}>Required Count</th>
+                  <th style={thStyle} onClick={() => handleSort("employee_id")}>
+                    Employee ID{getSortIndicator("employee_id")}
+                  </th>
+                  <th style={thStyle} onClick={() => handleSort("employee_name")}>
+                    Employee{getSortIndicator("employee_name")}
+                  </th>
+                  <th style={thStyle} onClick={() => handleSort("leader_name")}>
+                    Leader{getSortIndicator("leader_name")}
+                  </th>
+                  <th style={thStyle} onClick={() => handleSort("required_count")}>
+                    Required Count{getSortIndicator("required_count")}
+                  </th>
+                  <th style={thStyle} onClick={() => handleSort("actual_submissions")}>
+                    Progress{getSortIndicator("actual_submissions")}
+                  </th>
                   <th style={thStyle}>Actions</th>
                 </tr>
               </thead>
 
               <tbody>
-                {records.map((r) => (
-                  <tr key={r.employee_id} style={{ borderBottom: "1px solid #ddd" }}>
-                    <td style={tdStyle}>{r.employee_name}</td>
-                    <td style={tdStyle}>{r.leader_email || "—"}</td>
-                    <td style={tdStyle}>
-                      <input
-                        type="number"
-                        defaultValue={r.required_count}
-                        onBlur={(e) =>
-                          updateRequirement(r.employee_id, Number(e.target.value))
-                        }
-                        style={{
-                          width: "70px",
-                          padding: "0.3rem",
-                          borderRadius: "4px",
-                          border: "1px solid #ccc",
-                        }}
-                      />
-                    </td>
-                    <td style={tdStyle}>
-                      <button
-                        onClick={() => deleteRequirement(r.employee_id)}
-                        style={{
-                          padding: "0.3rem 0.6rem",
-                          backgroundColor: "#b30000",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontSize: "0.9rem",
-                        }}
-                      >
-                        Delete
-                      </button>
+                {processedRecords.map((r) => {
+                  const actual = r.actual_submissions || 0;
+                  const required = r.required_count || 0;
+                  const pct =
+                    required > 0 ? ((actual / required) * 100).toFixed(1) : "0.0";
+
+                  // Simple color coding
+                  let progressColor = "#999";
+                  if (required > 0) {
+                    if (actual >= required) progressColor = "#008000";
+                    else if (actual >= required * 0.5) progressColor = "#e6a800";
+                    else progressColor = "#b30000";
+                  }
+
+                  return (
+                    <tr
+                      key={r.employee_id}
+                      style={{ borderBottom: "1px solid #ddd" }}
+                    >
+                      <td style={tdStyle}>{r.employee_id}</td>
+                      <td style={tdStyle}>{r.employee_name}</td>
+                      <td style={tdStyle}>{r.leader_name || "—"}</td>
+                      <td style={tdStyle}>
+                        <input
+                          type="number"
+                          defaultValue={required}
+                          onBlur={(e) =>
+                            updateRequirement(
+                              r.employee_id,
+                              Number(e.target.value)
+                            )
+                          }
+                          style={{
+                            width: "70px",
+                            padding: "0.3rem",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                          }}
+                        />
+                      </td>
+                      <td style={tdStyle}>
+                        <div style={{ color: progressColor, fontWeight: "bold" }}>
+                          {actual} / {required}{" "}
+                          <span style={{ marginLeft: "4px", fontWeight: "normal" }}>
+                            ({pct}%)
+                          </span>
+                        </div>
+                      </td>
+                      <td style={tdStyle}>
+                        <button
+                          onClick={() => deleteRequirement(r.employee_id)}
+                          style={{
+                            padding: "0.3rem 0.6rem",
+                            backgroundColor: "#b30000",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          Delete Requirement
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+                {!processedRecords.length && !loading && (
+                  <tr>
+                    <td style={tdStyle} colSpan={6}>
+                      No records match the current filters.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -280,6 +529,8 @@ const thStyle = {
   borderBottom: "2px solid #ccc",
   textAlign: "left",
   fontWeight: "bold",
+  cursor: "pointer",
+  userSelect: "none",
 };
 
 const tdStyle = {
