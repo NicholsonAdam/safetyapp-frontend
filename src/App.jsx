@@ -22,7 +22,7 @@ import DocumentFolderView from "./pages/DocumentFolderView";
 import DocumentView from "./pages/DocumentView";
 import DocumentVersionView from "./pages/DocumentVersionView";
 import TrainingScanner from "./pages/TrainingScanner";
-import LeaderWalk from "./pages/LeaderWalk;"
+import LeaderWalk from "./pages/LeaderWalk";
 
 export default function App() {
   return (
