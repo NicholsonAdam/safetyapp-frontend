@@ -17,6 +17,11 @@ import SafetyHuddle from "./pages/SafetyHuddle";
 import AdminHuddle from "./pages/AdminHuddle";
 import AdminInspection from "./pages/AdminInspection";
 import SubmissionRequirements from "./pages/SubmissionRequirements";
+import DocumentLibrary from "./pages/DocumentLibrary";
+import DocumentFolderView from "./pages/DocumentFolderView";
+import DocumentView from "./pages/DocumentView";
+import DocumentVersionView from "./pages/DocumentVersionView";
+import TrainingScanner from "./pages/TrainingScanner";
 
 export default function App() {
   return (
@@ -42,6 +47,12 @@ export default function App() {
         <Route path="/huddle" element={<SafetyHuddle />} />
         <Route path="/admin/inspection" element={<AdminInspection />} />
         <Route path="/admin/submission-requirements" element={<SubmissionRequirements />} />
+        <Route path="/leaderwalk" element={<LeaderWalk />} />
+        <Route path="/documents" element={<DocumentLibrary />} />
+        <Route path="/documents/folder:folderId" element={<DocumentFolderView />} />
+        <Route path="/documents/view/:documentId" element={<DocumentView />} />
+        <Route path="/documents/version/:versionId" element={<DocumentVersionView />} />
+        <Route path="/training-scanner" element={<TrainingScanner />} />
       </Routes>
     </BrowserRouter>
   );

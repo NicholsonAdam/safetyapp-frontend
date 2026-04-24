@@ -298,7 +298,7 @@ export default function Layout({ children }) {
                   zIndex: 5,
                 }}
               >
-                Leadership Walk (In Development)
+                Leadership Tools
               </button>
             </>
           )}
