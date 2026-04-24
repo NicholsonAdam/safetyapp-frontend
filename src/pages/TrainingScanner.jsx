@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout";
-import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function TrainingScanner() {
   const [scannedId, setScannedId] = useState("");
@@ -8,7 +7,7 @@ export default function TrainingScanner() {
   const [sessionName, setSessionName] = useState("");
 
   const startScanner = () => {
-    const scanner = new Html5QrcodeScanner(
+    const scanner = new window.Html5QrcodeScanner(
       "reader",
       { fps: 10, qrbox: 250 },
       false
