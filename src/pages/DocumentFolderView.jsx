@@ -119,6 +119,21 @@ export default function DocumentFolderView() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      <button
+        onClick={() => navigate("/documents")}
+        style={{
+          padding: "0.6rem 1rem",
+          backgroundColor: "#e0e0e0",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          marginBottom: "1.5rem",
+          fontWeight: "600"
+        }}
+      >
+        ← Back to Document Library
+      </button>
+
       <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
         Folder Contents
       </h1>
