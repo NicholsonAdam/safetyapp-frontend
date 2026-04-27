@@ -61,9 +61,20 @@ export default function DocumentView() {
   };
 
   // Open version (view/download)
-  const openVersion = versionId => {
-    // Viewer route – you can implement a dedicated VersionView page
-    window.open(`${API}/documentversions/version/${versionId}`, "_blank");
+  const openVersion = async versionId => {
+    try {
+      // 1. Get version metadata (this returns JSON)
+      const res = await fetch(`${API}/documentversions/version/${versionId}`);
+      const data = await res.json();
+
+      // 2. Build full file URL
+      const fileUrl = `${API}${data.file_path}`;
+
+      // 3. Open the actual file (PDF, Word, Excel, etc.)
+      window.open(fileUrl, "_blank");
+    } catch (err) {
+      console.error("Error opening version:", err);
+    }
   };
 
   return (
@@ -163,9 +174,7 @@ export default function DocumentView() {
             <div style={{ display: "flex", gap: "1rem" }}>
               <button
                 onClick={uploadVersion}
-                disabled={
-                  uploadLoading || !file || !comment.trim()
-                }
+                disabled={uploadLoading || !file || !comment.trim()}
                 style={{
                   flex: 1,
                   padding: "0.8rem",
