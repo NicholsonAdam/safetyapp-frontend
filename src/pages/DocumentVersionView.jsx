@@ -15,14 +15,14 @@ export default function DocumentVersionView() {
 
   // Load version
   useEffect(() => {
-    fetch(`/api/documentversions/version/${versionId}`)
+    fetch(`${API}/documentversions/version/${versionId}`)
       .then(res => res.json())
       .then(data => setVersion(data));
   }, [versionId]);
 
   // Load signatures
   const loadSignatures = () => {
-    fetch(`/api/signatures/${versionId}`)
+    fetch(`${API}/signatures/${versionId}`)
       .then(res => res.json())
       .then(data => setSignatures(data));
   };
@@ -76,7 +76,7 @@ export default function DocumentVersionView() {
     formData.append("employee_id", localStorage.getItem("employee_id"));
     formData.append("signed_by", typedName);
 
-    await fetch("/api/signatures", {
+    await fetch(`${API}/signatures`, {
       method: "POST",
       body: formData
     });
@@ -90,7 +90,7 @@ export default function DocumentVersionView() {
     return <div style={{ padding: "2rem" }}>Loading...</div>;
   }
 
-  const fileUrl = `/${version.file_path}`;
+  const fileUrl = `${API}${version.file_path}`;
 
   return (
     <div style={{ padding: "2rem" }}>
