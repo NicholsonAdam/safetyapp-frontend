@@ -52,7 +52,7 @@ export default function DocumentLibrary() {
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
       {/* Back Button */}
       <button
-        onClick={() => navigate("/leader-tools")}
+        onClick={() => navigate("/leaderwalk")}
         style={{
           padding: "0.6rem 1rem",
           backgroundColor: "#e0e0e0",
