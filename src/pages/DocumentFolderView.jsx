@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../components/Layout";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function DocumentFolderView() {
   const { folderId } = useParams();
   const navigate = useNavigate();
+
+  const API = import.meta.env.VITE_API_URL; // IMPORTANT
 
   // DOCUMENTS + SUBFOLDERS
   const [documents, setDocuments] = useState([]);
@@ -30,26 +31,29 @@ export default function DocumentFolderView() {
 
   // LOAD DOCUMENTS
   const loadDocuments = () => {
-    fetch(`/api/documents?folder_id=${folderId}`)
+    fetch(`${API}/documents?folder_id=${folderId}`)
       .then(res => res.json())
-      .then(data => setDocuments(data));
+      .then(data => setDocuments(data))
+      .catch(err => console.error("Error loading documents:", err));
   };
 
   // LOAD SUBFOLDERS
   const loadSubfolders = () => {
-    fetch(`/api/folders`)
+    fetch(`${API}/folders`)
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(f => f.parent_folder_id == folderId);
         setSubfolders(filtered);
-      });
+      })
+      .catch(err => console.error("Error loading subfolders:", err));
   };
 
-  // LOAD ALL FOLDERS (for move dropdown)
+  // LOAD ALL FOLDERS
   const loadAllFolders = () => {
-    fetch(`/api/folders`)
+    fetch(`${API}/folders`)
       .then(res => res.json())
-      .then(data => setAllFolders(data));
+      .then(data => setAllFolders(data))
+      .catch(err => console.error("Error loading all folders:", err));
   };
 
   useEffect(() => {
@@ -60,14 +64,14 @@ export default function DocumentFolderView() {
 
   // CREATE DOCUMENT
   const createDocument = async () => {
-    await fetch("/api/documents", {
+    await fetch(`${API}/documents`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         folder_id: folderId,
         title,
         description,
-        created_by: localStorage.getItem("employee_id")
+        created_by: Number(localStorage.getItem("employee_id"))
       })
     });
 
@@ -79,14 +83,14 @@ export default function DocumentFolderView() {
 
   // CREATE SUBFOLDER
   const createSubfolder = async () => {
-    await fetch("/api/folders", {
+    await fetch(`${API}/folders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: folderName,
         description: folderDescription,
         parent_folder_id: folderId,
-        created_by: localStorage.getItem("employee_id")
+        created_by: Number(localStorage.getItem("employee_id"))
       })
     });
 
@@ -98,7 +102,7 @@ export default function DocumentFolderView() {
 
   // UPDATE DOCUMENT
   const updateDocument = async () => {
-    await fetch(`/api/documents/${editDoc.id}`, {
+    await fetch(`${API}/documents/${editDoc.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -151,250 +155,6 @@ export default function DocumentFolderView() {
           + Create Subfolder
         </button>
       </div>
-
-      {/* CREATE DOCUMENT MODAL */}
-      {showCreateDoc && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "2rem",
-              borderRadius: "10px",
-              width: "400px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem"
-            }}
-          >
-            <h2>Create Document</h2>
-
-            <input
-              type="text"
-              placeholder="Document Title"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            />
-
-            <textarea
-              placeholder="Description (optional)"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            />
-
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <button
-                onClick={createDocument}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#004aad",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Create
-              </button>
-
-              <button
-                onClick={() => setShowCreateDoc(false)}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#999",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE SUBFOLDER MODAL */}
-      {showCreateFolder && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "2rem",
-              borderRadius: "10px",
-              width: "400px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem"
-            }}
-          >
-            <h2>Create Subfolder</h2>
-
-            <input
-              type="text"
-              placeholder="Folder Name"
-              value={folderName}
-              onChange={e => setFolderName(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            />
-
-            <textarea
-              placeholder="Description (optional)"
-              value={folderDescription}
-              onChange={e => setFolderDescription(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            />
-
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <button
-                onClick={createSubfolder}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#004aad",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Create
-              </button>
-
-              <button
-                onClick={() => setShowCreateFolder(false)}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#999",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* EDIT DOCUMENT MODAL */}
-      {showEdit && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "2rem",
-              borderRadius: "10px",
-              width: "400px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem"
-            }}
-          >
-            <h2>Edit Document</h2>
-
-            <input
-              type="text"
-              value={editTitle}
-              onChange={e => setEditTitle(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            />
-
-            <textarea
-              value={editDescription}
-              onChange={e => setEditDescription(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            />
-
-            <select
-              value={editFolder}
-              onChange={e => setEditFolder(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
-            >
-              {allFolders.map(f => (
-                <option key={f.id} value={f.id}>
-                  {f.name}
-                </option>
-              ))}
-            </select>
-
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <button
-                onClick={updateDocument}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#004aad",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Save
-              </button>
-
-              <button
-                onClick={() => setShowEdit(false)}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#999",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* SUBFOLDER LIST */}
       <h2 style={{ marginTop: "2rem" }}>Subfolders</h2>
