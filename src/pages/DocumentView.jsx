@@ -63,7 +63,7 @@ export default function DocumentView() {
   // Open version (view/download)
   const openVersion = versionId => {
     // Viewer route – you can implement a dedicated VersionView page
-    navigate(`/documents/version/${versionId}`);
+    window.open(`${API}/documentversions/version/${versionId}`, "_blank");
   };
 
   return (
