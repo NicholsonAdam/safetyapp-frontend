@@ -12,6 +12,16 @@ export default function LeaderWalk() {
         margin: "0 auto",
       }}
     >
+      {/* Top Back Button */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <button
+          onClick={() => navigate("/dashboard")}
+          style={backButton}
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
+
       {/* Header Section */}
       <div
         style={{
@@ -22,7 +32,7 @@ export default function LeaderWalk() {
         }}
       >
         <img
-          src="/logo2.png"   // <-- Correct for public folder
+          src="/logo2.png"
           alt="Company Logo"
           style={{ height: "70px", objectFit: "contain" }}
         />
@@ -57,6 +67,39 @@ export default function LeaderWalk() {
           gap: "1rem",
         }}
       >
+        {/* Leadership Walk */}
+        <button
+          onClick={() => navigate("/leadership-walk")}
+          style={buttonPrimary}
+        >
+          🚶 Leadership Gemba Walk
+        </button>
+
+        {/* Open Action Items */}
+        <button
+          onClick={() => navigate("/action-items")}
+          style={buttonPrimary}
+        >
+          📋 Open Action Items
+        </button>
+
+        {/* Incident Investigation */}
+        <button
+          onClick={() => navigate("/incident-investigation")}
+          style={buttonPrimary}
+        >
+          ⚠️ Incident Investigation
+        </button>
+
+        {/* Continuous Improvement Tools */}
+        <button
+          onClick={() => navigate("/ci-tools")}
+          style={buttonPrimary}
+        >
+          🔧 Continuous Improvement Tools
+        </button>
+
+        {/* Document Library */}
         <button
           onClick={() => navigate("/documents")}
           style={buttonPrimary}
@@ -64,6 +107,7 @@ export default function LeaderWalk() {
           📁 Document Library
         </button>
 
+        {/* Training Attendance Scanner */}
         <button
           onClick={() => navigate("/training-scanner")}
           style={{
@@ -74,22 +118,13 @@ export default function LeaderWalk() {
           📷 Training Attendance Scanner
         </button>
 
+        {/* Coming Soon Buttons */}
         <button disabled style={buttonDisabled}>
           Training Attendance (Coming Soon)
         </button>
 
         <button disabled style={buttonDisabled}>
           Document Signatures (Coming Soon)
-        </button>
-      </div>
-
-      {/* Back Button */}
-      <div style={{ marginTop: "3rem" }}>
-        <button
-          onClick={() => navigate("/dashboard")}
-          style={backButton}
-        >
-          ← Back to Dashboard
         </button>
       </div>
     </div>
