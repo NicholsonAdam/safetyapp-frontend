@@ -9,11 +9,17 @@ export default function DocumentView() {
 
   const [versions, setVersions] = useState([]);
 
+  // Upload modal state
   const [showUpload, setShowUpload] = useState(false);
   const [file, setFile] = useState(null);
   const [comment, setComment] = useState("");
   const [uploadError, setUploadError] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
+
+  // Viewer state
+  const [activeFileUrl, setActiveFileUrl] = useState(null);
+  const [activeFileType, setActiveFileType] = useState(null);
+  const [activeVersion, setActiveVersion] = useState(null);
 
   // Load versions
   const loadVersions = () => {
@@ -60,18 +66,18 @@ export default function DocumentView() {
     }
   };
 
-  // Open version (view/download)
+  // Open version inside the page (PWA-safe)
   const openVersion = async versionId => {
     try {
-      // 1. Get version metadata (this returns JSON)
       const res = await fetch(`${API}/documentversions/version/${versionId}`);
       const data = await res.json();
 
-      // 2. Build full file URL
       const fileUrl = `${API}${data.file_path}`;
+      const fileType = data.file_type;
 
-      // 3. Open the actual file (PDF, Word, Excel, etc.)
-      window.open(fileUrl, "_blank");
+      setActiveFileUrl(fileUrl);
+      setActiveFileType(fileType);
+      setActiveVersion(data);
     } catch (err) {
       console.error("Error opening version:", err);
     }
@@ -160,13 +166,7 @@ export default function DocumentView() {
             />
 
             {uploadError && (
-              <div
-                style={{
-                  color: "red",
-                  fontSize: "0.9rem",
-                  marginTop: "0.5rem"
-                }}
-              >
+              <div style={{ color: "red", fontSize: "0.9rem" }}>
                 {uploadError}
               </div>
             )}
@@ -255,6 +255,69 @@ export default function DocumentView() {
           </button>
         ))}
       </div>
+
+      {/* INLINE DOCUMENT VIEWER */}
+      {activeFileUrl && (
+        <div
+          style={{
+            marginTop: "2rem",
+            padding: "1rem",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "8px"
+          }}
+        >
+          <h2 style={{ marginBottom: "1rem" }}>
+            Viewing Version {activeVersion?.version_number}
+          </h2>
+
+          {/* PDF VIEWER */}
+          {activeFileType === "application/pdf" && (
+            <iframe
+              src={activeFileUrl}
+              style={{
+                width: "100%",
+                height: "80vh",
+                border: "1px solid #ccc",
+                borderRadius: "6px"
+              }}
+            />
+          )}
+
+          {/* IMAGE VIEWER */}
+          {activeFileType?.startsWith("image/") && (
+            <img
+              src={activeFileUrl}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "80vh",
+                borderRadius: "6px",
+                border: "1px solid #ccc"
+              }}
+            />
+          )}
+
+          {/* NON-PREVIEWABLE FILES */}
+          {!activeFileType?.startsWith("image/") &&
+            activeFileType !== "application/pdf" && (
+              <div>
+                <p>This file type cannot be previewed. Download instead:</p>
+                <a
+                  href={activeFileUrl}
+                  download
+                  style={{
+                    padding: "0.8rem 1.2rem",
+                    backgroundColor: "#004aad",
+                    color: "white",
+                    borderRadius: "6px",
+                    textDecoration: "none"
+                  }}
+                >
+                  Download File
+                </a>
+              </div>
+            )}
+        </div>
+      )}
     </div>
   );
 }
