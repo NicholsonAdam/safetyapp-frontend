@@ -18,7 +18,7 @@ export default function DocumentLibrary() {
     fetch(`${API}/folders`)
       .then(res => res.json())
       .then(data => {
-        const topLevel = data.filter(f => f.parent_folder_id === null);
+        const topLevel = data.filter(f => f.parent_folder_id === null); // test to force redeploy
         setFolders(topLevel);
       })
       .catch(err => console.error("Error loading folders:", err));
