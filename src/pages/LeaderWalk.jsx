@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
-import companyLogo from "../logo2.png"; // <-- add your logo here
+import companyLogo from "/logo2.png"; // <-- add your logo here
 
 export default function LeaderWalk() {
   const navigate = useNavigate();
