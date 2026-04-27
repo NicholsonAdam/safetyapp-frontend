@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
 
 export default function DocumentLibrary() {
@@ -10,11 +9,14 @@ export default function DocumentLibrary() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
+  const API = import.meta.env.VITE_API_URL; // backend base URL
+
   // Load folders
   const loadFolders = () => {
-    fetch("/api/folders")
+    fetch(`${API}/api/folders`)
       .then(res => res.json())
-      .then(data => setFolders(data));
+      .then(data => setFolders(data))
+      .catch(err => console.error("Error loading folders:", err));
   };
 
   useEffect(() => {
@@ -23,26 +25,46 @@ export default function DocumentLibrary() {
 
   // Create folder
   const createFolder = async () => {
-    await fetch("/api/folders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        description,
-        parent_folder_id: null,
-        created_by: localStorage.getItem("employee_id") // your app already stores this
-      })
-    });
+    try {
+      await fetch(`${API}/api/folders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          description,
+          parent_folder_id: null,
+          created_by: localStorage.getItem("employee_id")
+        })
+      });
 
-    setShowCreate(false);
-    setName("");
-    setDescription("");
-    loadFolders();
+      setShowCreate(false);
+      setName("");
+      setDescription("");
+      loadFolders();
+    } catch (err) {
+      console.error("Error creating folder:", err);
+    }
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
+    <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      {/* Back Button */}
+      <button
+        onClick={() => navigate("/leader-tools")}
+        style={{
+          padding: "0.6rem 1rem",
+          backgroundColor: "#e0e0e0",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          marginBottom: "1.5rem",
+          fontWeight: "600"
+        }}
+      >
+        ← Back
+      </button>
+
+      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem", color: "#004aad" }}>
         Document Library
       </h1>
 
@@ -57,7 +79,8 @@ export default function DocumentLibrary() {
           border: "none",
           borderRadius: "6px",
           cursor: "pointer",
-          marginBottom: "1.5rem"
+          marginBottom: "1.5rem",
+          fontWeight: "600"
         }}
       >
         + Create Folder
@@ -75,7 +98,8 @@ export default function DocumentLibrary() {
             backgroundColor: "rgba(0,0,0,0.5)",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            zIndex: 9999
           }}
         >
           <div
@@ -86,24 +110,36 @@ export default function DocumentLibrary() {
               width: "400px",
               display: "flex",
               flexDirection: "column",
-              gap: "1rem"
+              gap: "1rem",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
             }}
           >
-            <h2>Create Folder</h2>
+            <h2 style={{ margin: 0 }}>Create Folder</h2>
 
             <input
               type="text"
               placeholder="Folder Name"
               value={name}
               onChange={e => setName(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
+              style={{
+                padding: "0.5rem",
+                fontSize: "1rem",
+                borderRadius: "6px",
+                border: "1px solid #ccc"
+              }}
             />
 
             <textarea
               placeholder="Description (optional)"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
+              style={{
+                padding: "0.5rem",
+                fontSize: "1rem",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                minHeight: "80px"
+              }}
             />
 
             <div style={{ display: "flex", gap: "1rem" }}>
@@ -116,7 +152,8 @@ export default function DocumentLibrary() {
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  fontWeight: "600"
                 }}
               >
                 Create
@@ -131,7 +168,8 @@ export default function DocumentLibrary() {
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  fontWeight: "600"
                 }}
               >
                 Cancel
@@ -149,15 +187,18 @@ export default function DocumentLibrary() {
             onClick={() => navigate(`/documents/folder/${folder.id}`)}
             style={{
               padding: "1rem",
-              fontSize: "1.5rem",
+              fontSize: "1.4rem",
               backgroundColor: "#004aad",
               color: "white",
               border: "none",
               borderRadius: "8px",
-              cursor: "pointer"
+              cursor: "pointer",
+              textAlign: "left",
+              fontWeight: "600",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.15)"
             }}
           >
-            {folder.name}
+            📁 {folder.name}
           </button>
         ))}
       </div>
