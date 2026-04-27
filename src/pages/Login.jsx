@@ -26,6 +26,7 @@ export default function Login() {
       // Normal login
       localStorage.setItem("token", data.token);
       localStorage.setItem("employee", JSON.stringify(data.employee));
+      localStorage.setItem("employee_id", data.employee.employee_id);
 
       navigate("/dashboard");
     } catch (err) {
