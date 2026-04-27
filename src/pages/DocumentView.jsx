@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../components/Layout";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function DocumentView() {
   const { documentId } = useParams();
+  const navigate = useNavigate();
+
+  const API = import.meta.env.VITE_API_URL;
+
   const [versions, setVersions] = useState([]);
 
   const [showUpload, setShowUpload] = useState(false);
@@ -12,9 +15,10 @@ export default function DocumentView() {
 
   // Load versions
   const loadVersions = () => {
-    fetch(`/api/documentversions/${documentId}`)
+    fetch(`${API}/documentversions/${documentId}`)
       .then(res => res.json())
-      .then(data => setVersions(data));
+      .then(data => setVersions(data))
+      .catch(err => console.error("Error loading versions:", err));
   };
 
   useEffect(() => {
@@ -28,7 +32,7 @@ export default function DocumentView() {
     formData.append("uploaded_by", localStorage.getItem("employee_id"));
     formData.append("change_comment", comment);
 
-    await fetch(`/api/documentversions/${documentId}`, {
+    await fetch(`${API}/documentversions/${documentId}`, {
       method: "POST",
       body: formData
     });
@@ -41,6 +45,22 @@ export default function DocumentView() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      {/* BACK BUTTON */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          padding: "0.6rem 1rem",
+          backgroundColor: "#e0e0e0",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          marginBottom: "1.5rem",
+          fontWeight: "600"
+        }}
+      >
+        ← Back
+      </button>
+
       <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
         Document Versions
       </h1>
@@ -74,7 +94,8 @@ export default function DocumentView() {
             backgroundColor: "rgba(0,0,0,0.5)",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            zIndex: 99999
           }}
         >
           <div
@@ -145,18 +166,18 @@ export default function DocumentView() {
             key={v.id}
             onClick={() => navigate(`/documents/version/${v.id}`)}
             style={{
-                padding: "1rem",
-                fontSize: "1.5rem",
-                backgroundColor: "#004aad",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer"
+              padding: "1rem",
+              fontSize: "1.5rem",
+              backgroundColor: "#004aad",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer"
             }}
-            >
-            Version {v.version_number} — {new Date(v.uploaded_at).toLocaleString()}
-            </button>
-
+          >
+            Version {v.version_number} —{" "}
+            {new Date(v.uploaded_at).toLocaleString()}
+          </button>
         ))}
       </div>
     </div>
