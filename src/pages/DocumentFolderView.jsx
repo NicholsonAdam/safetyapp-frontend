@@ -5,7 +5,7 @@ export default function DocumentFolderView() {
   const { folderId } = useParams();
   const navigate = useNavigate();
 
-  const API = import.meta.env.VITE_API_URL; // IMPORTANT
+  const API = import.meta.env.VITE_API_URL;
 
   // DOCUMENTS + SUBFOLDERS
   const [documents, setDocuments] = useState([]);
@@ -171,6 +171,72 @@ export default function DocumentFolderView() {
         </button>
       </div>
 
+      {/* CREATE DOCUMENT MODAL */}
+      {showCreateDoc && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Create Document</h2>
+
+            <input
+              type="text"
+              placeholder="Document Title"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              style={inputStyle}
+            />
+
+            <textarea
+              placeholder="Description (optional)"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              style={textareaStyle}
+            />
+
+            <div style={modalButtonRow}>
+              <button onClick={createDocument} style={primaryButton}>
+                Create
+              </button>
+              <button onClick={() => setShowCreateDoc(false)} style={cancelButton}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE SUBFOLDER MODAL */}
+      {showCreateFolder && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Create Subfolder</h2>
+
+            <input
+              type="text"
+              placeholder="Folder Name"
+              value={folderName}
+              onChange={e => setFolderName(e.target.value)}
+              style={inputStyle}
+            />
+
+            <textarea
+              placeholder="Description (optional)"
+              value={folderDescription}
+              onChange={e => setFolderDescription(e.target.value)}
+              style={textareaStyle}
+            />
+
+            <div style={modalButtonRow}>
+              <button onClick={createSubfolder} style={primaryButton}>
+                Create
+              </button>
+              <button onClick={() => setShowCreateFolder(false)} style={cancelButton}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SUBFOLDER LIST */}
       <h2 style={{ marginTop: "2rem" }}>Subfolders</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -250,3 +316,71 @@ export default function DocumentFolderView() {
     </div>
   );
 }
+
+/* ---------- SHARED MODAL STYLES ---------- */
+
+const modalOverlay = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
+  backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 99999
+};
+
+const modalBox = {
+  backgroundColor: "white",
+  padding: "2rem",
+  borderRadius: "10px",
+  width: "400px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+};
+
+const inputStyle = {
+  padding: "0.5rem",
+  fontSize: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc"
+};
+
+const textareaStyle = {
+  padding: "0.5rem",
+  fontSize: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc",
+  minHeight: "80px"
+};
+
+const modalButtonRow = {
+  display: "flex",
+  gap: "1rem"
+};
+
+const primaryButton = {
+  flex: 1,
+  padding: "0.8rem",
+  backgroundColor: "#004aad",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
+
+const cancelButton = {
+  flex: 1,
+  padding: "0.8rem",
+  backgroundColor: "#999",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
