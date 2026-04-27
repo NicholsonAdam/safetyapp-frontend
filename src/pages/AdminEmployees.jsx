@@ -38,7 +38,7 @@ export default function AdminEmployees() {
 
   // FETCH EMPLOYEES
   const loadEmployees = () => {
-    fetch("https://safetyapp-backend-xq88.onrender.com/api/employees")
+    fetch("https://safetyapp-backend-docker.onrender.com/api/employees")
       .then((res) => res.json())
       .then((data) => {
         setEmployees(
@@ -70,7 +70,7 @@ export default function AdminEmployees() {
   // SUBMIT ADD EMPLOYEE
   const submitAddEmployee = async () => {
     try {
-      const res = await fetch("https://safetyapp-backend-xq88.onrender.com/api/employees", {
+      const res = await fetch("https://safetyapp-backend-docker.onrender.com/api/employees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -92,7 +92,7 @@ export default function AdminEmployees() {
   const submitEditEmployee = async () => {
     try {
       const res = await fetch(
-        `https://safetyapp-backend-xq88.onrender.com/api/employees/${selectedEmployee.employee_id}`,
+        `https://safetyapp-backend-docker.onrender.com/api/employees/${selectedEmployee.employee_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -140,7 +140,7 @@ export default function AdminEmployees() {
 
     try {
       const res = await fetch(
-        `https://safetyapp-backend-xq88.onrender.com/api/employees/${emp.employee_id}`,
+        `https://safetyapp-backend-docker.onrender.com/api/employees/${emp.employee_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -171,7 +171,7 @@ export default function AdminEmployees() {
   // EXPORT EMPLOYEES TO EXCEL
       const exportToExcel = async () => {
         try {
-          const res = await fetch("https://safetyapp-backend-xq88.onrender.com/api/employees/export", {
+          const res = await fetch("https://safetyapp-backend-docker.onrender.com/api/employees/export", {
             method: "GET",
           });
 
@@ -206,7 +206,7 @@ export default function AdminEmployees() {
 
           try {
             const response = await fetch(
-              "https://safetyapp-backend-xq88.onrender.com/api/auth/admin/reset-password",
+              "https://safetyapp-backend-docker.onrender.com/api/auth/admin/reset-password",
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

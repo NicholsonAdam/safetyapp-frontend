@@ -15,7 +15,7 @@ export default function SafetyHuddle() {
 
   // Load list of huddles from backend
   useEffect(() => {
-    fetch("https://safetyapp-backend-xq88.onrender.com/api/huddles")
+    fetch("https://safetyapp-backend-docker.onrender.com/api/huddles")
       .then((res) => res.json())
       .then((data) => {
         setHuddles(data);
@@ -37,7 +37,7 @@ export default function SafetyHuddle() {
   };
 
   const handleSign = async () => {
-    const res = await fetch("https://safetyapp-backend-xq88.onrender.com/api/huddles/sign", {
+    const res = await fetch("https://safetyapp-backend-docker.onrender.com/api/huddles/sign", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

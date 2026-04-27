@@ -45,7 +45,7 @@ export default function AdminHuddle() {
 
   // LOAD ALL EMPLOYEES
   useEffect(() => {
-    fetch("https://safetyapp-backend-xq88.onrender.com/api/employees")
+    fetch("https://safetyapp-backend-docker.onrender.com/api/employees")
       .then((res) => res.json())
       .then((data) => {
         setEmployees(data);
@@ -78,7 +78,7 @@ export default function AdminHuddle() {
     if (!employeeId.trim()) return;
 
     const res = await fetch(
-      `https://safetyapp-backend-xq88.onrender.com/api/huddles/employee/${employeeId}?department=${deptOverride}&leader=${leaderOverride}`
+      `https://safetyapp-backend-docker.onrender.com/api/huddles/employee/${employeeId}?department=${deptOverride}&leader=${leaderOverride}`
     );
     const data = await res.json();
     setEmployeeData(data);
@@ -89,7 +89,7 @@ export default function AdminHuddle() {
     if (!week) return;
 
     const res = await fetch(
-      `https://safetyapp-backend-xq88.onrender.com/api/huddles/week/${year}/${week}?department=${deptOverride}&leader=${leaderOverride}`
+      `https://safetyapp-backend-docker.onrender.com/api/huddles/week/${year}/${week}?department=${deptOverride}&leader=${leaderOverride}`
     );
     const data = await res.json();
     setWeekData(data);
@@ -98,7 +98,7 @@ export default function AdminHuddle() {
   // EXPORT FULL YEAR
   const exportAllToExcel = async () => {
     const res = await fetch(
-      `https://safetyapp-backend-xq88.onrender.com/api/huddles/full-year?year=${year}&department=${department}&leader=${leader}`
+      `https://safetyapp-backend-docker.onrender.com/api/huddles/full-year?year=${year}&department=${department}&leader=${leader}`
     );
 
     if (!res.ok) {

@@ -53,7 +53,7 @@ export default function InspectionChecklist() {
     });
 
     try {
-      const res = await fetch("https://safetyapp-backend-xq88.onrender.com/api/inspection", {
+      const res = await fetch("https://safetyapp-backend-docker.onrender.com/api/inspection", {
         method: "POST",
         body: fd,
       });
