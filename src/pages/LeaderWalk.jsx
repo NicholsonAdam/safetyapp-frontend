@@ -72,31 +72,7 @@ export default function LeaderWalk() {
           onClick={() => navigate("/leadership-walk")}
           style={buttonPrimary}
         >
-          🚶 Leadership Gemba Walk
-        </button>
-
-        {/* Open Action Items */}
-        <button
-          onClick={() => navigate("/action-items")}
-          style={buttonPrimary}
-        >
-          📋 Open Action Items
-        </button>
-
-        {/* Incident Investigation */}
-        <button
-          onClick={() => navigate("/incident-investigation")}
-          style={buttonPrimary}
-        >
-          ⚠️ Incident Investigation
-        </button>
-
-        {/* Continuous Improvement Tools */}
-        <button
-          onClick={() => navigate("/ci-tools")}
-          style={buttonPrimary}
-        >
-          🔧 Continuous Improvement Tools
+          🚶 Leadership Gemba Walk (Coming Soon)
         </button>
 
         {/* Document Library */}
@@ -107,6 +83,30 @@ export default function LeaderWalk() {
           📁 Document Library
         </button>
 
+        {/* Open Action Items */}
+        <button
+          onClick={() => navigate("/action-items")}
+          style={buttonPrimary}
+        >
+          📋 Open Action Items (Coming Soon)
+        </button>
+
+        {/* Incident Investigation */}
+        <button
+          onClick={() => navigate("/incident-investigation")}
+          style={buttonPrimary}
+        >
+          ⚠️ Incident Investigation (Coming Soon)
+        </button>
+
+        {/* Continuous Improvement Tools */}
+        <button
+          onClick={() => navigate("/ci-tools")}
+          style={buttonPrimary}
+        >
+          🔧 Continuous Improvement Tools (Coming Soon)
+        </button>
+
         {/* Training Attendance Scanner */}
         <button
           onClick={() => navigate("/training-scanner")}
@@ -115,16 +115,16 @@ export default function LeaderWalk() {
             backgroundColor: "#8a2be2",
           }}
         >
-          📷 Training Attendance Scanner
+          📷 Training Attendance Scanner (Coming Soon)
         </button>
 
         {/* Coming Soon Buttons */}
         <button disabled style={buttonDisabled}>
-          Training Attendance (Coming Soon)
+          📝 Training Attendance (Coming Soon)
         </button>
 
         <button disabled style={buttonDisabled}>
-          Document Signatures (Coming Soon)
+          ✍️ Document Signatures (Coming Soon)
         </button>
       </div>
     </div>
