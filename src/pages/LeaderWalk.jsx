@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import companyLogo from "/logo2.png"; // <-- add your logo here
 
 export default function LeaderWalk() {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ export default function LeaderWalk() {
           }}
         >
           <img
-            src={companyLogo}
+            src="/logo2.png"   // <-- Correct for public folder
             alt="Company Logo"
             style={{ height: "70px", objectFit: "contain" }}
           />
@@ -59,7 +58,6 @@ export default function LeaderWalk() {
             gap: "1rem",
           }}
         >
-          {/* Document Library */}
           <button
             onClick={() => navigate("/documents")}
             style={buttonPrimary}
@@ -67,7 +65,6 @@ export default function LeaderWalk() {
             📁 Document Library
           </button>
 
-          {/* Training Attendance Scanner */}
           <button
             onClick={() => navigate("/training-scanner")}
             style={{
@@ -78,7 +75,6 @@ export default function LeaderWalk() {
             📷 Training Attendance Scanner
           </button>
 
-          {/* Coming Soon Buttons */}
           <button disabled style={buttonDisabled}>
             Training Attendance (Coming Soon)
           </button>
