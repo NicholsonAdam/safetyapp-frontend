@@ -1,468 +1,167 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Layout({ children }) {
+export default function LeaderWalk() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // 🔥 NEW: device mode state
-  const [deviceMode, setDeviceMode] = useState("desktop");
-
-  // 🔥 NEW: detect desktop vs mobile by input type (not width)
-  useEffect(() => {
-    const updateMode = () => {
-      const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      setDeviceMode(isDesktop ? "desktop" : "mobile");
-    };
-
-    updateMode();
-    window.addEventListener("resize", updateMode);
-
-    return () => window.removeEventListener("resize", updateMode);
-  }, []);
-
-  const isLoginPage = location.pathname.toLowerCase() === "/login";
-  const isDashboardPage = location.pathname === "/dashboard";
-  const isBBSPage = location.pathname === "/bbs";
-  const isNearMissPage = location.pathname === "/nearmiss";
-  const isSupportPage = location.pathname === "/support";
-  const isInspectionPage = location.pathname === "/inspection";
-  const isHuddlePage = location.pathname === "/huddle";
-  const isChangePasswordPage = location.pathname === "/change-password";
-  const isSafetyQuizPage = location.pathname === "/safetyquiz";
-  const isEmContactPage = location.pathname.toLowerCase().startsWith("/emcontact");
-
-  const employee = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("employee"));
-    } catch {
-      return null;
-    }
-  })();
-
-  const isFormPage =
-    isBBSPage ||
-    isNearMissPage ||
-    isSupportPage ||
-    isInspectionPage ||
-    isHuddlePage ||
-    isSafetyQuizPage ||
-    isEmContactPage ||
-    isChangePasswordPage;
-
-  const showHeroImage = isLoginPage || isDashboardPage;
-
-  const rightPanelBackground = isBBSPage
-    ? "/BBS.jpg"
-    : isNearMissPage
-    ? "/nearmiss.jpg"
-    : isSupportPage
-    ? "/support.jpg"
-    : isInspectionPage
-    ? "/inspection.jpg"
-    : isHuddlePage
-    ? "/huddle.jpg"
-    : null;
-
-  const heroImage = showHeroImage ? "/Safety2026.png" : null;
 
   return (
     <div
-      className={`layout-container ${deviceMode} ${
-        isDashboardPage ? "dashboard-page" : ""
-      } ${isBBSPage ? "bbs-page" : ""} ${isNearMissPage ? "nearmiss-page" : ""} ${
-        isSupportPage ? "support-page" : ""
-      } ${isInspectionPage ? "inspection-page" : ""} ${
-        isHuddlePage ? "huddle-page" : ""
-      }`}
       style={{
-        display: "flex",
-        minHeight: "100vh",
-        width: "100%",
-        fontFamily: "Arial, sans-serif",
+        padding: "2rem",
+        maxWidth: "900px",
+        margin: "0 auto",
       }}
     >
-      {/* LEFT PANEL */}
-      <div
-        className="left-panel"
-        style={{
-          backgroundColor: "#ffe5e5",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          top: 0,
-        }}
-      >
-        <header
-          style={{
-            backgroundColor: "#b30000",
-            color: "white",
-            padding: "1rem 2rem",
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            whiteSpace: "nowrap",
-          }}
+      {/* Top Back Button */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <button
+          onClick={() => navigate("/dashboard")}
+          style={backButton}
         >
-          Safety Communication App
-        </header>
-
-        <main
-          className={isLoginPage ? "login-center" : ""}
-          style={{
-            padding: "2rem",
-            width: "100%",
-          }}
-        >
-          {employee && !isLoginPage && (
-            <>
-              <h1 style={{ marginBottom: "1rem", fontSize: "2rem" }}>
-                Welcome, {employee?.name}
-              </h1>
-
-              <p style={{ fontSize: "1.1rem" }}>
-                Department: {employee?.department}
-              </p>
-
-              <p style={{ fontSize: "1.1rem", marginTop: "0.5rem" }}>
-                Job Title: {employee?.job_title}
-              </p>
-            </>
-          )}
-
-          {(isLoginPage || isDashboardPage) && children}
-        </main>
-
-        <div
-          style={{
-            padding: "0 2rem 1rem 2rem",
-            color: "#b30000",
-            fontWeight: "bold",
-            lineHeight: "1.3",
-          }}
-        >
-          <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
-            Dal‑Tile Safety
-          </div>
-          <div style={{ fontSize: "1rem" }}>
-            Part of the Safety Management System
-          </div>
-          <div style={{ fontSize: "1rem" }}>A VPP Star Facility</div>
-        </div>
-
-        <div
-          style={{
-            padding: "1rem 2rem",
-            marginTop: "auto",
-          }}
-        >
-          <img
-            src="/VPP.png"
-            alt="VPP Star"
-            style={{
-              width: "100%",
-              marginBottom: "1rem",
-              borderRadius: "6px",
-              objectFit: "contain",
-            }}
-          />
-
-          <img
-            src="/logo.jpg"
-            alt="Logo"
-            style={{
-              width: "100%",
-              borderRadius: "6px",
-              objectFit: "contain",
-            }}
-          />
-        </div>
+          ← Back to Dashboard
+        </button>
       </div>
 
-      {/* RIGHT PANEL */}
+      {/* Header Section */}
       <div
-        className={`right-panel ${
-          showHeroImage && !isDashboardPage ? "hero-hide-mobile" : ""
-        }`}
         style={{
-          flex: 1,
           display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "center",
-          backgroundImage:
-            isFormPage && rightPanelBackground
-              ? `url(${rightPanelBackground})`
-              : !isFormPage && heroImage
-              ? `url(${heroImage})`
-              : "none",
-          backgroundSize: isFormPage ? "cover" : "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundColor: isFormPage ? "white" : "black",
-          position: "relative",
-          overflowY: "visible",
-          scrollbarGutter: "stable",
-          padding: isFormPage ? "2rem" : 0,
+          alignItems: "center",
+          marginBottom: "2rem",
+          gap: "1rem",
         }}
       >
-        {/* STATIC BACKGROUND FOR FORM PAGES */}
-        {rightPanelBackground && (
-          <div
-            className="form-bg"
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundColor: "rgba(255,255,255,0.3)",
-              pointerEvents: "none",
-              zIndex: 0,
-            }}
-          />
-        )}
-
-        {/* CONTENT */}
-        <div
-          className="form-content"
+        <img
+          src="/logo2.png"
+          alt="Company Logo"
+          style={{ height: "70px", objectFit: "contain" }}
+        />
+        <h1
           style={{
-            position: "relative",
-            zIndex: 1,
-            width: "100%",
-            maxWidth: "900px",
-            color: "black",
+            fontSize: "2.5rem",
+            margin: 0,
+            color: "#004aad",
+            fontWeight: "700",
           }}
         >
-          {/* BACK BUTTON FOR FORM PAGES */}
-          {isFormPage && (
-            <button
-              onClick={() => navigate("/dashboard")}
-              style={{
-                marginBottom: "1.5rem",
-                padding: "0.5rem 1rem",
-                backgroundColor: "#b30000",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "1rem",
-                fontWeight: "bold",
-                cursor: "pointer",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              ← Back to Dashboard
-            </button>
-          )}
+          Leadership Tools
+        </h1>
+      </div>
 
-          {/* ADMIN FLOATING BUTTONS */}
-          {isDashboardPage && employee?.site_admin?.toString().toLowerCase() === "yes" && (
-            <>
-              <button
-                onClick={() => navigate("/admin")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "50px",
-                  right: "-150px",
-                  padding: "1rem 1.5rem",
-                  backgroundColor: "#b30000",
-                  color: "white",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "2rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 10,
-                }}
-              >
-                Dashboard
-              </button>
+      {/* Subtitle */}
+      <p
+        style={{
+          fontSize: "1.3rem",
+          marginBottom: "2rem",
+          color: "#333",
+        }}
+      >
+        Select a tool below.
+      </p>
 
-              <button
-                onClick={() => navigate("/leaderwalk")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "130px",
-                  left: "830px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "#f8c5c5",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                Leadership Tools
-              </button>
-            </>
-          )}
+      {/* Buttons Container */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+        }}
+      >
+        {/* Leadership Walk */}
+        <button
+          onClick={() => navigate("/leadership-walk")}
+          style={buttonPrimary}
+        >
+          🚶 Leadership Gemba Walk
+        </button>
 
-          {/* FORM PAGES */}
-          {isBBSPage && children}
-          {isNearMissPage && children}
-          {isSupportPage && children}
-          {isInspectionPage && children}
-          {isHuddlePage && children}
-          {isChangePasswordPage && children}
-          {isSafetyQuizPage && children}
-          {isEmContactPage && children}
+        {/* Open Action Items */}
+        <button
+          onClick={() => navigate("/action-items")}
+          style={buttonPrimary}
+        >
+          📋 Open Action Items
+        </button>
 
-          {/* DASHBOARD BUTTONS */}
-          {isDashboardPage && (
-            <>
-              <button
-                onClick={() => navigate("/bbs")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "525px",
-                  left: "500px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "white",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                B.B.S. Observation
-              </button>
+        {/* Incident Investigation */}
+        <button
+          onClick={() => navigate("/incident-investigation")}
+          style={buttonPrimary}
+        >
+          ⚠️ Incident Investigation
+        </button>
 
-              <button
-                onClick={() => navigate("/nearmiss")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "525px",
-                  left: "750px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "white",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                Near Miss Report / Safety Ideas
-              </button>
+        {/* Continuous Improvement Tools */}
+        <button
+          onClick={() => navigate("/ci-tools")}
+          style={buttonPrimary}
+        >
+          🔧 Continuous Improvement Tools
+        </button>
 
-              <button
-                onClick={() => navigate("/inspection")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "600px",
-                  left: "500px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "white",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                Safety-Related Activity
-              </button>
-              
-              <button
-                onClick={() => navigate("/support")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "600px",
-                  left: "750px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "white",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                Contact Support
-              </button>
+        {/* Document Library */}
+        <button
+          onClick={() => navigate("/documents")}
+          style={buttonPrimary}
+        >
+          📁 Document Library
+        </button>
 
-              <button
-                onClick={() => navigate("/safetyquiz")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "675px",
-                  left: "500px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "white",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                Safety Quiz
-              </button>
+        {/* Training Attendance Scanner */}
+        <button
+          onClick={() => navigate("/training-scanner")}
+          style={{
+            ...buttonPrimary,
+            backgroundColor: "#8a2be2",
+          }}
+        >
+          📷 Training Attendance Scanner
+        </button>
 
-              <button
-                onClick={() => navigate("/emcontact")}
-                className="dashboard-mobile-buttons"
-                style={{
-                  position: "absolute",
-                  top: "675px",
-                  left: "750px",
-                  width: "220px",
-                  height: "60px",
-                  backgroundColor: "white",
-                  color: "#b30000",
-                  border: "2px solid #b30000",
-                  borderRadius: "8px",
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s ease-in-out",
-                  zIndex: 5,
-                }}
-              >
-                Emergency Contact List
-              </button>
-            </>
-          )}
-        </div>
+        {/* Coming Soon Buttons */}
+        <button disabled style={buttonDisabled}>
+          Training Attendance (Coming Soon)
+        </button>
+
+        <button disabled style={buttonDisabled}>
+          Document Signatures (Coming Soon)
+        </button>
       </div>
     </div>
   );
 }
+
+/* ------------------ STYLES ------------------ */
+
+const buttonPrimary = {
+  padding: "1rem",
+  fontSize: "1.4rem",
+  backgroundColor: "#004aad",
+  color: "white",
+  border: "none",
+  borderRadius: "10px",
+  cursor: "pointer",
+  fontWeight: "600",
+  boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+};
+
+const buttonDisabled = {
+  padding: "1rem",
+  fontSize: "1.4rem",
+  backgroundColor: "#999",
+  color: "white",
+  border: "none",
+  borderRadius: "10px",
+  opacity: 0.7,
+};
+
+const backButton = {
+  padding: "0.8rem 1.2rem",
+  fontSize: "1.2rem",
+  backgroundColor: "#e0e0e0",
+  color: "#333",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontWeight: "600",
+};
