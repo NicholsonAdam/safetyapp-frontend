@@ -5,96 +5,94 @@ export default function LeaderWalk() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <div
+      style={{
+        padding: "2rem",
+        maxWidth: "900px",
+        margin: "0 auto",
+      }}
+    >
+      {/* Header Section */}
       <div
         style={{
-          padding: "2rem",
-          maxWidth: "900px",
-          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "2rem",
+          gap: "1rem",
         }}
       >
-        {/* Header Section */}
-        <div
+        <img
+          src="/logo2.png"   // <-- Correct for public folder
+          alt="Company Logo"
+          style={{ height: "70px", objectFit: "contain" }}
+        />
+        <h1
           style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "2rem",
-            gap: "1rem",
+            fontSize: "2.5rem",
+            margin: 0,
+            color: "#004aad",
+            fontWeight: "700",
           }}
         >
-          <img
-            src="/logo2.png"   // <-- Correct for public folder
-            alt="Company Logo"
-            style={{ height: "70px", objectFit: "contain" }}
-          />
-          <h1
-            style={{
-              fontSize: "2.5rem",
-              margin: 0,
-              color: "#004aad",
-              fontWeight: "700",
-            }}
-          >
-            Leadership Tools
-          </h1>
-        </div>
-
-        {/* Subtitle */}
-        <p
-          style={{
-            fontSize: "1.3rem",
-            marginBottom: "2rem",
-            color: "#333",
-          }}
-        >
-          Select a tool below.
-        </p>
-
-        {/* Buttons Container */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-          }}
-        >
-          <button
-            onClick={() => navigate("/documents")}
-            style={buttonPrimary}
-          >
-            📁 Document Library
-          </button>
-
-          <button
-            onClick={() => navigate("/training-scanner")}
-            style={{
-              ...buttonPrimary,
-              backgroundColor: "#8a2be2",
-            }}
-          >
-            📷 Training Attendance Scanner
-          </button>
-
-          <button disabled style={buttonDisabled}>
-            Training Attendance (Coming Soon)
-          </button>
-
-          <button disabled style={buttonDisabled}>
-            Document Signatures (Coming Soon)
-          </button>
-        </div>
-
-        {/* Back Button */}
-        <div style={{ marginTop: "3rem" }}>
-          <button
-            onClick={() => navigate("/dashboard")}
-            style={backButton}
-          >
-            ← Back to Dashboard
-          </button>
-        </div>
+          Leadership Tools
+        </h1>
       </div>
-    </Layout>
+
+      {/* Subtitle */}
+      <p
+        style={{
+          fontSize: "1.3rem",
+          marginBottom: "2rem",
+          color: "#333",
+        }}
+      >
+        Select a tool below.
+      </p>
+
+      {/* Buttons Container */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+        }}
+      >
+        <button
+          onClick={() => navigate("/documents")}
+          style={buttonPrimary}
+        >
+          📁 Document Library
+        </button>
+
+        <button
+          onClick={() => navigate("/training-scanner")}
+          style={{
+            ...buttonPrimary,
+            backgroundColor: "#8a2be2",
+          }}
+        >
+          📷 Training Attendance Scanner
+        </button>
+
+        <button disabled style={buttonDisabled}>
+          Training Attendance (Coming Soon)
+        </button>
+
+        <button disabled style={buttonDisabled}>
+          Document Signatures (Coming Soon)
+        </button>
+      </div>
+
+      {/* Back Button */}
+      <div style={{ marginTop: "3rem" }}>
+        <button
+          onClick={() => navigate("/dashboard")}
+          style={backButton}
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
+    </div>
   );
 }
 
