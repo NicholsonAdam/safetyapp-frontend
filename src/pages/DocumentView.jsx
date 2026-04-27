@@ -12,6 +12,8 @@ export default function DocumentView() {
   const [showUpload, setShowUpload] = useState(false);
   const [file, setFile] = useState(null);
   const [comment, setComment] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   // Load versions
   const loadVersions = () => {
@@ -27,20 +29,41 @@ export default function DocumentView() {
 
   // Upload new version
   const uploadVersion = async () => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("uploaded_by", localStorage.getItem("employee_id"));
-    formData.append("change_comment", comment);
+    setUploadError("");
+    setUploadLoading(true);
 
-    await fetch(`${API}/documentversions/${documentId}`, {
-      method: "POST",
-      body: formData
-    });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("uploaded_by", localStorage.getItem("employee_id"));
+      formData.append("change_comment", comment);
 
-    setShowUpload(false);
-    setFile(null);
-    setComment("");
-    loadVersions();
+      const res = await fetch(`${API}/documentversions/${documentId}`, {
+        method: "POST",
+        body: formData
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upload new version");
+      }
+
+      setShowUpload(false);
+      setFile(null);
+      setComment("");
+      loadVersions();
+      console.log("Version uploaded successfully");
+    } catch (err) {
+      console.error(err);
+      setUploadError(err.message || "Error uploading version");
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  // Open version (view/download)
+  const openVersion = versionId => {
+    // Viewer route – you can implement a dedicated VersionView page
+    navigate(`/documents/version/${versionId}`);
   };
 
   return (
@@ -61,7 +84,7 @@ export default function DocumentView() {
         ← Back
       </button>
 
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
+      <h1 style={{ fontSize: "2.2rem", marginBottom: "1rem" }}>
         Document Versions
       </h1>
 
@@ -102,31 +125,47 @@ export default function DocumentView() {
             style={{
               backgroundColor: "white",
               padding: "2rem",
-              borderRadius: "10px",
-              width: "400px",
+              borderRadius: "12px",
+              width: "450px",
               display: "flex",
               flexDirection: "column",
-              gap: "1rem"
+              gap: "1rem",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
             }}
           >
             <h2>Upload New Version</h2>
 
             <input
               type="file"
-              onChange={e => setFile(e.target.files[0])}
+              onChange={e => setFile(e.target.files[0] || null)}
               style={{ padding: "0.5rem", fontSize: "1rem" }}
             />
 
             <textarea
-              placeholder="Change comment (what changed?)"
+              placeholder="Explain the revision"
               value={comment}
               onChange={e => setComment(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
+              style={{ padding: "0.5rem", fontSize: "1rem", minHeight: "80px" }}
             />
+
+            {uploadError && (
+              <div
+                style={{
+                  color: "red",
+                  fontSize: "0.9rem",
+                  marginTop: "0.5rem"
+                }}
+              >
+                {uploadError}
+              </div>
+            )}
 
             <div style={{ display: "flex", gap: "1rem" }}>
               <button
                 onClick={uploadVersion}
+                disabled={
+                  uploadLoading || !file || !comment.trim()
+                }
                 style={{
                   flex: 1,
                   padding: "0.8rem",
@@ -134,14 +173,24 @@ export default function DocumentView() {
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
-                  cursor: "pointer"
+                  cursor:
+                    uploadLoading || !file || !comment.trim()
+                      ? "not-allowed"
+                      : "pointer",
+                  opacity:
+                    uploadLoading || !file || !comment.trim()
+                      ? 0.6
+                      : 1
                 }}
               >
-                Upload
+                {uploadLoading ? "Uploading..." : "Upload"}
               </button>
 
               <button
-                onClick={() => setShowUpload(false)}
+                onClick={() => {
+                  setShowUpload(false);
+                  setUploadError("");
+                }}
                 style={{
                   flex: 1,
                   padding: "0.8rem",
@@ -164,19 +213,36 @@ export default function DocumentView() {
         {versions.map(v => (
           <button
             key={v.id}
-            onClick={() => navigate(`/documents/version/${v.id}`)}
+            onClick={() => openVersion(v.id)}
             style={{
               padding: "1rem",
-              fontSize: "1.5rem",
+              fontSize: "1.2rem",
               backgroundColor: "#004aad",
               color: "white",
               border: "none",
               borderRadius: "8px",
-              cursor: "pointer"
+              cursor: "pointer",
+              textAlign: "left"
             }}
           >
-            Version {v.version_number} —{" "}
-            {new Date(v.uploaded_at).toLocaleString()}
+            <div style={{ fontWeight: "600" }}>
+              Version {v.version_number} —{" "}
+              {new Date(v.uploaded_at).toLocaleString()}
+            </div>
+            <div style={{ fontSize: "0.9rem", marginTop: "0.25rem" }}>
+              Uploaded by: {v.uploaded_by_name || v.uploaded_by}
+            </div>
+            {v.change_comment && (
+              <div
+                style={{
+                  fontSize: "0.9rem",
+                  marginTop: "0.25rem",
+                  fontStyle: "italic"
+                }}
+              >
+                “{v.change_comment}”
+              </div>
+            )}
           </button>
         ))}
       </div>

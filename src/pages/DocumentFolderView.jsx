@@ -15,17 +15,16 @@ export default function DocumentFolderView() {
   // BREADCRUMBS
   const [breadcrumbs, setBreadcrumbs] = useState([]);
 
-  // CREATE DOCUMENT
-  const [showCreateDoc, setShowCreateDoc] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  // UPLOAD DOCUMENT (NEW DOCUMENT + VERSION 1)
+  const [showUploadDoc, setShowUploadDoc] = useState(false);
+  const [newDocTitle, setNewDocTitle] = useState("");
+  const [newDocDescription, setNewDocDescription] = useState("");
+  const [newDocFile, setNewDocFile] = useState(null);
+  const [newDocComment, setNewDocComment] = useState("Initial Upload");
+  const [uploadDocError, setUploadDocError] = useState("");
+  const [uploadDocLoading, setUploadDocLoading] = useState(false);
 
-  // CREATE SUBFOLDER
-  const [showCreateFolder, setShowCreateFolder] = useState(false);
-  const [folderName, setFolderName] = useState("");
-  const [folderDescription, setFolderDescription] = useState("");
-
-  // EDIT DOCUMENT
+  // EDIT DOCUMENT (metadata only – rename/move)
   const [showEdit, setShowEdit] = useState(false);
   const [editDoc, setEditDoc] = useState(null);
   const [editTitle, setEditTitle] = useState("");
@@ -84,45 +83,77 @@ export default function DocumentFolderView() {
     }
   }, [allFolders, folderId]);
 
-  // CREATE DOCUMENT
-  const createDocument = async () => {
-    await fetch(`${API}/documents`, {
+  // CREATE DOCUMENT (metadata only)
+  const createDocumentMetadata = async () => {
+    const res = await fetch(`${API}/documents`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         folder_id: folderId,
-        title,
-        description,
+        title: newDocTitle,
+        description: newDocDescription,
         created_by: Number(localStorage.getItem("employee_id"))
       })
     });
 
-    setShowCreateDoc(false);
-    setTitle("");
-    setDescription("");
-    loadDocuments();
+    if (!res.ok) {
+      throw new Error("Failed to create document metadata");
+    }
+
+    const doc = await res.json();
+    return doc;
   };
 
-  // CREATE SUBFOLDER
-  const createSubfolder = async () => {
-    await fetch(`${API}/folders`, {
+  // UPLOAD VERSION 1 FOR NEW DOCUMENT
+  const uploadInitialVersion = async documentId => {
+    const formData = new FormData();
+    formData.append("file", newDocFile);
+    formData.append("uploaded_by", localStorage.getItem("employee_id"));
+    formData.append("change_comment", newDocComment || "Initial Upload");
+
+    const res = await fetch(`${API}/documentversions/${documentId}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: folderName,
-        description: folderDescription,
-        parent_folder_id: folderId,
-        created_by: Number(localStorage.getItem("employee_id"))
-      })
+      body: formData
     });
 
-    setShowCreateFolder(false);
-    setFolderName("");
-    setFolderDescription("");
-    loadSubfolders();
+    if (!res.ok) {
+      throw new Error("Failed to upload initial version");
+    }
   };
 
-  // UPDATE DOCUMENT
+  // HANDLE NEW DOCUMENT UPLOAD
+  const handleUploadDocument = async () => {
+    setUploadDocError("");
+    setUploadDocLoading(true);
+
+    try {
+      // Step 1: create document metadata
+      const doc = await createDocumentMetadata();
+
+      // Step 2: upload version 1
+      await uploadInitialVersion(doc.id);
+
+      // Reset modal state
+      setShowUploadDoc(false);
+      setNewDocTitle("");
+      setNewDocDescription("");
+      setNewDocFile(null);
+      setNewDocComment("Initial Upload");
+
+      // Reload documents
+      loadDocuments();
+
+      // Optional: toast could be added here
+      console.log("Document uploaded successfully");
+    } catch (err) {
+      console.error(err);
+      setUploadDocError(err.message || "Error uploading document");
+    } finally {
+      setUploadDocLoading(false);
+    }
+  };
+
+  // UPDATE DOCUMENT (metadata only – rename/move)
   const updateDocument = async () => {
     await fetch(`${API}/documents/${editDoc.id}`, {
       method: "PUT",
@@ -137,6 +168,14 @@ export default function DocumentFolderView() {
     setShowEdit(false);
     loadDocuments();
     loadSubfolders();
+  };
+
+  // HELPER: get file extension from filename
+  const getFileExtension = filename => {
+    if (!filename) return "";
+    const parts = filename.split(".");
+    if (parts.length < 2) return "";
+    return parts[parts.length - 1].toLowerCase();
   };
 
   return (
@@ -172,7 +211,7 @@ export default function DocumentFolderView() {
             <span
               style={{
                 cursor:
-                  index === breadcrumbs.length - 1 ? "default" : "pointer",
+                  index === breadcrumbs.length - 1 ? "pointer" : "pointer",
                 color:
                   index === breadcrumbs.length - 1 ? "black" : "#004aad",
                 fontWeight:
@@ -180,7 +219,7 @@ export default function DocumentFolderView() {
               }}
               onClick={() =>
                 index === breadcrumbs.length - 1
-                  ? null
+                  ? navigate(`/documents/folder/${folder.id}`)
                   : navigate(`/documents/folder/${folder.id}`)
               }
             >
@@ -193,7 +232,7 @@ export default function DocumentFolderView() {
       {/* ACTION BUTTONS */}
       <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }}>
         <button
-          onClick={() => setShowCreateDoc(true)}
+          onClick={() => setShowUploadDoc(true)}
           style={{
             padding: "0.8rem 1.2rem",
             fontSize: "1.2rem",
@@ -204,11 +243,11 @@ export default function DocumentFolderView() {
             cursor: "pointer"
           }}
         >
-          + Create Document
+          + Upload Document
         </button>
 
         <button
-          onClick={() => setShowCreateFolder(true)}
+          onClick={() => navigate("/documents")}
           style={{
             padding: "0.8rem 1.2rem",
             fontSize: "1.2rem",
@@ -219,73 +258,84 @@ export default function DocumentFolderView() {
             cursor: "pointer"
           }}
         >
-          + Create Subfolder
+          Back to Library
         </button>
       </div>
 
-      {/* CREATE DOCUMENT MODAL */}
-      {showCreateDoc && (
+      {/* UPLOAD DOCUMENT MODAL */}
+      {showUploadDoc && (
         <div style={modalOverlay}>
-          <div style={modalBox}>
-            <h2>Create Document</h2>
+          <div style={modalBoxModern}>
+            <h2 style={{ marginBottom: "0.5rem" }}>Upload Document</h2>
+            <p style={{ marginTop: 0, color: "#555", fontSize: "0.9rem" }}>
+              Create a new controlled document and upload its initial version.
+            </p>
 
             <input
               type="text"
-              placeholder="Document Title"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
+              placeholder="Document Title (required)"
+              value={newDocTitle}
+              onChange={e => setNewDocTitle(e.target.value)}
               style={inputStyle}
             />
 
             <textarea
               placeholder="Description (optional)"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
+              value={newDocDescription}
+              onChange={e => setNewDocDescription(e.target.value)}
               style={textareaStyle}
             />
 
-            <div style={modalButtonRow}>
-              <button onClick={createDocument} style={primaryButton}>
-                Create
-              </button>
-              <button
-                onClick={() => setShowCreateDoc(false)}
-                style={cancelButton}
+            <input
+              type="file"
+              onChange={e => setNewDocFile(e.target.files[0] || null)}
+              style={inputStyle}
+            />
+
+            <textarea
+              placeholder='Explain the revision (default: "Initial Upload")'
+              value={newDocComment}
+              onChange={e => setNewDocComment(e.target.value)}
+              style={textareaStyle}
+            />
+
+            {uploadDocError && (
+              <div
+                style={{
+                  color: "red",
+                  fontSize: "0.9rem",
+                  marginTop: "0.5rem"
+                }}
               >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE SUBFOLDER MODAL */}
-      {showCreateFolder && (
-        <div style={modalOverlay}>
-          <div style={modalBox}>
-            <h2>Create Subfolder</h2>
-
-            <input
-              type="text"
-              placeholder="Folder Name"
-              value={folderName}
-              onChange={e => setFolderName(e.target.value)}
-              style={inputStyle}
-            />
-
-            <textarea
-              placeholder="Description (optional)"
-              value={folderDescription}
-              onChange={e => setFolderDescription(e.target.value)}
-              style={textareaStyle}
-            />
+                {uploadDocError}
+              </div>
+            )}
 
             <div style={modalButtonRow}>
-              <button onClick={createSubfolder} style={primaryButton}>
-                Create
+              <button
+                onClick={handleUploadDocument}
+                disabled={
+                  uploadDocLoading || !newDocTitle.trim() || !newDocFile
+                }
+                style={{
+                  ...primaryButton,
+                  opacity:
+                    uploadDocLoading || !newDocTitle.trim() || !newDocFile
+                      ? 0.6
+                      : 1,
+                  cursor:
+                    uploadDocLoading || !newDocTitle.trim() || !newDocFile
+                      ? "not-allowed"
+                      : "pointer"
+                }}
+              >
+                {uploadDocLoading ? "Uploading..." : "Upload"}
               </button>
               <button
-                onClick={() => setShowCreateFolder(false)}
+                onClick={() => {
+                  setShowUploadDoc(false);
+                  setUploadDocError("");
+                }}
                 style={cancelButton}
               >
                 Cancel
@@ -320,57 +370,116 @@ export default function DocumentFolderView() {
       {/* DOCUMENT LIST */}
       <h2 style={{ marginTop: "2rem" }}>Documents</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {documents.map(doc => (
-          <div
-            key={doc.id}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor: "#004aad",
-              color: "white",
-              padding: "1rem",
-              borderRadius: "8px"
-            }}
-          >
-            <button
-              onClick={() => navigate(`/documents/view/${doc.id}`)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "white",
-                fontSize: "1.5rem",
-                cursor: "pointer",
-                textAlign: "left",
-                flex: 1
-              }}
-            >
-              📄 {doc.title}
-            </button>
+        {documents.map(doc => {
+          const ext = getFileExtension(doc.latest_filename || "");
+          const versionLabel = doc.latest_version_number
+            ? ` (v${doc.latest_version_number})`
+            : "";
+          const extLabel = ext ? `.${ext}` : "";
 
-            <button
-              onClick={() => {
-                setEditDoc(doc);
-                setEditTitle(doc.title);
-                setEditDescription(doc.description || "");
-                setEditFolder(doc.folder_id);
-                setShowEdit(true);
-              }}
+          return (
+            <div
+              key={doc.id}
               style={{
-                backgroundColor: "#ffa500",
-                border: "none",
-                color: "black",
-                padding: "0.5rem 1rem",
-                borderRadius: "6px",
-                cursor: "pointer",
-                marginLeft: "1rem"
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                backgroundColor: "#004aad",
+                color: "white",
+                padding: "1rem",
+                borderRadius: "8px"
               }}
             >
-              Edit
-            </button>
-          </div>
-        ))}
+              <button
+                onClick={() => navigate(`/documents/view/${doc.id}`)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "white",
+                  fontSize: "1.3rem",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  flex: 1
+                }}
+              >
+                📄 {doc.title}
+                {versionLabel}
+                {extLabel}
+              </button>
+
+              <button
+                onClick={() => {
+                  setEditDoc(doc);
+                  setEditTitle(doc.title);
+                  setEditDescription(doc.description || "");
+                  setEditFolder(doc.folder_id);
+                  setShowEdit(true);
+                }}
+                style={{
+                  backgroundColor: "#ffa500",
+                  border: "none",
+                  color: "black",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  marginLeft: "1rem"
+                }}
+              >
+                Edit
+              </button>
+            </div>
+          );
+        })}
       </div>
+
+      {/* EDIT DOCUMENT MODAL (rename/move) */}
+      {showEdit && (
+        <div style={modalOverlay}>
+          <div style={modalBoxModern}>
+            <h2>Edit Document</h2>
+
+            <input
+              type="text"
+              placeholder="Document Title"
+              value={editTitle}
+              onChange={e => setEditTitle(e.target.value)}
+              style={inputStyle}
+            />
+
+            <textarea
+              placeholder="Description (optional)"
+              value={editDescription}
+              onChange={e => setEditDescription(e.target.value)}
+              style={textareaStyle}
+            />
+
+            <select
+              value={editFolder}
+              onChange={e => setEditFolder(e.target.value)}
+              style={inputStyle}
+            >
+              <option value="">Select Folder</option>
+              {allFolders.map(f => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+            </select>
+
+            <div style={modalButtonRow}>
+              <button onClick={updateDocument} style={primaryButton}>
+                Save
+              </button>
+              <button
+                onClick={() => setShowEdit(false)}
+                style={cancelButton}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -390,15 +499,15 @@ const modalOverlay = {
   zIndex: 99999
 };
 
-const modalBox = {
+const modalBoxModern = {
   backgroundColor: "white",
   padding: "2rem",
-  borderRadius: "10px",
-  width: "400px",
+  borderRadius: "12px",
+  width: "450px",
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+  boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
 };
 
 const inputStyle = {
@@ -418,7 +527,8 @@ const textareaStyle = {
 
 const modalButtonRow = {
   display: "flex",
-  gap: "1rem"
+  gap: "1rem",
+  marginTop: "0.5rem"
 };
 
 const primaryButton = {
