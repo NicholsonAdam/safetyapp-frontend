@@ -50,7 +50,7 @@ export default function App() {
         <Route path="/admin/submission-requirements" element={<SubmissionRequirements />} />
         <Route path="/leaderwalk" element={<LeaderWalk />} />
         <Route path="/documents" element={<DocumentLibrary />} />
-        <Route path="/documents/folder:folderId" element={<DocumentFolderView />} />
+        <Route path="/documents/folder/:folderId" element={<DocumentFolderView />} />
         <Route path="/documents/view/:documentId" element={<DocumentView />} />
         <Route path="/documents/version/:versionId" element={<DocumentVersionView />} />
         <Route path="/training-scanner" element={<TrainingScanner />} />
