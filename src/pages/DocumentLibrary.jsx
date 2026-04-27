@@ -9,11 +9,13 @@ export default function DocumentLibrary() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const API = import.meta.env.VITE_API_URL; // backend base URL
+  const API = import.meta.env.VITE_API_URL; // already ends with /api
 
   // Load folders
   const loadFolders = () => {
-    fetch(`${API}/api/folders`)
+    console.log("FETCHING:", `${API}/folders`);
+
+    fetch(`${API}/folders`)
       .then(res => res.json())
       .then(data => setFolders(data))
       .catch(err => console.error("Error loading folders:", err));
@@ -26,7 +28,7 @@ export default function DocumentLibrary() {
   // Create folder
   const createFolder = async () => {
     try {
-      await fetch(`${API}/api/folders`, {
+      await fetch(`${API}/folders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
