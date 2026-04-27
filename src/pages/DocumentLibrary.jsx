@@ -11,13 +11,16 @@ export default function DocumentLibrary() {
 
   const API = import.meta.env.VITE_API_URL; // already ends with /api
 
-  // Load folders
+// Load folders (ONLY top-level folders)
   const loadFolders = () => {
     console.log("FETCHING:", `${API}/folders`);
 
     fetch(`${API}/folders`)
       .then(res => res.json())
-      .then(data => setFolders(data))
+      .then(data => {
+        const topLevel = data.filter(f => f.parent_folder_id === null);
+        setFolders(topLevel);
+      })
       .catch(err => console.error("Error loading folders:", err));
   };
 

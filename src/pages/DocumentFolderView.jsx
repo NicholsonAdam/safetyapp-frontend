@@ -12,6 +12,9 @@ export default function DocumentFolderView() {
   const [subfolders, setSubfolders] = useState([]);
   const [allFolders, setAllFolders] = useState([]);
 
+  // BREADCRUMBS
+  const [breadcrumbs, setBreadcrumbs] = useState([]);
+
   // CREATE DOCUMENT
   const [showCreateDoc, setShowCreateDoc] = useState(false);
   const [title, setTitle] = useState("");
@@ -56,11 +59,30 @@ export default function DocumentFolderView() {
       .catch(err => console.error("Error loading all folders:", err));
   };
 
+  // BUILD BREADCRUMBS
+  const buildBreadcrumbs = (folderId, all) => {
+    let chain = [];
+    let current = all.find(f => f.id == folderId);
+
+    while (current) {
+      chain.unshift(current);
+      current = all.find(f => f.id == current.parent_folder_id);
+    }
+
+    setBreadcrumbs(chain);
+  };
+
   useEffect(() => {
     loadDocuments();
     loadSubfolders();
     loadAllFolders();
   }, [folderId]);
+
+  useEffect(() => {
+    if (allFolders.length > 0) {
+      buildBreadcrumbs(folderId, allFolders);
+    }
+  }, [allFolders, folderId]);
 
   // CREATE DOCUMENT
   const createDocument = async () => {
@@ -119,6 +141,7 @@ export default function DocumentFolderView() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      {/* BACK BUTTON */}
       <button
         onClick={() => navigate("/documents")}
         style={{
@@ -134,8 +157,37 @@ export default function DocumentFolderView() {
         ← Back to Document Library
       </button>
 
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
-        Folder Contents
+      {/* BREADCRUMBS */}
+      <h1 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
+        <span
+          style={{ cursor: "pointer", color: "#004aad", fontWeight: "600" }}
+          onClick={() => navigate("/documents")}
+        >
+          Document Library
+        </span>
+
+        {breadcrumbs.map((folder, index) => (
+          <span key={folder.id}>
+            {" > "}
+            <span
+              style={{
+                cursor:
+                  index === breadcrumbs.length - 1 ? "default" : "pointer",
+                color:
+                  index === breadcrumbs.length - 1 ? "black" : "#004aad",
+                fontWeight:
+                  index === breadcrumbs.length - 1 ? "600" : "500"
+              }}
+              onClick={() =>
+                index === breadcrumbs.length - 1
+                  ? null
+                  : navigate(`/documents/folder/${folder.id}`)
+              }
+            >
+              {folder.name}
+            </span>
+          </span>
+        ))}
       </h1>
 
       {/* ACTION BUTTONS */}
@@ -196,7 +248,10 @@ export default function DocumentFolderView() {
               <button onClick={createDocument} style={primaryButton}>
                 Create
               </button>
-              <button onClick={() => setShowCreateDoc(false)} style={cancelButton}>
+              <button
+                onClick={() => setShowCreateDoc(false)}
+                style={cancelButton}
+              >
                 Cancel
               </button>
             </div>
@@ -229,7 +284,10 @@ export default function DocumentFolderView() {
               <button onClick={createSubfolder} style={primaryButton}>
                 Create
               </button>
-              <button onClick={() => setShowCreateFolder(false)} style={cancelButton}>
+              <button
+                onClick={() => setShowCreateFolder(false)}
+                style={cancelButton}
+              >
                 Cancel
               </button>
             </div>
