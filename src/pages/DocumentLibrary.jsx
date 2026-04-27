@@ -35,7 +35,7 @@ export default function DocumentLibrary() {
           name,
           description,
           parent_folder_id: null,
-          created_by: localStorage.getItem("employee_id")
+          created_by: NUMBER(localStorage.getItem("employee_id"))
         })
       });
 
