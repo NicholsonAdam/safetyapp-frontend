@@ -24,6 +24,11 @@ export default function DocumentFolderView() {
   const [uploadDocError, setUploadDocError] = useState("");
   const [uploadDocLoading, setUploadDocLoading] = useState(false);
 
+    // CREATE SUBFOLDER
+  const [showCreateSubfolder, setShowCreateSubfolder] = useState(false);
+  const [newSubfolderName, setNewSubfolderName] = useState("");
+  const [createSubfolderError, setCreateSubfolderError] = useState("");
+
   // EDIT DOCUMENT (metadata only – rename/move)
   const [showEdit, setShowEdit] = useState(false);
   const [editDoc, setEditDoc] = useState(null);
@@ -247,6 +252,21 @@ export default function DocumentFolderView() {
         </button>
 
         <button
+          onClick={() => setShowCreateSubfolder(true)}
+          style={{
+            padding: "0.8rem 1.2rem",
+            fontSize: "1.2rem",
+            backgroundColor: "#ffa500",
+            color: "black",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          + Create Subfolder
+        </button>
+
+        <button
           onClick={() => navigate("/documents")}
           style={{
             padding: "0.8rem 1.2rem",
@@ -335,6 +355,75 @@ export default function DocumentFolderView() {
                 onClick={() => {
                   setShowUploadDoc(false);
                   setUploadDocError("");
+                }}
+                style={cancelButton}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE SUBFOLDER MODAL */}
+      {showCreateSubfolder && (
+        <div style={modalOverlay}>
+          <div style={modalBoxModern}>
+            <h2>Create Subfolder</h2>
+
+            <input
+              type="text"
+              placeholder="Subfolder Name"
+              value={newSubfolderName}
+              onChange={e => setNewSubfolderName(e.target.value)}
+              style={inputStyle}
+            />
+
+            {createSubfolderError && (
+              <div style={{ color: "red", fontSize: "0.9rem" }}>
+                {createSubfolderError}
+              </div>
+            )}
+
+            <div style={modalButtonRow}>
+              <button
+                onClick={async () => {
+                  setCreateSubfolderError("");
+
+                  if (!newSubfolderName.trim()) {
+                    setCreateSubfolderError("Folder name is required");
+                    return;
+                  }
+
+                  try {
+                    const res = await fetch(`${API}/folders`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        name: newSubfolderName,
+                        parent_folder_id: folderId
+                      })
+                    });
+
+                    if (!res.ok) throw new Error("Failed to create subfolder");
+
+                    setShowCreateSubfolder(false);
+                    setNewSubfolderName("");
+                    loadSubfolders();
+                  } catch (err) {
+                    setCreateSubfolderError(err.message);
+                  }
+                }}
+                style={primaryButton}
+              >
+                Create
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowCreateSubfolder(false);
+                  setNewSubfolderName("");
+                  setCreateSubfolderError("");
                 }}
                 style={cancelButton}
               >
