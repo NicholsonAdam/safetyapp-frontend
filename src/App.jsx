@@ -22,6 +22,7 @@ import DocumentFolderView from "./pages/DocumentFolderView";
 import DocumentView from "./pages/DocumentView";
 import DocumentVersionView from "./pages/DocumentVersionView";
 import TrainingScanner from "./pages/TrainingScanner";
+import TrainingAttendance from "./pages/TrainingAttendance";
 import LeaderWalk from "./pages/LeaderWalk";
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="/documents/view/:documentId" element={<DocumentView />} />
         <Route path="/documents/version/:versionId" element={<DocumentVersionView />} />
         <Route path="/training-scanner" element={<TrainingScanner />} />
+        <Route path="/training-attendance" element={<TrainingAttendance />} />
       </Routes>
     </BrowserRouter>
   );

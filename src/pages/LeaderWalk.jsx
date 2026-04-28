@@ -115,12 +115,15 @@ export default function LeaderWalk() {
             backgroundColor: "#8a2be2",
           }}
         >
-          📷 Training Attendance Scanner (Coming Soon)
+          📷 Training Attendance Scanner
         </button>
 
-        {/* Coming Soon Buttons */}
-        <button disabled style={buttonDisabled}>
-          📝 Training Attendance (Coming Soon)
+        {/* Training Attendance Reports */}
+        <button
+          onClick={() => navigate("/training-attendance")}
+          style={buttonPrimary}
+        >
+          📝 Training Attendance Reports
         </button>
 
         <button disabled style={buttonDisabled}>
