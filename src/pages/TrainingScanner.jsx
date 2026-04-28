@@ -75,24 +75,27 @@ export default function TrainingScanner() {
 
     scanner.render(
       (decodedText) => {
+        // HARD LOCK — stops ALL duplicate firing instantly
         if (scanLocked) return;
-
-        // LOCK FIRST — BEFORE ANYTHING ELSE
         setScanLocked(true);
 
-        // Prevent duplicates
+        // Prevent duplicate employees
         if (attendees.includes(decodedText)) {
-          setScanLocked(false);
+          // Keep lock for the full 3 seconds so it doesn't spam
+          setTimeout(() => setScanLocked(false), 3000);
           return;
         }
 
+        // Show success banner
         setScanFlash(true);
 
+        // Unlock after 3 seconds
         setTimeout(() => {
           setScanFlash(false);
           setScanLocked(false);
         }, 3000);
 
+        // Process scan
         setScannedId(decodedText);
         logScan(decodedText, "CAMERA");
       },
