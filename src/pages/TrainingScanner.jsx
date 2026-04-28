@@ -17,6 +17,7 @@ export default function TrainingScanner() {
   const [attendees, setAttendees] = useState([]);
 
   const [scanFlash, setScanFlash] = useState(false); // NEW: success flash
+  const [scanLocked, setScanLocked] = useState(false);
 
   // Load open sessions
   const loadOpenSessions = async () => {
@@ -49,27 +50,41 @@ export default function TrainingScanner() {
 
     const newSession = await res.json();
     setActiveSession(newSession);
+    loadOpenSessions();
   };
 
   // Join an existing session
   const joinSession = (session) => {
     setActiveSession(session);
+    loadOpenSessions();
   };
 
   // Start QR scanner
   const startScanner = () => {
     const scanner = new window.Html5QrcodeScanner(
       "reader",
-      { fps: 10, qrbox: 250 },
+      {
+        fps: 10,
+        qrbox: 300,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        }
+      },
       false
     );
 
     scanner.render(
       (decodedText) => {
-        if (attendees.includes(decodedText)) return; // NEW: prevent duplicates
+        if (scanLocked) return;
+        if (attendees.includes(decodedText)) return;
 
-        setScanFlash(true); // NEW: flash success banner
-        setTimeout(() => setScanFlash(false), 600);
+        setScanLocked(true);
+        setScanFlash(true);
+
+        setTimeout(() => {
+          setScanFlash(false);
+          setScanLocked(false);
+        }, 3000);
 
         setScannedId(decodedText);
         logScan(decodedText, "CAMERA");
