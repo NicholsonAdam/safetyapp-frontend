@@ -124,7 +124,7 @@ export default function TrainingScanner() {
             marginBottom: "1.5rem",
           }}
         >
-          ← Back to LeaderWalk
+          ← Back
         </button>
 
         <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>

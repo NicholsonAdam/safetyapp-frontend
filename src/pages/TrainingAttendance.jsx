@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ReportList from "../components/training/ReportList";
 import ReportViewer from "../components/training/ReportViewer";
 
 export default function TrainingAttendance() {
   const backendUrl = "https://safetyapp-backend-docker.onrender.com";
+  const navigate = useNavigate();
 
   const [tab, setTab] = useState("PLANT_MEETING"); // default tab
   const [reports, setReports] = useState([]);
@@ -39,7 +41,7 @@ export default function TrainingAttendance() {
             marginBottom: "1.5rem",
         }}
         >
-        ← Back to LeaderWalk
+        ← Back
         </button>
 
       <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
