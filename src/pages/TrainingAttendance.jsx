@@ -25,6 +25,23 @@ export default function TrainingAttendance() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      <button
+        onClick={() => navigate("/leaderwalk")}
+        style={{
+            padding: "0.8rem 1.2rem",
+            fontSize: "1.2rem",
+            backgroundColor: "#e0e0e0",
+            color: "#333",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "600",
+            marginBottom: "1.5rem",
+        }}
+        >
+        ← Back to LeaderWalk
+        </button>
+
       <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
         Training Attendance Reports
       </h1>
