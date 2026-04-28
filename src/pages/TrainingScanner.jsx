@@ -76,9 +76,16 @@ export default function TrainingScanner() {
     scanner.render(
       (decodedText) => {
         if (scanLocked) return;
-        if (attendees.includes(decodedText)) return;
 
+        // LOCK FIRST — BEFORE ANYTHING ELSE
         setScanLocked(true);
+
+        // Prevent duplicates
+        if (attendees.includes(decodedText)) {
+          setScanLocked(false);
+          return;
+        }
+
         setScanFlash(true);
 
         setTimeout(() => {
