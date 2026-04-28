@@ -16,6 +16,8 @@ export default function TrainingScanner() {
   const [scannedId, setScannedId] = useState("");
   const [attendees, setAttendees] = useState([]);
 
+  const [scanFlash, setScanFlash] = useState(false); // NEW: success flash
+
   // Load open sessions
   const loadOpenSessions = async () => {
     const res = await fetch(`${backendUrl}/api/training/sessions/open`);
@@ -40,7 +42,7 @@ export default function TrainingScanner() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        employee_id: "9999", // TEMP — replace with real auth later
+        employee_id: "9999",
       },
       body: JSON.stringify(body),
     });
@@ -64,6 +66,11 @@ export default function TrainingScanner() {
 
     scanner.render(
       (decodedText) => {
+        if (attendees.includes(decodedText)) return; // NEW: prevent duplicates
+
+        setScanFlash(true); // NEW: flash success banner
+        setTimeout(() => setScanFlash(false), 600);
+
         setScannedId(decodedText);
         logScan(decodedText, "CAMERA");
       },
@@ -74,6 +81,9 @@ export default function TrainingScanner() {
   // Log a scan
   const logScan = async (employeeId, source) => {
     if (!activeSession) return;
+
+    // NEW: prevent duplicates
+    if (attendees.includes(employeeId)) return;
 
     await fetch(`${backendUrl}/api/training/sessions/${activeSession.id}/scan`, {
       method: "POST",
@@ -89,6 +99,7 @@ export default function TrainingScanner() {
     });
 
     setAttendees((prev) => [...prev, employeeId]);
+    setScannedId(""); // NEW: clear manual entry field
   };
 
   // Close session
@@ -101,7 +112,7 @@ export default function TrainingScanner() {
       }
     );
 
-    const data = await res.json();
+    await res.json();
     alert("Session closed and report created.");
     setActiveSession(null);
     setAttendees([]);
@@ -109,209 +120,231 @@ export default function TrainingScanner() {
   };
 
   return (
-      <div style={{ padding: "2rem" }}>
-        <button
-          onClick={() => navigate("/leaderwalk")}
+    <div style={{ padding: "2rem" }}>
+      <button
+        onClick={() => navigate("/leaderwalk")}
+        style={{
+          padding: "0.8rem 1.2rem",
+          fontSize: "1.2rem",
+          backgroundColor: "#e0e0e0",
+          color: "#333",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "600",
+          marginBottom: "1.5rem",
+        }}
+      >
+        ← Back
+      </button>
+
+      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
+        Training Attendance Scanner
+      </h1>
+
+      {/* SUCCESS FLASH */}
+      {scanFlash && (
+        <div
           style={{
-            padding: "0.8rem 1.2rem",
-            fontSize: "1.2rem",
-            backgroundColor: "#e0e0e0",
-            color: "#333",
-            border: "none",
+            width: "100%",
+            padding: "1rem",
+            backgroundColor: "#4caf50",
+            color: "white",
+            textAlign: "center",
+            fontSize: "1.5rem",
+            fontWeight: "bold",
             borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "600",
             marginBottom: "1.5rem",
           }}
         >
-          ← Back
-        </button>
+          ✓ Scan Recorded
+        </div>
+      )}
 
-        <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
-          Training Attendance Scanner
-        </h1>
+      {/* If no active session, show session creation + open sessions */}
+      {!activeSession && (
+        <>
+          <h2>Create New Session</h2>
 
-        {/* If no active session, show session creation + open sessions */}
-        {!activeSession && (
-          <>
-            <h2>Create New Session</h2>
+          <input
+            type="text"
+            placeholder="Session Name"
+            value={sessionName}
+            onChange={(e) => setSessionName(e.target.value)}
+            style={{
+              padding: "0.8rem",
+              fontSize: "1.2rem",
+              width: "100%",
+              marginBottom: "1rem",
+            }}
+          />
 
-            <input
-              type="text"
-              placeholder="Session Name"
-              value={sessionName}
-              onChange={(e) => setSessionName(e.target.value)}
-              style={{
-                padding: "0.8rem",
-                fontSize: "1.2rem",
-                width: "100%",
-                marginBottom: "1rem",
-              }}
-            />
+          <select
+            value={sessionType}
+            onChange={(e) => setSessionType(e.target.value)}
+            style={{
+              padding: "0.8rem",
+              fontSize: "1.2rem",
+              width: "100%",
+              marginBottom: "1rem",
+            }}
+          >
+            <option value="PLANT_MEETING">Plant Meeting</option>
+            <option value="TRAINING">Training Session</option>
+          </select>
 
-            <select
-              value={sessionType}
-              onChange={(e) => setSessionType(e.target.value)}
-              style={{
-                padding: "0.8rem",
-                fontSize: "1.2rem",
-                width: "100%",
-                marginBottom: "1rem",
-              }}
-            >
-              <option value="PLANT_MEETING">Plant Meeting</option>
-              <option value="TRAINING">Training Session</option>
-            </select>
+          {sessionType === "TRAINING" && (
+            <>
+              <input
+                type="text"
+                placeholder="Training Title"
+                value={trainingTitle}
+                onChange={(e) => setTrainingTitle(e.target.value)}
+                style={{
+                  padding: "0.8rem",
+                  fontSize: "1.2rem",
+                  width: "100%",
+                  marginBottom: "1rem",
+                }}
+              />
 
-            {sessionType === "TRAINING" && (
-              <>
-                <input
-                  type="text"
-                  placeholder="Training Title"
-                  value={trainingTitle}
-                  onChange={(e) => setTrainingTitle(e.target.value)}
+              <input
+                type="text"
+                placeholder="Trainer Name"
+                value={trainerName}
+                onChange={(e) => setTrainerName(e.target.value)}
+                style={{
+                  padding: "0.8rem",
+                  fontSize: "1.2rem",
+                  width: "100%",
+                  marginBottom: "1rem",
+                }}
+              />
+            </>
+          )}
+
+          <button
+            onClick={startSession}
+            style={{
+              padding: "1rem",
+              fontSize: "1.5rem",
+              backgroundColor: "#004aad",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              marginBottom: "2rem",
+            }}
+          >
+            Start New Session
+          </button>
+
+          <h2>Open Sessions</h2>
+          {openSessions.length === 0 && <p>No open sessions.</p>}
+
+          <ul>
+            {openSessions.map((s) => (
+              <li key={s.id} style={{ marginBottom: "1rem" }}>
+                <strong>{s.name}</strong> — {s.type}
+                <button
+                  onClick={() => joinSession(s)}
                   style={{
-                    padding: "0.8rem",
-                    fontSize: "1.2rem",
-                    width: "100%",
-                    marginBottom: "1rem",
+                    marginLeft: "1rem",
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "#008000",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
                   }}
-                />
+                >
+                  Join
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
-                <input
-                  type="text"
-                  placeholder="Trainer Name"
-                  value={trainerName}
-                  onChange={(e) => setTrainerName(e.target.value)}
-                  style={{
-                    padding: "0.8rem",
-                    fontSize: "1.2rem",
-                    width: "100%",
-                    marginBottom: "1rem",
-                  }}
-                />
-              </>
-            )}
+      {/* Active session UI */}
+      {activeSession && (
+        <>
+          <h2>Active Session: {activeSession.name}</h2>
 
-            <button
-              onClick={startSession}
-              style={{
-                padding: "1rem",
-                fontSize: "1.5rem",
-                backgroundColor: "#004aad",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginBottom: "2rem",
-              }}
-            >
-              Start New Session
-            </button>
+          <button
+            onClick={startScanner}
+            style={{
+              padding: "1rem",
+              fontSize: "1.5rem",
+              backgroundColor: "#004aad",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              marginBottom: "1.5rem",
+            }}
+          >
+            Start Scanner
+          </button>
 
-            <h2>Open Sessions</h2>
-            {openSessions.length === 0 && <p>No open sessions.</p>}
+          <div id="reader" style={{ width: "100%", marginBottom: "2rem" }}></div>
 
-            <ul>
-              {openSessions.map((s) => (
-                <li key={s.id} style={{ marginBottom: "1rem" }}>
-                  <strong>{s.name}</strong> — {s.type}
-                  <button
-                    onClick={() => joinSession(s)}
-                    style={{
-                      marginLeft: "1rem",
-                      padding: "0.5rem 1rem",
-                      backgroundColor: "#008000",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Join
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+          <h3>Manual Entry</h3>
+          <input
+            type="text"
+            placeholder="Employee ID"
+            value={scannedId}
+            onChange={(e) => setScannedId(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") logScan(scannedId, "MANUAL");
+            }}
+            style={{
+              padding: "0.8rem",
+              fontSize: "1.2rem",
+              width: "100%",
+              marginBottom: "1rem",
+            }}
+          />
+          <button
+            onClick={() => logScan(scannedId, "MANUAL")}
+            style={{
+              padding: "0.8rem",
+              fontSize: "1.2rem",
+              backgroundColor: "#555",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              marginBottom: "2rem",
+            }}
+          >
+            Submit Manual Entry
+          </button>
 
-        {/* Active session UI */}
-        {activeSession && (
-          <>
-            <h2>Active Session: {activeSession.name}</h2>
+          <h3>Attendees</h3>
+          <ul style={{ fontSize: "1.3rem" }}>
+            {attendees.map((id, index) => (
+              <li key={index}>Employee ID: {id}</li>
+            ))}
+          </ul>
 
-            <button
-              onClick={startScanner}
-              style={{
-                padding: "1rem",
-                fontSize: "1.5rem",
-                backgroundColor: "#004aad",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginBottom: "1.5rem",
-              }}
-            >
-              Start Scanner
-            </button>
-
-            <div id="reader" style={{ width: "100%", marginBottom: "2rem" }}></div>
-
-            <h3>Manual Entry</h3>
-            <input
-              type="text"
-              placeholder="Employee ID"
-              value={scannedId}
-              onChange={(e) => setScannedId(e.target.value)}
-              style={{
-                padding: "0.8rem",
-                fontSize: "1.2rem",
-                width: "100%",
-                marginBottom: "1rem",
-              }}
-            />
-            <button
-              onClick={() => logScan(scannedId, "MANUAL")}
-              style={{
-                padding: "0.8rem",
-                fontSize: "1.2rem",
-                backgroundColor: "#555",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-                marginBottom: "2rem",
-              }}
-            >
-              Submit Manual Entry
-            </button>
-
-            <h3>Attendees</h3>
-            <ul style={{ fontSize: "1.3rem" }}>
-              {attendees.map((id, index) => (
-                <li key={index}>Employee ID: {id}</li>
-              ))}
-            </ul>
-
-            <button
-              onClick={closeSession}
-              style={{
-                padding: "1rem",
-                fontSize: "1.5rem",
-                backgroundColor: "red",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginTop: "2rem",
-              }}
-            >
-              Close Session
-            </button>
-          </>
-        )}
-      </div>
+          <button
+            onClick={closeSession}
+            style={{
+              padding: "1rem",
+              fontSize: "1.5rem",
+              backgroundColor: "red",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              marginTop: "2rem",
+            }}
+          >
+            Close Session
+          </button>
+        </>
+      )}
+    </div>
   );
 }
