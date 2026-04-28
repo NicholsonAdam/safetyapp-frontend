@@ -400,9 +400,11 @@ export default function DocumentFolderView() {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        name: newSubfolderName,
-                        parent_folder_id: folderId
-                      })
+                      name: newSubfolderName,
+                      parent_folder_id: folderId,
+                      created_by: Number(localStorage.getItem("employee_id"))
+                    })
+
                     });
 
                     if (!res.ok) throw new Error("Failed to create subfolder");
