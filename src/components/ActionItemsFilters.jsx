@@ -1,3 +1,5 @@
+import EmployeeAutocomplete from "./EmployeeAutocomplete";
+
 export default function ActionItemsFilters({ filters, setFilters, reload }) {
   const update = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -5,20 +7,48 @@ export default function ActionItemsFilters({ filters, setFilters, reload }) {
   };
 
   return (
-    <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "12px",
+        background: "#FFFFFF",
+        padding: "14px",
+        borderRadius: "8px",
+        alignItems: "center",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+      }}
+    >
+      {/* STATUS */}
       <select
         value={filters.status}
         onChange={(e) => update("status", e.target.value)}
+        style={{
+          padding: "8px",
+          borderRadius: "6px",
+          border: "1px solid #C4C4C4",
+          background: "#F5F5F5",
+        }}
       >
         <option value="">All Statuses</option>
         <option value="Open">Open</option>
         <option value="In Progress">In Progress</option>
-        <option value="Closed">Closed</option>
+        <option value="Delayed">Delayed</option>
+        <option value="Canceled">Canceled</option>
+        <option value="Duplicate Submission">Duplicate Submission</option>
+        <option value="Complete">Complete</option>
+        <option value="On Hold">On Hold</option>
       </select>
 
+      {/* CLASSIFICATION */}
       <select
         value={filters.classification}
         onChange={(e) => update("classification", e.target.value)}
+        style={{
+          padding: "8px",
+          borderRadius: "6px",
+          border: "1px solid #C4C4C4",
+          background: "#F5F5F5",
+        }}
       >
         <option value="">All Classifications</option>
         <option value="Safety">Safety</option>
@@ -26,35 +56,51 @@ export default function ActionItemsFilters({ filters, setFilters, reload }) {
         <option value="General">General</option>
       </select>
 
+      {/* DEPARTMENT */}
       <select
         value={filters.department}
         onChange={(e) => update("department", e.target.value)}
-        >
+        style={{
+          padding: "8px",
+          borderRadius: "6px",
+          border: "1px solid #C4C4C4",
+          background: "#F5F5F5",
+        }}
+      >
         <option value="">All Departments</option>
-        <option value="Production">Production</option>
+        <option value="Body Prep">Body Prep</option>
+        <option value="Press">Press</option>
+        <option value="Glazeline">Glazeline</option>
+        <option value="Glaze Prep">Glaze Prep</option>
+        <option value="Kiln">Kiln</option>
+        <option value="LGV">LGV</option>
+        <option value="Sorting">Sorting</option>
         <option value="Maintenance">Maintenance</option>
-        <option value="Quality">Quality</option>
-        <option value="Safety">Safety</option>
-        <option value="Warehouse">Warehouse</option>
-        </select>
+        <option value="Administration">Administration</option>
+        <option value="Facility">Facility</option>
+      </select>
 
-        <select
-        value={filters.owner}
-        onChange={(e) => update("owner", e.target.value)}
-        >
-        <option value="">All Owners</option>
-        <option value="1001">1001</option>
-        <option value="1002">1002</option>
-        <option value="1003">1003</option>
-        <option value="1004">1004</option>
-        </select>
+      {/* OWNER (AUTOCOMPLETE) */}
+      <div style={{ width: "220px" }}>
+        <EmployeeAutocomplete
+          value={filters.owner}
+          onSelect={(emp) => update("owner", emp.employee_id)}
+        />
+      </div>
 
+      {/* SEARCH */}
       <input
         type="text"
         placeholder="Search description/notes"
         value={filters.search}
         onChange={(e) => update("search", e.target.value)}
-        style={{ flex: 1 }}
+        style={{
+          flex: 1,
+          padding: "8px",
+          borderRadius: "6px",
+          border: "1px solid #C4C4C4",
+          background: "#F5F5F5",
+        }}
       />
     </div>
   );
