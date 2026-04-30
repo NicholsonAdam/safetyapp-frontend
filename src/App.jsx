@@ -24,6 +24,7 @@ import DocumentVersionView from "./pages/DocumentVersionView";
 import TrainingScanner from "./pages/TrainingScanner";
 import TrainingAttendance from "./pages/TrainingAttendance";
 import LeaderWalk from "./pages/LeaderWalk";
+import ActionItemsPage from "./pages/ActionItemsPage";
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/admin/inspection" element={<AdminInspection />} />
         <Route path="/admin/submission-requirements" element={<SubmissionRequirements />} />
         <Route path="/leaderwalk" element={<LeaderWalk />} />
+        <Route path="/action-items" element={<ActionItemsPage />} />
         <Route path="/documents" element={<DocumentLibrary />} />
         <Route path="/documents/folder/:folderId" element={<DocumentFolderView />} />
         <Route path="/documents/view/:documentId" element={<DocumentView />} />
