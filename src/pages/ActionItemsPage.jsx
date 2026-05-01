@@ -9,36 +9,45 @@ export default function ActionItemsPage() {
 
   const [showModal, setShowModal] = useState(false);
   const [items, setItems] = useState([]);
+
+  // MULTI‑SELECT FILTER STATE
   const [filters, setFilters] = useState({
-    status: "",
-    classification: "",
+    status: [],            // array
+    classification: [],    // array
+    department: [],        // array
+    owner: [],             // array
     search: "",
     sort: "id",
     direction: "asc",
-    department: "",
-    owner: "",
   });
 
+  // LOAD ITEMS
   const loadItems = async () => {
     const params = new URLSearchParams();
 
-    if (filters.status) params.append("status", filters.status);
-    if (filters.classification) params.append("classification", filters.classification);
+    // MULTI‑SELECT PARAMS
+    filters.status.forEach(s => params.append("status", s));
+    filters.classification.forEach(c => params.append("classification", c));
+    filters.department.forEach(d => params.append("department", d));
+    filters.owner.forEach(o => params.append("owner", o));
+
     if (filters.search) params.append("search", filters.search);
-    if (filters.department) params.append("department", filters.department);
-    if (filters.owner) params.append("owner", filters.owner);
 
     params.append("sort", filters.sort);
     params.append("direction", filters.direction);
 
-    const res = await fetch(`/api/action-items?${params.toString()}`);
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/action-items?${params.toString()}`
+    );
+
     const data = await res.json();
     setItems(data);
   };
 
+  // AUTO‑RELOAD WHEN FILTERS CHANGE
   useEffect(() => {
     loadItems();
-  }, []);
+  }, [filters]);
 
   return (
     <div
@@ -104,16 +113,18 @@ export default function ActionItemsPage() {
           onClick={() => {
             const params = new URLSearchParams();
 
-            if (filters.status) params.append("status", filters.status);
-            if (filters.classification) params.append("classification", filters.classification);
+            filters.status.forEach(s => params.append("status", s));
+            filters.classification.forEach(c => params.append("classification", c));
+            filters.department.forEach(d => params.append("department", d));
+            filters.owner.forEach(o => params.append("owner", o));
+
             if (filters.search) params.append("search", filters.search);
-            if (filters.department) params.append("department", filters.department);
-            if (filters.owner) params.append("owner", filters.owner);
 
             params.append("sort", filters.sort);
             params.append("direction", filters.direction);
 
-            window.location.href = `/api/action-items/export/excel?${params.toString()}`;
+            window.location.href =
+              `${import.meta.env.VITE_API_URL}/action-items/export/excel?${params.toString()}`;
           }}
           style={{
             padding: "10px 16px",
@@ -170,7 +181,7 @@ export default function ActionItemsPage() {
         <NewActionItemModal
           onClose={() => setShowModal(false)}
           onCreate={async (form) => {
-            await fetch("/api/action-items", {
+            await fetch(`${import.meta.env.VITE_API_URL}/action-items`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(form),

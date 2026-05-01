@@ -21,16 +21,20 @@ export default function ActionItemsTable({
         direction: "asc",
       }));
     }
-    reload();
+    // ❌ DO NOT call reload() here — ActionItemsPage auto‑reloads on filter change
   };
 
   const updateField = async (id, field, value) => {
-    await fetch(`/api/action-items/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [field]: value }),
-    });
-    reload();
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/action-items/${id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      }
+    );
+
+    reload(); // keep this — table edits should reload immediately
   };
 
   const badgeStyle = (status) => {
@@ -50,7 +54,7 @@ export default function ActionItemsTable({
       case "In Progress":
         return { ...base, background: "#4285f4" };
       case "Delayed":
-        return { ...base, background: "#B30000" }; // Dal‑Tile red
+        return { ...base, background: "#B30000" };
       case "Canceled":
         return { ...base, background: "#5f6368" };
       case "Duplicate Submission":

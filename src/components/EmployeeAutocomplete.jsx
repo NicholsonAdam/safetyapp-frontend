@@ -6,6 +6,25 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
+  // Detect multi-select mode
+  const isMulti = Array.isArray(value);
+
+  // Load selected employee names when editing a row
+  useEffect(() => {
+    if (!isMulti && value && typeof value === "number") {
+      // Load employee name for single-select mode
+      const loadName = async () => {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/employees/${value}`
+        );
+        const data = await res.json();
+        setQuery(data.name || "");
+      };
+      loadName();
+    }
+  }, [value]);
+
+  // Fetch employees
   useEffect(() => {
     if (!query) {
       setResults([]);
@@ -13,7 +32,9 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     }
 
     const fetchEmployees = async () => {
-      const res = await fetch(`/api/employees?search=${query}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/employees?search=${query}`
+      );
       const data = await res.json();
       setResults(data);
     };
@@ -22,6 +43,7 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     return () => clearTimeout(delay);
   }, [query]);
 
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -32,8 +54,55 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Multi-select chip removal
+  const removeChip = (id) => {
+    const updated = value.filter((v) => v !== id);
+    onSelect(updated);
+  };
+
   return (
     <div ref={containerRef} style={{ position: "relative", width: "100%" }}>
+      {/* MULTI-SELECT CHIPS */}
+      {isMulti && value.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "6px",
+            marginBottom: "6px",
+          }}
+        >
+          {value.map((id) => (
+            <div
+              key={id}
+              style={{
+                background: "#B30000",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "12px",
+                fontWeight: "600",
+              }}
+            >
+              ID {id}
+              <span
+                style={{
+                  cursor: "pointer",
+                  fontWeight: "900",
+                }}
+                onClick={() => removeChip(id)}
+              >
+                ×
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* INPUT */}
       <input
         value={query}
         onChange={(e) => {
@@ -41,14 +110,21 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
           setOpen(true);
         }}
         placeholder="Type owner name..."
-        style={{ width: "100%", padding: 8 }}
+        style={{
+          width: "100%",
+          padding: "8px",
+          borderRadius: "6px",
+          border: "1px solid #C4C4C4",
+          background: "#F5F5F5",
+        }}
       />
 
+      {/* DROPDOWN */}
       {open && results.length > 0 && (
         <div
           style={{
             position: "absolute",
-            top: "38px",
+            top: "42px",
             left: 0,
             width: "100%",
             background: "white",
@@ -63,8 +139,17 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
             <div
               key={emp.employee_id}
               onClick={() => {
-                onSelect(emp);
-                setQuery(emp.name);
+                if (isMulti) {
+                  // Multi-select mode
+                  if (!value.includes(emp.employee_id)) {
+                    onSelect([...value, emp.employee_id]);
+                  }
+                  setQuery("");
+                } else {
+                  // Single-select mode
+                  onSelect(emp);
+                  setQuery(emp.name);
+                }
                 setOpen(false);
               }}
               style={{
