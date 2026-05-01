@@ -9,20 +9,14 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
   // Detect multi-select mode
   const isMulti = Array.isArray(value);
 
-  // Load selected employee names when editing a row
-  useEffect(() => {
-    if (!isMulti && value && typeof value === "number") {
-      // Load employee name for single-select mode
-      const loadName = async () => {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/employees/${value}`
-        );
-        const data = await res.json();
-        setQuery(data.name || "");
-      };
-      loadName();
-    }
-  }, [value]);
+  // For single-select: show ID if no query yet
+  const inputValue = isMulti
+    ? query
+    : query !== ""
+    ? query
+    : value
+    ? String(value)
+    : "";
 
   // Fetch employees
   useEffect(() => {
@@ -33,7 +27,9 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
 
     const fetchEmployees = async () => {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/employees?search=${query}`
+        `${import.meta.env.VITE_API_URL}/employees?search=${encodeURIComponent(
+          query
+        )}`
       );
       const data = await res.json();
       setResults(data);
@@ -104,7 +100,7 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
 
       {/* INPUT */}
       <input
-        value={query}
+        value={inputValue}
         onChange={(e) => {
           setQuery(e.target.value);
           setOpen(true);
@@ -140,13 +136,11 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
               key={emp.employee_id}
               onClick={() => {
                 if (isMulti) {
-                  // Multi-select mode
                   if (!value.includes(emp.employee_id)) {
                     onSelect([...value, emp.employee_id]);
                   }
                   setQuery("");
                 } else {
-                  // Single-select mode
                   onSelect(emp);
                   setQuery(emp.name);
                 }

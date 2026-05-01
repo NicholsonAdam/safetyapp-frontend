@@ -21,22 +21,36 @@ export default function ActionItemsTable({
         direction: "asc",
       }));
     }
-    // ❌ DO NOT call reload() here — ActionItemsPage auto‑reloads on filter change
   };
 
   const updateField = async (id, field, value) => {
-    await fetch(
-      `${import.meta.env.VITE_API_URL}/action-items/${id}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [field]: value }),
-      }
-    );
+    await fetch(`${import.meta.env.VITE_API_URL}/action-items/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [field]: value }),
+    });
 
-    reload(); // keep this — table edits should reload immediately
+    reload();
   };
 
+  // Format ISO dates
+  const formatDate = (value) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+    return d.toLocaleDateString();
+  };
+
+  // Convert ENUM → pretty label
+  const pretty = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  // Correct badge colors for ENUM values
   const badgeStyle = (status) => {
     const base = {
       padding: "4px 8px",
@@ -49,22 +63,22 @@ export default function ActionItemsTable({
     };
 
     switch (status) {
-      case "Open":
+      case "OPEN":
         return { ...base, background: "#f4b400" };
-      case "In Progress":
+      case "IN_PROGRESS":
         return { ...base, background: "#4285f4" };
-      case "Delayed":
+      case "DELAYED":
         return { ...base, background: "#B30000" };
-      case "Canceled":
+      case "CANCELED":
         return { ...base, background: "#5f6368" };
-      case "Duplicate Submission":
+      case "DUPLICATE_SUBMISSION":
         return { ...base, background: "#9aa0a6" };
-      case "Complete":
+      case "COMPLETE":
         return { ...base, background: "#0f9d58" };
-      case "On Hold":
+      case "ON_HOLD":
         return { ...base, background: "#ab47bc" };
       default:
-        return base;
+        return { ...base, background: "#444" };
     }
   };
 
@@ -133,8 +147,8 @@ export default function ActionItemsTable({
             }
           >
             <td style={{ padding: 10 }}>{row.id}</td>
-            <td style={{ padding: 10 }}>{row.date_submitted}</td>
-            <td style={{ padding: 10 }}>{row.date_last_update}</td>
+            <td style={{ padding: 10 }}>{formatDate(row.date_submitted)}</td>
+            <td style={{ padding: 10 }}>{formatDate(row.date_last_update)}</td>
 
             <td style={{ padding: 10 }}>
               <InlineCell
@@ -149,11 +163,7 @@ export default function ActionItemsTable({
               <EmployeeAutocomplete
                 value={row.current_owner_user_id}
                 onSelect={(emp) =>
-                  updateField(
-                    row.id,
-                    "current_owner_user_id",
-                    emp.employee_id
-                  )
+                  updateField(row.id, "current_owner_user_id", emp.employee_id)
                 }
               />
             </td>
@@ -168,25 +178,17 @@ export default function ActionItemsTable({
             </td>
 
             <td style={{ padding: 10 }}>
-              <InlineCell
-                value={row.department}
-                rowId={row.id}
-                field="department"
-                onSave={updateField}
-              />
+              {pretty(row.department)}
             </td>
 
             <td style={{ padding: 10 }}>
-              <InlineCell
-                value={row.classification}
-                rowId={row.id}
-                field="classification"
-                onSave={updateField}
-              />
+              {pretty(row.classification)}
             </td>
 
             <td style={{ padding: 10 }}>
-              <div style={badgeStyle(row.status)}>{row.status}</div>
+              <div style={badgeStyle(row.status)}>
+                {pretty(row.status)}
+              </div>
             </td>
 
             <td style={{ padding: 10 }}>
