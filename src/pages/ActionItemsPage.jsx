@@ -163,10 +163,14 @@ export default function ActionItemsPage() {
       {/* TABLE */}
       <div
         style={{
-          background: "white",
-          padding: "16px",
-          borderRadius: "8px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          background: "#FFFFFF",
+          padding: "20px",
+          borderRadius: "10px",
+          border: "1px solid #E0E0E0",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.20)",
+          overflowX: "auto",
+          width: "100%",
+          boxSizing: "border-box",
         }}
       >
         <ActionItemsTable
