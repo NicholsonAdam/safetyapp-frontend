@@ -344,7 +344,7 @@ export default function ActionItemsTable({
             </td>
 
             {/* STATUS */}
-            <td style={{ padding: 10 }}>
+            <td style={{ padding: 10, minWidth: "160px" }}>
               <select
                 value={row.status || ""}
                 onChange={(e) =>
@@ -352,6 +352,7 @@ export default function ActionItemsTable({
                 }
                 style={{
                   width: "100%",
+                  minWidth: "160px",
                   padding: "4px 6px",
                   borderRadius: "4px",
                   border: "1px solid #C4C4C4",
@@ -375,7 +376,7 @@ export default function ActionItemsTable({
             </td>
 
             {/* NOTES */}
-            <td style={{ padding: 10 }}>
+            <td style={{ padding: 10, minWidth: "260px" }}>
               <InlineCell
                 value={row.notes}
                 rowId={row.id}
