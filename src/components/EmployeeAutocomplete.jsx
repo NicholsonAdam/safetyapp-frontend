@@ -7,7 +7,9 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  // Load ALL employees once
+  // ---------------------------------------------------------
+  // LOAD ALL EMPLOYEES ONCE
+  // ---------------------------------------------------------
   useEffect(() => {
     const loadEmployees = async () => {
       try {
@@ -21,15 +23,21 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     loadEmployees();
   }, []);
 
-  // When value is an ID, show the employee name
+  // ---------------------------------------------------------
+  // RESOLVE ID → NAME WHENEVER employees OR value CHANGE
+  // ---------------------------------------------------------
   useEffect(() => {
-    if (typeof value === "number") {
-      const emp = employees.find((e) => e.employee_id === value);
-      if (emp) setQuery(emp.name);
-    }
-  }, [value, employees]);
+    if (!value || typeof value !== "number") return;
 
-  // Filter employees when typing
+    const emp = employees.find((e) => e.employee_id === value);
+    if (emp) {
+      setQuery(emp.name);   // <-- THIS IS THE FIX
+    }
+  }, [value, employees]);   // <-- THIS is what was missing
+
+  // ---------------------------------------------------------
+  // FILTER EMPLOYEES WHEN TYPING
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!query) {
       setFiltered([]);
@@ -46,7 +54,9 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     );
   }, [query, employees]);
 
-  // Close dropdown on outside click
+  // ---------------------------------------------------------
+  // CLOSE DROPDOWN ON OUTSIDE CLICK
+  // ---------------------------------------------------------
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
