@@ -10,12 +10,13 @@ export default function ActionItemsPage() {
   const [showModal, setShowModal] = useState(false);
   const [items, setItems] = useState([]);
 
-  // SCALAR FILTER STATE (correct)
+  // SCALAR FILTER STATE (now includes element)
   const [filters, setFilters] = useState({
     status: "",
     classification: "",
     department: "",
     owner: "",
+    element: "",        // <-- NEW FILTER
     search: "",
     sort: "id",
     direction: "asc",
@@ -29,6 +30,7 @@ export default function ActionItemsPage() {
     if (filters.classification) params.append("classification", filters.classification);
     if (filters.department) params.append("department", filters.department);
     if (filters.owner) params.append("owner", filters.owner);
+    if (filters.element) params.append("element", filters.element);   // <-- NEW
     if (filters.search) params.append("search", filters.search);
 
     params.append("sort", filters.sort);
@@ -115,6 +117,7 @@ export default function ActionItemsPage() {
             if (filters.classification) params.append("classification", filters.classification);
             if (filters.department) params.append("department", filters.department);
             if (filters.owner) params.append("owner", filters.owner);
+            if (filters.element) params.append("element", filters.element);   // <-- NEW
             if (filters.search) params.append("search", filters.search);
 
             params.append("sort", filters.sort);

@@ -8,11 +8,38 @@ export default function NewActionItemModal({ onClose, onCreate }) {
     description: "",
     department: "",
     classification: "",
-    status: "OPEN",   // ENUM
+    element: "",        // <-- NEW FIELD
+    status: "OPEN",     // ENUM
     notes: "",
   });
 
   const [error, setError] = useState("");
+
+  // ---------------------------------------------
+  // ELEMENT LISTS (ENUM VALUES)
+  // ---------------------------------------------
+  const SAFETY_ELEMENTS = [
+    "LADDER_SAFETY",
+    "HOUSEKEEPING",
+    "LOTO",
+    "HOT_WORK",
+    "EYEWASH",
+    "PPE",
+    "FORKLIFT_SAFETY",
+    "CHEMICAL_HANDLING",
+    "SPILL_RESPONSE",
+  ];
+
+  const CI_ELEMENTS = [
+    "5S",
+    "SIX_SIGMA",
+    "KAIZEN",
+    "STANDARD_WORK",
+    "ROOT_CAUSE_ANALYSIS",
+    "VALUE_STREAM_MAPPING",
+  ];
+
+  const ALL_ELEMENTS = [...SAFETY_ELEMENTS, ...CI_ELEMENTS];
 
   const update = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -39,6 +66,10 @@ export default function NewActionItemModal({ onClose, onCreate }) {
       setError("Classification is required.");
       return;
     }
+    if (!form.element) {
+      setError("Element is required.");
+      return;
+    }
 
     setError("");
 
@@ -47,11 +78,27 @@ export default function NewActionItemModal({ onClose, onCreate }) {
       submitted_by_user_id: form.submitted_by_user_id.trim(),
       description: form.description.trim(),
       notes: form.notes.trim(),
-      // ENUMS are already correct — no conversion needed
     };
 
     onCreate(payload);
   };
+
+  // Pretty print ENUM → Label
+  const pretty = (str) =>
+    str
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Determine which element list to show
+  const elementOptions =
+    form.classification === "SAFETY"
+      ? SAFETY_ELEMENTS
+      : form.classification === "CI"
+      ? CI_ELEMENTS
+      : form.classification === "GENERAL"
+      ? ALL_ELEMENTS
+      : [];
 
   return (
     <div
@@ -129,7 +176,7 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           }}
         />
 
-        {/* DEPARTMENT (ENUM VALUES) */}
+        {/* DEPARTMENT */}
         <select
           value={form.department}
           onChange={(e) => update("department", e.target.value)}
@@ -155,10 +202,13 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           <option value="FACILITY">Facility</option>
         </select>
 
-        {/* CLASSIFICATION (ENUM VALUES) */}
+        {/* CLASSIFICATION */}
         <select
           value={form.classification}
-          onChange={(e) => update("classification", e.target.value)}
+          onChange={(e) => {
+            update("classification", e.target.value);
+            update("element", ""); // reset element when classification changes
+          }}
           style={{
             width: "100%",
             marginBottom: 12,
@@ -174,7 +224,28 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           <option value="GENERAL">General</option>
         </select>
 
-        {/* STATUS (ENUM VALUES) */}
+        {/* ELEMENT (NEW) */}
+        <select
+          value={form.element}
+          onChange={(e) => update("element", e.target.value)}
+          style={{
+            width: "100%",
+            marginBottom: 12,
+            padding: 10,
+            borderRadius: "6px",
+            border: "1px solid #C4C4C4",
+            background: "#F5F5F5",
+          }}
+        >
+          <option value="">Select Element</option>
+          {elementOptions.map((el) => (
+            <option key={el} value={el}>
+              {pretty(el)}
+            </option>
+          ))}
+        </select>
+
+        {/* STATUS */}
         <select
           value={form.status}
           onChange={(e) => update("status", e.target.value)}

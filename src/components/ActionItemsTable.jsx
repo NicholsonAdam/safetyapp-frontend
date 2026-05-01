@@ -12,7 +12,35 @@ export default function ActionItemsTable({
   const [employees, setEmployees] = useState([]);
   const [editingOwnerId, setEditingOwnerId] = useState(null);
 
-  // Load all employees once for ID → name mapping
+  // ---------------------------------------------
+  // ELEMENT ENUM LISTS (MATCH MODAL)
+  // ---------------------------------------------
+  const SAFETY_ELEMENTS = [
+    "LADDER_SAFETY",
+    "HOUSEKEEPING",
+    "LOTO",
+    "HOT_WORK",
+    "EYEWASH",
+    "PPE",
+    "FORKLIFT_SAFETY",
+    "CHEMICAL_HANDLING",
+    "SPILL_RESPONSE",
+  ];
+
+  const CI_ELEMENTS = [
+    "5S",
+    "SIX_SIGMA",
+    "KAIZEN",
+    "STANDARD_WORK",
+    "ROOT_CAUSE_ANALYSIS",
+    "VALUE_STREAM_MAPPING",
+  ];
+
+  const ALL_ELEMENTS = [...SAFETY_ELEMENTS, ...CI_ELEMENTS];
+
+  // ---------------------------------------------
+  // LOAD EMPLOYEES FOR OWNER NAME MAPPING
+  // ---------------------------------------------
   useEffect(() => {
     const loadEmployees = async () => {
       try {
@@ -34,6 +62,9 @@ export default function ActionItemsTable({
     return emp ? emp.name : String(id);
   };
 
+  // ---------------------------------------------
+  // SORTING
+  // ---------------------------------------------
   const handleSort = (column) => {
     if (filters.sort === column) {
       setFilters((prev) => ({
@@ -49,6 +80,9 @@ export default function ActionItemsTable({
     }
   };
 
+  // ---------------------------------------------
+  // UPDATE FIELD
+  // ---------------------------------------------
   const updateField = async (id, field, value) => {
     await fetch(`${import.meta.env.VITE_API_URL}/action-items/${id}`, {
       method: "PATCH",
@@ -59,7 +93,9 @@ export default function ActionItemsTable({
     reload();
   };
 
-  // Format ISO dates
+  // ---------------------------------------------
+  // HELPERS
+  // ---------------------------------------------
   const formatDate = (value) => {
     if (!value) return "";
     const d = new Date(value);
@@ -67,7 +103,6 @@ export default function ActionItemsTable({
     return d.toLocaleDateString();
   };
 
-  // Convert ENUM → pretty label
   const pretty = (str) => {
     if (!str) return "";
     return str
@@ -76,7 +111,6 @@ export default function ActionItemsTable({
       .replace(/\b\w/g, (c) => c.toUpperCase());
   };
 
-  // Correct badge colors for ENUM values
   const badgeStyle = (status) => {
     const base = {
       padding: "4px 8px",
@@ -108,6 +142,16 @@ export default function ActionItemsTable({
     }
   };
 
+  // ---------------------------------------------
+  // DETERMINE ELEMENT OPTIONS PER ROW
+  // ---------------------------------------------
+  const getElementOptions = (classification) => {
+    if (classification === "SAFETY") return SAFETY_ELEMENTS;
+    if (classification === "CI") return CI_ELEMENTS;
+    if (classification === "GENERAL") return ALL_ELEMENTS;
+    return [];
+  };
+
   return (
     <table
       style={{
@@ -115,7 +159,6 @@ export default function ActionItemsTable({
         borderCollapse: "collapse",
         background: "white",
         borderRadius: "8px",
-        // overflow: "hidden",  // keep this removed so autocomplete dropdown isn't clipped
         boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
       }}
     >
@@ -136,6 +179,7 @@ export default function ActionItemsTable({
             ["description", "Description"],
             ["department", "Department"],
             ["classification", "Classification"],
+            ["element", "Element"], // <-- NEW COLUMN
             ["status", "Status"],
             ["notes", "Notes"],
           ].map(([key, label]) => (
@@ -176,6 +220,7 @@ export default function ActionItemsTable({
             <td style={{ padding: 10 }}>{formatDate(row.date_submitted)}</td>
             <td style={{ padding: 10 }}>{formatDate(row.date_last_update)}</td>
 
+            {/* SUBMITTER */}
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.submitted_by_user_id}
@@ -185,7 +230,7 @@ export default function ActionItemsTable({
               />
             </td>
 
-            {/* OWNER: show name, click to edit with autocomplete */}
+            {/* OWNER */}
             <td style={{ padding: 10 }}>
               {editingOwnerId === row.id ? (
                 <EmployeeAutocomplete
@@ -209,6 +254,7 @@ export default function ActionItemsTable({
               )}
             </td>
 
+            {/* DESCRIPTION */}
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.description}
@@ -218,7 +264,7 @@ export default function ActionItemsTable({
               />
             </td>
 
-            {/* DEPARTMENT: dropdown */}
+            {/* DEPARTMENT */}
             <td style={{ padding: 10 }}>
               <select
                 value={row.department || ""}
@@ -248,7 +294,7 @@ export default function ActionItemsTable({
               </select>
             </td>
 
-            {/* CLASSIFICATION: dropdown */}
+            {/* CLASSIFICATION */}
             <td style={{ padding: 10 }}>
               <select
                 value={row.classification || ""}
@@ -271,7 +317,32 @@ export default function ActionItemsTable({
               </select>
             </td>
 
-            {/* STATUS: dropdown + colored badge */}
+            {/* ELEMENT (NEW COLUMN) */}
+            <td style={{ padding: 10 }}>
+              <select
+                value={row.element || ""}
+                onChange={(e) =>
+                  updateField(row.id, "element", e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "4px 6px",
+                  borderRadius: "4px",
+                  border: "1px solid #C4C4C4",
+                  background: "#FFFFFF",
+                  fontSize: "13px",
+                }}
+              >
+                <option value="">Select Element</option>
+                {getElementOptions(row.classification).map((el) => (
+                  <option key={el} value={el}>
+                    {pretty(el)}
+                  </option>
+                ))}
+              </select>
+            </td>
+
+            {/* STATUS */}
             <td style={{ padding: 10 }}>
               <select
                 value={row.status || ""}
@@ -298,9 +369,11 @@ export default function ActionItemsTable({
                 <option value="COMPLETE">Complete</option>
                 <option value="ON_HOLD">On Hold</option>
               </select>
+
               <div style={badgeStyle(row.status)}>{pretty(row.status)}</div>
             </td>
 
+            {/* NOTES */}
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.notes}
