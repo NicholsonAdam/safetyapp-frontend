@@ -318,7 +318,7 @@ export default function ActionItemsTable({
             </td>
 
             {/* ELEMENT (NEW COLUMN) */}
-            <td style={{ padding: 10 }}>
+            <td style={{ padding: 10, minWidth: "180px" }}>
               <select
                 value={row.element || ""}
                 onChange={(e) =>
@@ -326,6 +326,7 @@ export default function ActionItemsTable({
                 }
                 style={{
                   width: "100%",
+                  minWidth: "180px",
                   padding: "4px 6px",
                   borderRadius: "4px",
                   border: "1px solid #C4C4C4",
