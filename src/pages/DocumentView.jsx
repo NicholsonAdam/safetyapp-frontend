@@ -49,24 +49,20 @@ export default function DocumentView() {
         body: formData
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to upload new version");
-      }
+      if (!res.ok) throw new Error("Failed to upload new version");
 
       setShowUpload(false);
       setFile(null);
       setComment("");
       loadVersions();
-      console.log("Version uploaded successfully");
     } catch (err) {
-      console.error(err);
       setUploadError(err.message || "Error uploading version");
     } finally {
       setUploadLoading(false);
     }
   };
 
-  // Open version inside the page (PWA-safe)
+  // Open version inside the page
   const openVersion = async versionId => {
     try {
       const res = await fetch(`${API}/documentversions/version/${versionId}`);
@@ -84,39 +80,54 @@ export default function DocumentView() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      {/* BACK BUTTON */}
-      <button
-        onClick={() => navigate(-1)}
+    <div style={{ padding: "24px", maxWidth: "1300px", margin: "0 auto" }}>
+      {/* HEADER BAR */}
+      <div
         style={{
-          padding: "0.6rem 1rem",
-          backgroundColor: "#e0e0e0",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          marginBottom: "1.5rem",
-          fontWeight: "600"
+          background: "#333333",
+          padding: "16px 20px",
+          borderRadius: "8px",
+          marginBottom: "24px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)"
         }}
       >
-        ← Back
-      </button>
+        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
+          Document Versions
+        </h1>
 
-      <h1 style={{ fontSize: "2.2rem", marginBottom: "1rem" }}>
-        Document Versions
-      </h1>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            padding: "8px 14px",
+            background: "#B30000",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600"
+          }}
+        >
+          ← Back
+        </button>
+      </div>
 
       {/* UPLOAD NEW VERSION BUTTON */}
       <button
         onClick={() => setShowUpload(true)}
         style={{
-          padding: "0.8rem 1.2rem",
-          fontSize: "1.2rem",
-          backgroundColor: "#008000",
+          padding: "10px 16px",
+          background: "#B30000",
           color: "white",
           border: "none",
           borderRadius: "6px",
           cursor: "pointer",
-          marginBottom: "1.5rem"
+          fontWeight: "600",
+          marginBottom: "20px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
         }}
       >
         + Upload New Version
@@ -124,45 +135,21 @@ export default function DocumentView() {
 
       {/* UPLOAD MODAL */}
       {showUpload && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 99999
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "2rem",
-              borderRadius: "12px",
-              width: "450px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
-            }}
-          >
+        <Modal>
+          <ModalBox>
             <h2>Upload New Version</h2>
 
             <input
               type="file"
               onChange={e => setFile(e.target.files[0] || null)}
-              style={{ padding: "0.5rem", fontSize: "1rem" }}
+              style={input}
             />
 
             <textarea
               placeholder="Explain the revision"
               value={comment}
               onChange={e => setComment(e.target.value)}
-              style={{ padding: "0.5rem", fontSize: "1rem", minHeight: "80px" }}
+              style={textarea}
             />
 
             {uploadError && (
@@ -171,25 +158,19 @@ export default function DocumentView() {
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "1rem" }}>
+            <div style={modalRow}>
               <button
                 onClick={uploadVersion}
                 disabled={uploadLoading || !file || !comment.trim()}
                 style={{
+                  ...btnPrimary,
                   flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#004aad",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
+                  opacity:
+                    uploadLoading || !file || !comment.trim() ? 0.6 : 1,
                   cursor:
                     uploadLoading || !file || !comment.trim()
                       ? "not-allowed"
-                      : "pointer",
-                  opacity:
-                    uploadLoading || !file || !comment.trim()
-                      ? 0.6
-                      : 1
+                      : "pointer"
                 }}
               >
                 {uploadLoading ? "Uploading..." : "Upload"}
@@ -200,59 +181,45 @@ export default function DocumentView() {
                   setShowUpload(false);
                   setUploadError("");
                 }}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#999",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
+                style={{ ...btnCancel, flex: 1 }}
               >
                 Cancel
               </button>
             </div>
-          </div>
-        </div>
+          </ModalBox>
+        </Modal>
       )}
 
       {/* VERSION LIST */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <h2 style={{ marginBottom: "10px" }}>Versions</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {versions.map(v => (
-          <button
+          <div
             key={v.id}
             onClick={() => openVersion(v.id)}
-            style={{
-              padding: "1rem",
-              fontSize: "1.2rem",
-              backgroundColor: "#004aad",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              textAlign: "left"
-            }}
+            style={versionCard}
           >
-            <div style={{ fontWeight: "600" }}>
+            <div style={{ fontWeight: "600", fontSize: "1.2rem" }}>
               Version {v.version_number} —{" "}
               {new Date(v.uploaded_at).toLocaleString()}
             </div>
-            <div style={{ fontSize: "0.9rem", marginTop: "0.25rem" }}>
+
+            <div style={{ fontSize: "0.9rem", marginTop: "4px" }}>
               Uploaded by: {v.uploaded_by_name || v.uploaded_by}
             </div>
+
             {v.change_comment && (
               <div
                 style={{
                   fontSize: "0.9rem",
-                  marginTop: "0.25rem",
+                  marginTop: "4px",
                   fontStyle: "italic"
                 }}
               >
                 “{v.change_comment}”
               </div>
             )}
-          </button>
+          </div>
         ))}
       </div>
 
@@ -260,13 +227,14 @@ export default function DocumentView() {
       {activeFileUrl && (
         <div
           style={{
-            marginTop: "2rem",
-            padding: "1rem",
-            backgroundColor: "#f5f5f5",
-            borderRadius: "8px"
+            marginTop: "24px",
+            background: "white",
+            padding: "16px",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
           }}
         >
-          <h2 style={{ marginBottom: "1rem" }}>
+          <h2 style={{ marginBottom: "12px" }}>
             Viewing Version {activeVersion?.version_number}
           </h2>
 
@@ -277,8 +245,8 @@ export default function DocumentView() {
               style={{
                 width: "100%",
                 height: "80vh",
-                border: "1px solid #ccc",
-                borderRadius: "6px"
+                borderRadius: "6px",
+                border: "1px solid #ccc"
               }}
             />
           )}
@@ -304,13 +272,7 @@ export default function DocumentView() {
                 <a
                   href={activeFileUrl}
                   download
-                  style={{
-                    padding: "0.8rem 1.2rem",
-                    backgroundColor: "#004aad",
-                    color: "white",
-                    borderRadius: "6px",
-                    textDecoration: "none"
-                  }}
+                  style={btnPrimary}
                 >
                   Download File
                 </a>
@@ -321,3 +283,93 @@ export default function DocumentView() {
     </div>
   );
 }
+
+/* ---------- STYLES ---------- */
+
+const btnPrimary = {
+  padding: "10px 16px",
+  background: "#B30000",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600",
+  textDecoration: "none",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+};
+
+const btnCancel = {
+  padding: "10px 16px",
+  background: "#999",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
+
+const versionCard = {
+  background: "white",
+  borderLeft: "6px solid #800000",
+  padding: "14px 18px",
+  borderRadius: "8px",
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
+};
+
+const Modal = ({ children }) => (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 99999
+    }}
+  >
+    {children}
+  </div>
+);
+
+const ModalBox = ({ children }) => (
+  <div
+    style={{
+      background: "white",
+      padding: "24px",
+      borderRadius: "12px",
+      width: "450px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
+    }}
+  >
+    {children}
+  </div>
+);
+
+const input = {
+  padding: "0.6rem",
+  fontSize: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc"
+};
+
+const textarea = {
+  padding: "0.6rem",
+  fontSize: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc",
+  minHeight: "80px"
+};
+
+const modalRow = {
+  display: "flex",
+  gap: "1rem",
+  marginTop: "0.5rem"
+};

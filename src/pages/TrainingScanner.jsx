@@ -16,7 +16,7 @@ export default function TrainingScanner() {
   const [scannedId, setScannedId] = useState("");
   const [attendees, setAttendees] = useState([]);
 
-  const [scanFlash, setScanFlash] = useState(false); // NEW: success flash
+  const [scanFlash, setScanFlash] = useState(false);
   const [scanLocked, setScanLocked] = useState(false);
 
   // Load open sessions
@@ -75,27 +75,21 @@ export default function TrainingScanner() {
 
     scanner.render(
       (decodedText) => {
-        // HARD LOCK — stops ALL duplicate firing instantly
         if (scanLocked) return;
         setScanLocked(true);
 
-        // Prevent duplicate employees
         if (attendees.includes(decodedText)) {
-          // Keep lock for the full 3 seconds so it doesn't spam
           setTimeout(() => setScanLocked(false), 3000);
           return;
         }
 
-        // Show success banner
         setScanFlash(true);
 
-        // Unlock after 3 seconds
         setTimeout(() => {
           setScanFlash(false);
           setScanLocked(false);
         }, 3000);
 
-        // Process scan
         setScannedId(decodedText);
         logScan(decodedText, "CAMERA");
       },
@@ -107,7 +101,6 @@ export default function TrainingScanner() {
   const logScan = async (employeeId, source) => {
     if (!activeSession) return;
 
-    // NEW: prevent duplicates
     if (attendees.includes(employeeId)) return;
 
     await fetch(`${backendUrl}/api/training/sessions/${activeSession.id}/scan`, {
@@ -124,12 +117,12 @@ export default function TrainingScanner() {
     });
 
     setAttendees((prev) => [...prev, employeeId]);
-    setScannedId(""); // NEW: clear manual entry field
+    setScannedId("");
   };
 
   // Close session
   const closeSession = async () => {
-    const res = await fetch(
+    await fetch(
       `${backendUrl}/api/training/sessions/${activeSession.id}/close`,
       {
         method: "POST",
@@ -137,7 +130,6 @@ export default function TrainingScanner() {
       }
     );
 
-    await res.json();
     alert("Session closed and report created.");
     setActiveSession(null);
     setAttendees([]);
@@ -145,27 +137,40 @@ export default function TrainingScanner() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <button
-        onClick={() => navigate("/leaderwalk")}
+    <div style={{ padding: "24px", maxWidth: "1300px", margin: "0 auto" }}>
+      {/* HEADER BAR */}
+      <div
         style={{
-          padding: "0.8rem 1.2rem",
-          fontSize: "1.2rem",
-          backgroundColor: "#e0e0e0",
-          color: "#333",
-          border: "none",
+          background: "#333333",
+          padding: "16px 20px",
           borderRadius: "8px",
-          cursor: "pointer",
-          fontWeight: "600",
-          marginBottom: "1.5rem",
+          marginBottom: "24px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)"
         }}
       >
-        ← Back
-      </button>
+        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
+          Training Attendance Scanner
+        </h1>
 
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
-        Training Attendance Scanner
-      </h1>
+        <button
+          onClick={() => navigate("/leaderwalk")}
+          style={{
+            padding: "8px 14px",
+            background: "#B30000",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600"
+          }}
+        >
+          ← Back to Tools
+        </button>
+      </div>
 
       {/* SUCCESS FLASH */}
       {scanFlash && (
@@ -180,15 +185,24 @@ export default function TrainingScanner() {
             fontWeight: "bold",
             borderRadius: "8px",
             marginBottom: "1.5rem",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
           }}
         >
           ✓ Scan Recorded
         </div>
       )}
 
-      {/* If no active session, show session creation + open sessions */}
+      {/* If no active session */}
       {!activeSession && (
-        <>
+        <div
+          style={{
+            background: "white",
+            padding: "16px",
+            borderRadius: "8px",
+            marginBottom: "20px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
+          }}
+        >
           <h2>Create New Session</h2>
 
           <input
@@ -196,23 +210,13 @@ export default function TrainingScanner() {
             placeholder="Session Name"
             value={sessionName}
             onChange={(e) => setSessionName(e.target.value)}
-            style={{
-              padding: "0.8rem",
-              fontSize: "1.2rem",
-              width: "100%",
-              marginBottom: "1rem",
-            }}
+            style={input}
           />
 
           <select
             value={sessionType}
             onChange={(e) => setSessionType(e.target.value)}
-            style={{
-              padding: "0.8rem",
-              fontSize: "1.2rem",
-              width: "100%",
-              marginBottom: "1rem",
-            }}
+            style={input}
           >
             <option value="PLANT_MEETING">Plant Meeting</option>
             <option value="TRAINING">Training Session</option>
@@ -225,12 +229,7 @@ export default function TrainingScanner() {
                 placeholder="Training Title"
                 value={trainingTitle}
                 onChange={(e) => setTrainingTitle(e.target.value)}
-                style={{
-                  padding: "0.8rem",
-                  fontSize: "1.2rem",
-                  width: "100%",
-                  marginBottom: "1rem",
-                }}
+                style={input}
               />
 
               <input
@@ -238,76 +237,59 @@ export default function TrainingScanner() {
                 placeholder="Trainer Name"
                 value={trainerName}
                 onChange={(e) => setTrainerName(e.target.value)}
-                style={{
-                  padding: "0.8rem",
-                  fontSize: "1.2rem",
-                  width: "100%",
-                  marginBottom: "1rem",
-                }}
+                style={input}
               />
             </>
           )}
 
           <button
             onClick={startSession}
-            style={{
-              padding: "1rem",
-              fontSize: "1.5rem",
-              backgroundColor: "#004aad",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              marginBottom: "2rem",
-            }}
+            style={btnPrimary}
           >
             Start New Session
           </button>
 
-          <h2>Open Sessions</h2>
+          <h2 style={{ marginTop: "20px" }}>Open Sessions</h2>
+
           {openSessions.length === 0 && <p>No open sessions.</p>}
 
-          <ul>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {openSessions.map((s) => (
-              <li key={s.id} style={{ marginBottom: "1rem" }}>
-                <strong>{s.name}</strong> — {s.type}
+              <div
+                key={s.id}
+                style={sessionCard}
+              >
+                <div>
+                  <strong>{s.name}</strong> — {s.type}
+                </div>
+
                 <button
                   onClick={() => joinSession(s)}
-                  style={{
-                    marginLeft: "1rem",
-                    padding: "0.5rem 1rem",
-                    backgroundColor: "#008000",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                  }}
+                  style={btnSecondary}
                 >
                   Join
                 </button>
-              </li>
+              </div>
             ))}
-          </ul>
-        </>
+          </div>
+        </div>
       )}
 
       {/* Active session UI */}
       {activeSession && (
-        <>
+        <div
+          style={{
+            background: "white",
+            padding: "16px",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
+          }}
+        >
           <h2>Active Session: {activeSession.name}</h2>
 
           <button
             onClick={startScanner}
-            style={{
-              padding: "1rem",
-              fontSize: "1.5rem",
-              backgroundColor: "#004aad",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              marginBottom: "1.5rem",
-            }}
+            style={btnPrimary}
           >
             Start Scanner
           </button>
@@ -315,6 +297,7 @@ export default function TrainingScanner() {
           <div id="reader" style={{ width: "100%", marginBottom: "2rem" }}></div>
 
           <h3>Manual Entry</h3>
+
           <input
             type="text"
             placeholder="Employee ID"
@@ -323,31 +306,19 @@ export default function TrainingScanner() {
             onKeyDown={(e) => {
               if (e.key === "Enter") logScan(scannedId, "MANUAL");
             }}
-            style={{
-              padding: "0.8rem",
-              fontSize: "1.2rem",
-              width: "100%",
-              marginBottom: "1rem",
-            }}
+            style={input}
           />
+
           <button
             onClick={() => logScan(scannedId, "MANUAL")}
-            style={{
-              padding: "0.8rem",
-              fontSize: "1.2rem",
-              backgroundColor: "#555",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              marginBottom: "2rem",
-            }}
+            style={btnGray}
           >
             Submit Manual Entry
           </button>
 
           <h3>Attendees</h3>
-          <ul style={{ fontSize: "1.3rem" }}>
+
+          <ul style={{ fontSize: "1.2rem", paddingLeft: "20px" }}>
             {attendees.map((id, index) => (
               <li key={index}>Employee ID: {id}</li>
             ))}
@@ -355,21 +326,80 @@ export default function TrainingScanner() {
 
           <button
             onClick={closeSession}
-            style={{
-              padding: "1rem",
-              fontSize: "1.5rem",
-              backgroundColor: "red",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              marginTop: "2rem",
-            }}
+            style={btnDanger}
           >
             Close Session
           </button>
-        </>
+        </div>
       )}
     </div>
   );
 }
+
+/* ---------- STYLES ---------- */
+
+const input = {
+  padding: "0.8rem",
+  fontSize: "1.2rem",
+  width: "100%",
+  marginBottom: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc"
+};
+
+const btnPrimary = {
+  padding: "1rem",
+  fontSize: "1.3rem",
+  backgroundColor: "#B30000",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontWeight: "600",
+  marginBottom: "1.5rem",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+};
+
+const btnSecondary = {
+  padding: "0.6rem 1rem",
+  backgroundColor: "#800000",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
+
+const btnGray = {
+  padding: "0.8rem",
+  fontSize: "1.2rem",
+  backgroundColor: "#555",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  marginBottom: "2rem"
+};
+
+const btnDanger = {
+  padding: "1rem",
+  fontSize: "1.3rem",
+  backgroundColor: "red",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  marginTop: "2rem",
+  fontWeight: "600"
+};
+
+const sessionCard = {
+  background: "white",
+  borderLeft: "6px solid #B30000",
+  padding: "14px 18px",
+  borderRadius: "8px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
+};

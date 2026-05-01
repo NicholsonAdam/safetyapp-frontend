@@ -15,7 +15,7 @@ export default function DocumentFolderView() {
   // BREADCRUMBS
   const [breadcrumbs, setBreadcrumbs] = useState([]);
 
-  // UPLOAD DOCUMENT (NEW DOCUMENT + VERSION 1)
+  // UPLOAD DOCUMENT
   const [showUploadDoc, setShowUploadDoc] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState("");
   const [newDocDescription, setNewDocDescription] = useState("");
@@ -24,46 +24,40 @@ export default function DocumentFolderView() {
   const [uploadDocError, setUploadDocError] = useState("");
   const [uploadDocLoading, setUploadDocLoading] = useState(false);
 
-    // CREATE SUBFOLDER
+  // CREATE SUBFOLDER
   const [showCreateSubfolder, setShowCreateSubfolder] = useState(false);
   const [newSubfolderName, setNewSubfolderName] = useState("");
   const [createSubfolderError, setCreateSubfolderError] = useState("");
 
-  // EDIT DOCUMENT (metadata only – rename/move)
+  // EDIT DOCUMENT
   const [showEdit, setShowEdit] = useState(false);
   const [editDoc, setEditDoc] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editFolder, setEditFolder] = useState("");
 
-  // LOAD DOCUMENTS
+  // LOADERS
   const loadDocuments = () => {
     fetch(`${API}/documents?folder_id=${folderId}`)
       .then(res => res.json())
-      .then(data => setDocuments(data))
-      .catch(err => console.error("Error loading documents:", err));
+      .then(data => setDocuments(data));
   };
 
-  // LOAD SUBFOLDERS
   const loadSubfolders = () => {
     fetch(`${API}/folders`)
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(f => f.parent_folder_id == folderId);
         setSubfolders(filtered);
-      })
-      .catch(err => console.error("Error loading subfolders:", err));
+      });
   };
 
-  // LOAD ALL FOLDERS
   const loadAllFolders = () => {
     fetch(`${API}/folders`)
       .then(res => res.json())
-      .then(data => setAllFolders(data))
-      .catch(err => console.error("Error loading all folders:", err));
+      .then(data => setAllFolders(data));
   };
 
-  // BUILD BREADCRUMBS
   const buildBreadcrumbs = (folderId, all) => {
     let chain = [];
     let current = all.find(f => f.id == folderId);
@@ -88,7 +82,7 @@ export default function DocumentFolderView() {
     }
   }, [allFolders, folderId]);
 
-  // CREATE DOCUMENT (metadata only)
+  // CREATE DOCUMENT
   const createDocumentMetadata = async () => {
     const res = await fetch(`${API}/documents`, {
       method: "POST",
@@ -101,64 +95,47 @@ export default function DocumentFolderView() {
       })
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to create document metadata");
-    }
+    if (!res.ok) throw new Error("Failed to create document metadata");
 
-    const doc = await res.json();
-    return doc;
+    return await res.json();
   };
 
-  // UPLOAD VERSION 1 FOR NEW DOCUMENT
   const uploadInitialVersion = async documentId => {
     const formData = new FormData();
     formData.append("file", newDocFile);
     formData.append("uploaded_by", localStorage.getItem("employee_id"));
-    formData.append("change_comment", newDocComment || "Initial Upload");
+    formData.append("change_comment", newDocComment);
 
     const res = await fetch(`${API}/documentversions/${documentId}`, {
       method: "POST",
       body: formData
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to upload initial version");
-    }
+    if (!res.ok) throw new Error("Failed to upload initial version");
   };
 
-  // HANDLE NEW DOCUMENT UPLOAD
   const handleUploadDocument = async () => {
     setUploadDocError("");
     setUploadDocLoading(true);
 
     try {
-      // Step 1: create document metadata
       const doc = await createDocumentMetadata();
-
-      // Step 2: upload version 1
       await uploadInitialVersion(doc.id);
 
-      // Reset modal state
       setShowUploadDoc(false);
       setNewDocTitle("");
       setNewDocDescription("");
       setNewDocFile(null);
       setNewDocComment("Initial Upload");
 
-      // Reload documents
       loadDocuments();
-
-      // Optional: toast could be added here
-      console.log("Document uploaded successfully");
     } catch (err) {
-      console.error(err);
-      setUploadDocError(err.message || "Error uploading document");
+      setUploadDocError(err.message);
     } finally {
       setUploadDocLoading(false);
     }
   };
 
-  // UPDATE DOCUMENT (metadata only – rename/move)
   const updateDocument = async () => {
     await fetch(`${API}/documents/${editDoc.id}`, {
       method: "PUT",
@@ -175,323 +152,128 @@ export default function DocumentFolderView() {
     loadSubfolders();
   };
 
-  // HELPER: get file extension from filename
   const getFileExtension = filename => {
     if (!filename) return "";
     const parts = filename.split(".");
-    if (parts.length < 2) return "";
-    return parts[parts.length - 1].toLowerCase();
+    return parts.length < 2 ? "" : parts.pop().toLowerCase();
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      {/* BACK BUTTON */}
-      <button
-        onClick={() => navigate("/documents")}
+    <div style={{ padding: "24px", maxWidth: "1300px", margin: "0 auto" }}>
+      {/* HEADER BAR */}
+      <div
         style={{
-          padding: "0.6rem 1rem",
-          backgroundColor: "#e0e0e0",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          marginBottom: "1.5rem",
-          fontWeight: "600"
+          background: "#333333",
+          padding: "16px 20px",
+          borderRadius: "8px",
+          marginBottom: "24px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)"
         }}
       >
-        ← Back to Document Library
-      </button>
-
-      {/* BREADCRUMBS */}
-      <h1 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
-        <span
-          style={{ cursor: "pointer", color: "#004aad", fontWeight: "600" }}
-          onClick={() => navigate("/documents")}
-        >
+        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
           Document Library
-        </span>
+        </h1>
 
-        {breadcrumbs.map((folder, index) => (
-          <span key={folder.id}>
-            {" > "}
-            <span
-              style={{
-                cursor:
-                  index === breadcrumbs.length - 1 ? "pointer" : "pointer",
-                color:
-                  index === breadcrumbs.length - 1 ? "black" : "#004aad",
-                fontWeight:
-                  index === breadcrumbs.length - 1 ? "600" : "500"
-              }}
-              onClick={() =>
-                index === breadcrumbs.length - 1
-                  ? navigate(`/documents/folder/${folder.id}`)
-                  : navigate(`/documents/folder/${folder.id}`)
-              }
-            >
-              {folder.name}
-            </span>
-          </span>
-        ))}
-      </h1>
-
-      {/* ACTION BUTTONS */}
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }}>
         <button
-          onClick={() => setShowUploadDoc(true)}
+          onClick={() => navigate("/documents")}
           style={{
-            padding: "0.8rem 1.2rem",
-            fontSize: "1.2rem",
-            backgroundColor: "#008000",
+            padding: "8px 14px",
+            background: "#B30000",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: "pointer"
+            cursor: "pointer",
+            fontWeight: "600"
           }}
+        >
+          ← Back to Library
+        </button>
+      </div>
+
+      {/* BREADCRUMBS CARD */}
+      <div
+        style={{
+          background: "white",
+          padding: "16px",
+          borderRadius: "8px",
+          marginBottom: "20px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
+        }}
+      >
+        <div style={{ fontSize: "1.2rem", fontWeight: "600" }}>
+          <span
+            style={{ cursor: "pointer", color: "#B30000" }}
+            onClick={() => navigate("/documents")}
+          >
+            Document Library
+          </span>
+
+          {breadcrumbs.map(folder => (
+            <span key={folder.id}>
+              {" > "}
+              <span
+                style={{ cursor: "pointer", color: "#800000" }}
+                onClick={() => navigate(`/documents/folder/${folder.id}`)}
+              >
+                {folder.name}
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ACTION BUTTONS */}
+      <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+        <button
+          onClick={() => setShowUploadDoc(true)}
+          style={btnPrimary}
         >
           + Upload Document
         </button>
 
         <button
           onClick={() => setShowCreateSubfolder(true)}
-          style={{
-            padding: "0.8rem 1.2rem",
-            fontSize: "1.2rem",
-            backgroundColor: "#ffa500",
-            color: "black",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
+          style={btnSecondary}
         >
           + Create Subfolder
         </button>
-
-        <button
-          onClick={() => navigate("/documents")}
-          style={{
-            padding: "0.8rem 1.2rem",
-            fontSize: "1.2rem",
-            backgroundColor: "#004aad",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          Back to Library
-        </button>
       </div>
 
-      {/* UPLOAD DOCUMENT MODAL */}
-      {showUploadDoc && (
-        <div style={modalOverlay}>
-          <div style={modalBoxModern}>
-            <h2 style={{ marginBottom: "0.5rem" }}>Upload Document</h2>
-            <p style={{ marginTop: 0, color: "#555", fontSize: "0.9rem" }}>
-              Create a new controlled document and upload its initial version.
-            </p>
-
-            <input
-              type="text"
-              placeholder="Document Title (required)"
-              value={newDocTitle}
-              onChange={e => setNewDocTitle(e.target.value)}
-              style={inputStyle}
-            />
-
-            <textarea
-              placeholder="Description (optional)"
-              value={newDocDescription}
-              onChange={e => setNewDocDescription(e.target.value)}
-              style={textareaStyle}
-            />
-
-            <input
-              type="file"
-              onChange={e => setNewDocFile(e.target.files[0] || null)}
-              style={inputStyle}
-            />
-
-            <textarea
-              placeholder='Explain the revision (default: "Initial Upload")'
-              value={newDocComment}
-              onChange={e => setNewDocComment(e.target.value)}
-              style={textareaStyle}
-            />
-
-            {uploadDocError && (
-              <div
-                style={{
-                  color: "red",
-                  fontSize: "0.9rem",
-                  marginTop: "0.5rem"
-                }}
-              >
-                {uploadDocError}
-              </div>
-            )}
-
-            <div style={modalButtonRow}>
-              <button
-                onClick={handleUploadDocument}
-                disabled={
-                  uploadDocLoading || !newDocTitle.trim() || !newDocFile
-                }
-                style={{
-                  ...primaryButton,
-                  opacity:
-                    uploadDocLoading || !newDocTitle.trim() || !newDocFile
-                      ? 0.6
-                      : 1,
-                  cursor:
-                    uploadDocLoading || !newDocTitle.trim() || !newDocFile
-                      ? "not-allowed"
-                      : "pointer"
-                }}
-              >
-                {uploadDocLoading ? "Uploading..." : "Upload"}
-              </button>
-              <button
-                onClick={() => {
-                  setShowUploadDoc(false);
-                  setUploadDocError("");
-                }}
-                style={cancelButton}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE SUBFOLDER MODAL */}
-      {showCreateSubfolder && (
-        <div style={modalOverlay}>
-          <div style={modalBoxModern}>
-            <h2>Create Subfolder</h2>
-
-            <input
-              type="text"
-              placeholder="Subfolder Name"
-              value={newSubfolderName}
-              onChange={e => setNewSubfolderName(e.target.value)}
-              style={inputStyle}
-            />
-
-            {createSubfolderError && (
-              <div style={{ color: "red", fontSize: "0.9rem" }}>
-                {createSubfolderError}
-              </div>
-            )}
-
-            <div style={modalButtonRow}>
-              <button
-                onClick={async () => {
-                  setCreateSubfolderError("");
-
-                  if (!newSubfolderName.trim()) {
-                    setCreateSubfolderError("Folder name is required");
-                    return;
-                  }
-
-                  try {
-                    const res = await fetch(`${API}/folders`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                      name: newSubfolderName,
-                      parent_folder_id: folderId,
-                      created_by: Number(localStorage.getItem("employee_id"))
-                    })
-
-                    });
-
-                    if (!res.ok) throw new Error("Failed to create subfolder");
-
-                    setShowCreateSubfolder(false);
-                    setNewSubfolderName("");
-                    loadSubfolders();
-                  } catch (err) {
-                    setCreateSubfolderError(err.message);
-                  }
-                }}
-                style={primaryButton}
-              >
-                Create
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowCreateSubfolder(false);
-                  setNewSubfolderName("");
-                  setCreateSubfolderError("");
-                }}
-                style={cancelButton}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUBFOLDER LIST */}
-      <h2 style={{ marginTop: "2rem" }}>Subfolders</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      {/* SUBFOLDERS */}
+      <h2 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>Subfolders</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {subfolders.map(folder => (
-          <button
+          <div
             key={folder.id}
             onClick={() => navigate(`/documents/folder/${folder.id}`)}
-            style={{
-              padding: "1rem",
-              fontSize: "1.5rem",
-              backgroundColor: "#0066cc",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer"
-            }}
+            style={folderCard}
           >
-            📁 {folder.name}
-          </button>
+            <span style={{ fontSize: "1.3rem", fontWeight: "600" }}>
+              📁 {folder.name}
+            </span>
+          </div>
         ))}
       </div>
 
-      {/* DOCUMENT LIST */}
-      <h2 style={{ marginTop: "2rem" }}>Documents</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      {/* DOCUMENTS */}
+      <h2 style={{ marginTop: "2rem", marginBottom: "0.5rem" }}>Documents</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {documents.map(doc => {
-          const ext = getFileExtension(doc.latest_filename || "");
+          const ext = getFileExtension(doc.latest_filename);
           const versionLabel = doc.latest_version_number
             ? ` (v${doc.latest_version_number})`
             : "";
           const extLabel = ext ? `.${ext}` : "";
 
           return (
-            <div
-              key={doc.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                backgroundColor: "#004aad",
-                color: "white",
-                padding: "1rem",
-                borderRadius: "8px"
-              }}
-            >
+            <div key={doc.id} style={docCard}>
               <button
                 onClick={() => navigate(`/documents/view/${doc.id}`)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "white",
-                  fontSize: "1.3rem",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  flex: 1
-                }}
+                style={docTitleButton}
               >
                 📄 {doc.title}
                 {versionLabel}
@@ -506,15 +288,7 @@ export default function DocumentFolderView() {
                   setEditFolder(doc.folder_id);
                   setShowEdit(true);
                 }}
-                style={{
-                  backgroundColor: "#ffa500",
-                  border: "none",
-                  color: "black",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  marginLeft: "1rem"
-                }}
+                style={editButton}
               >
                 Edit
               </button>
@@ -523,10 +297,143 @@ export default function DocumentFolderView() {
         })}
       </div>
 
-      {/* EDIT DOCUMENT MODAL (rename/move) */}
+      {/* UPLOAD MODAL */}
+      {showUploadDoc && (
+        <Modal>
+          <ModalBox>
+            <h2>Upload Document</h2>
+
+            <input
+              type="text"
+              placeholder="Document Title"
+              value={newDocTitle}
+              onChange={e => setNewDocTitle(e.target.value)}
+              style={input}
+            />
+
+            <textarea
+              placeholder="Description (optional)"
+              value={newDocDescription}
+              onChange={e => setNewDocDescription(e.target.value)}
+              style={textarea}
+            />
+
+            <input
+              type="file"
+              onChange={e => setNewDocFile(e.target.files[0] || null)}
+              style={input}
+            />
+
+            <textarea
+              placeholder='Explain the revision (default: "Initial Upload")'
+              value={newDocComment}
+              onChange={e => setNewDocComment(e.target.value)}
+              style={textarea}
+            />
+
+            {uploadDocError && (
+              <div style={{ color: "red", fontSize: "0.9rem" }}>
+                {uploadDocError}
+              </div>
+            )}
+
+            <div style={modalRow}>
+              <button
+                onClick={handleUploadDocument}
+                disabled={!newDocTitle.trim() || !newDocFile}
+                style={{
+                  ...btnPrimary,
+                  flex: 1,
+                  opacity:
+                    !newDocTitle.trim() || !newDocFile ? 0.6 : 1,
+                  cursor:
+                    !newDocTitle.trim() || !newDocFile
+                      ? "not-allowed"
+                      : "pointer"
+                }}
+              >
+                {uploadDocLoading ? "Uploading..." : "Upload"}
+              </button>
+
+              <button
+                onClick={() => setShowUploadDoc(false)}
+                style={{ ...btnCancel, flex: 1 }}
+              >
+                Cancel
+              </button>
+            </div>
+          </ModalBox>
+        </Modal>
+      )}
+
+      {/* CREATE SUBFOLDER MODAL */}
+      {showCreateSubfolder && (
+        <Modal>
+          <ModalBox>
+            <h2>Create Subfolder</h2>
+
+            <input
+              type="text"
+              placeholder="Subfolder Name"
+              value={newSubfolderName}
+              onChange={e => setNewSubfolderName(e.target.value)}
+              style={input}
+            />
+
+            {createSubfolderError && (
+              <div style={{ color: "red", fontSize: "0.9rem" }}>
+                {createSubfolderError}
+              </div>
+            )}
+
+            <div style={modalRow}>
+              <button
+                onClick={async () => {
+                  if (!newSubfolderName.trim()) {
+                    setCreateSubfolderError("Folder name is required");
+                    return;
+                  }
+
+                  try {
+                    const res = await fetch(`${API}/folders`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        name: newSubfolderName,
+                        parent_folder_id: folderId,
+                        created_by: Number(localStorage.getItem("employee_id"))
+                      })
+                    });
+
+                    if (!res.ok) throw new Error("Failed to create subfolder");
+
+                    setShowCreateSubfolder(false);
+                    setNewSubfolderName("");
+                    loadSubfolders();
+                  } catch (err) {
+                    setCreateSubfolderError(err.message);
+                  }
+                }}
+                style={{ ...btnPrimary, flex: 1 }}
+              >
+                Create
+              </button>
+
+              <button
+                onClick={() => setShowCreateSubfolder(false)}
+                style={{ ...btnCancel, flex: 1 }}
+              >
+                Cancel
+              </button>
+            </div>
+          </ModalBox>
+        </Modal>
+      )}
+
+      {/* EDIT DOCUMENT MODAL */}
       {showEdit && (
-        <div style={modalOverlay}>
-          <div style={modalBoxModern}>
+        <Modal>
+          <ModalBox>
             <h2>Edit Document</h2>
 
             <input
@@ -534,20 +441,20 @@ export default function DocumentFolderView() {
               placeholder="Document Title"
               value={editTitle}
               onChange={e => setEditTitle(e.target.value)}
-              style={inputStyle}
+              style={input}
             />
 
             <textarea
               placeholder="Description (optional)"
               value={editDescription}
               onChange={e => setEditDescription(e.target.value)}
-              style={textareaStyle}
+              style={textarea}
             />
 
             <select
               value={editFolder}
               onChange={e => setEditFolder(e.target.value)}
-              style={inputStyle}
+              style={input}
             >
               <option value="">Select Folder</option>
               {allFolders.map(f => (
@@ -557,89 +464,158 @@ export default function DocumentFolderView() {
               ))}
             </select>
 
-            <div style={modalButtonRow}>
-              <button onClick={updateDocument} style={primaryButton}>
+            <div style={modalRow}>
+              <button
+                onClick={updateDocument}
+                style={{ ...btnPrimary, flex: 1 }}
+              >
                 Save
               </button>
+
               <button
                 onClick={() => setShowEdit(false)}
-                style={cancelButton}
+                style={{ ...btnCancel, flex: 1 }}
               >
                 Cancel
               </button>
             </div>
-          </div>
-        </div>
+          </ModalBox>
+        </Modal>
       )}
     </div>
   );
 }
 
-/* ---------- SHARED MODAL STYLES ---------- */
+/* ---------- STYLES ---------- */
 
-const modalOverlay = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  backgroundColor: "rgba(0,0,0,0.5)",
+const btnPrimary = {
+  padding: "10px 16px",
+  background: "#B30000",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+};
+
+const btnSecondary = {
+  padding: "10px 16px",
+  background: "#800000",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+};
+
+const btnCancel = {
+  padding: "10px 16px",
+  background: "#999",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
+
+const folderCard = {
+  background: "white",
+  borderLeft: "6px solid #B30000",
+  padding: "14px 18px",
+  borderRadius: "8px",
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+  fontSize: "1.2rem",
+  fontWeight: "600"
+};
+
+const docCard = {
+  background: "white",
+  borderLeft: "6px solid #800000",
+  padding: "14px 18px",
+  borderRadius: "8px",
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "space-between",
   alignItems: "center",
-  zIndex: 99999
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
 };
 
-const modalBoxModern = {
-  backgroundColor: "white",
-  padding: "2rem",
-  borderRadius: "12px",
-  width: "450px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
+const docTitleButton = {
+  background: "none",
+  border: "none",
+  color: "#333",
+  fontSize: "1.2rem",
+  cursor: "pointer",
+  textAlign: "left",
+  flex: 1,
+  fontWeight: "600"
 };
 
-const inputStyle = {
-  padding: "0.5rem",
+const editButton = {
+  background: "#ffa500",
+  border: "none",
+  color: "black",
+  padding: "8px 12px",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
+
+const Modal = ({ children }) => (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 99999
+    }}
+  >
+    {children}
+  </div>
+);
+
+const ModalBox = ({ children }) => (
+  <div
+    style={{
+      background: "white",
+      padding: "24px",
+      borderRadius: "12px",
+      width: "450px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
+    }}
+  >
+    {children}
+  </div>
+);
+
+const input = {
+  padding: "0.6rem",
   fontSize: "1rem",
   borderRadius: "6px",
   border: "1px solid #ccc"
 };
 
-const textareaStyle = {
-  padding: "0.5rem",
+const textarea = {
+  padding: "0.6rem",
   fontSize: "1rem",
   borderRadius: "6px",
   border: "1px solid #ccc",
   minHeight: "80px"
 };
 
-const modalButtonRow = {
+const modalRow = {
   display: "flex",
   gap: "1rem",
   marginTop: "0.5rem"
-};
-
-const primaryButton = {
-  flex: 1,
-  padding: "0.8rem",
-  backgroundColor: "#004aad",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontWeight: "600"
-};
-
-const cancelButton = {
-  flex: 1,
-  padding: "0.8rem",
-  backgroundColor: "#999",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontWeight: "600"
 };

@@ -9,16 +9,14 @@ export default function DocumentLibrary() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const API = import.meta.env.VITE_API_URL; // already ends with /api
+  const API = import.meta.env.VITE_API_URL;
 
-// Load folders (ONLY top-level folders)
+  // Load ONLY top-level folders
   const loadFolders = () => {
-    console.log("FETCHING:", `${API}/folders`);
-
     fetch(`${API}/folders`)
       .then(res => res.json())
       .then(data => {
-        const topLevel = data.filter(f => f.parent_folder_id === null); // test to force redeploy
+        const topLevel = data.filter(f => f.parent_folder_id === null);
         setFolders(topLevel);
       })
       .catch(err => console.error("Error loading folders:", err));
@@ -52,40 +50,54 @@ export default function DocumentLibrary() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
-      {/* Back Button */}
-      <button
-        onClick={() => navigate("/leaderwalk")}
+    <div style={{ padding: "24px", maxWidth: "1300px", margin: "0 auto" }}>
+      {/* HEADER BAR */}
+      <div
         style={{
-          padding: "0.6rem 1rem",
-          backgroundColor: "#e0e0e0",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          marginBottom: "1.5rem",
-          fontWeight: "600"
+          background: "#333333",
+          padding: "16px 20px",
+          borderRadius: "8px",
+          marginBottom: "24px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)"
         }}
       >
-        ← Back
-      </button>
+        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
+          Document Library
+        </h1>
 
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem", color: "#004aad" }}>
-        Document Library
-      </h1>
+        <button
+          onClick={() => navigate("/leaderwalk")}
+          style={{
+            padding: "8px 14px",
+            background: "#B30000",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600"
+          }}
+        >
+          ← Back to Tools
+        </button>
+      </div>
 
       {/* CREATE FOLDER BUTTON */}
       <button
         onClick={() => setShowCreate(true)}
         style={{
-          padding: "0.8rem 1.2rem",
-          fontSize: "1.2rem",
-          backgroundColor: "#008000",
+          padding: "10px 16px",
+          background: "#B30000",
           color: "white",
           border: "none",
           borderRadius: "6px",
           cursor: "pointer",
-          marginBottom: "1.5rem",
-          fontWeight: "600"
+          fontWeight: "600",
+          marginBottom: "20px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
         }}
       >
         + Create Folder
@@ -93,120 +105,150 @@ export default function DocumentLibrary() {
 
       {/* CREATE FOLDER MODAL */}
       {showCreate && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "2rem",
-              borderRadius: "10px",
-              width: "400px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
-            }}
-          >
-            <h2 style={{ margin: 0 }}>Create Folder</h2>
+        <Modal>
+          <ModalBox>
+            <h2>Create Folder</h2>
 
             <input
               type="text"
               placeholder="Folder Name"
               value={name}
               onChange={e => setName(e.target.value)}
-              style={{
-                padding: "0.5rem",
-                fontSize: "1rem",
-                borderRadius: "6px",
-                border: "1px solid #ccc"
-              }}
+              style={input}
             />
 
             <textarea
               placeholder="Description (optional)"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              style={{
-                padding: "0.5rem",
-                fontSize: "1rem",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                minHeight: "80px"
-              }}
+              style={textarea}
             />
 
-            <div style={{ display: "flex", gap: "1rem" }}>
+            <div style={modalRow}>
               <button
                 onClick={createFolder}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#004aad",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "600"
-                }}
+                style={{ ...btnPrimary, flex: 1 }}
               >
                 Create
               </button>
 
               <button
                 onClick={() => setShowCreate(false)}
-                style={{
-                  flex: 1,
-                  padding: "0.8rem",
-                  backgroundColor: "#999",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "600"
-                }}
+                style={{ ...btnCancel, flex: 1 }}
               >
                 Cancel
               </button>
             </div>
-          </div>
-        </div>
+          </ModalBox>
+        </Modal>
       )}
 
       {/* FOLDER LIST */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <h2 style={{ marginBottom: "10px" }}>Folders</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {folders.map(folder => (
-          <button
+          <div
             key={folder.id}
             onClick={() => navigate(`/documents/folder/${folder.id}`)}
-            style={{
-              padding: "1rem",
-              fontSize: "1.4rem",
-              backgroundColor: "#004aad",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              textAlign: "left",
-              fontWeight: "600",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.15)"
-            }}
+            style={folderCard}
           >
-            📁 {folder.name}
-          </button>
+            <span style={{ fontSize: "1.3rem", fontWeight: "600" }}>
+              📁 {folder.name}
+            </span>
+          </div>
         ))}
       </div>
     </div>
   );
 }
+
+/* ---------- SHARED STYLES ---------- */
+
+const btnPrimary = {
+  padding: "10px 16px",
+  background: "#B30000",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+};
+
+const btnCancel = {
+  padding: "10px 16px",
+  background: "#999",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600"
+};
+
+const folderCard = {
+  background: "white",
+  borderLeft: "6px solid #B30000",
+  padding: "14px 18px",
+  borderRadius: "8px",
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+  fontSize: "1.2rem",
+  fontWeight: "600"
+};
+
+const Modal = ({ children }) => (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 99999
+    }}
+  >
+    {children}
+  </div>
+);
+
+const ModalBox = ({ children }) => (
+  <div
+    style={{
+      background: "white",
+      padding: "24px",
+      borderRadius: "12px",
+      width: "450px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.25)"
+    }}
+  >
+    {children}
+  </div>
+);
+
+const input = {
+  padding: "0.6rem",
+  fontSize: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc"
+};
+
+const textarea = {
+  padding: "0.6rem",
+  fontSize: "1rem",
+  borderRadius: "6px",
+  border: "1px solid #ccc",
+  minHeight: "80px"
+};
+
+const modalRow = {
+  display: "flex",
+  gap: "1rem",
+  marginTop: "0.5rem"
+};
