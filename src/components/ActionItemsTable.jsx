@@ -28,7 +28,9 @@ export default function ActionItemsTable({
 
   const getEmployeeName = (id) => {
     if (!id) return "";
-    const emp = employees.find((e) => e.employee_id === id);
+    const emp = employees.find(
+      (e) => String(e.employee_id) === String(id)   // <-- key fix: compare as strings
+    );
     return emp ? emp.name : String(id);
   };
 
@@ -113,7 +115,7 @@ export default function ActionItemsTable({
         borderCollapse: "collapse",
         background: "white",
         borderRadius: "8px",
-        overflow: "hidden",
+        // overflow: "hidden",          // <-- remove this so dropdown isn't clipped
         boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
       }}
     >
@@ -189,7 +191,11 @@ export default function ActionItemsTable({
                 <EmployeeAutocomplete
                   value={row.current_owner_user_id}
                   onSelect={(emp) => {
-                    updateField(row.id, "current_owner_user_id", emp.employee_id);
+                    updateField(
+                      row.id,
+                      "current_owner_user_id",
+                      emp.employee_id
+                    );
                     setEditingOwnerId(null);
                   }}
                 />
