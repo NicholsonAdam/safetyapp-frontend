@@ -29,7 +29,7 @@ export default function ActionItemsTable({
   const getEmployeeName = (id) => {
     if (!id) return "";
     const emp = employees.find(
-      (e) => String(e.employee_id) === String(id)   // <-- key fix: compare as strings
+      (e) => String(e.employee_id) === String(id)
     );
     return emp ? emp.name : String(id);
   };
@@ -115,7 +115,7 @@ export default function ActionItemsTable({
         borderCollapse: "collapse",
         background: "white",
         borderRadius: "8px",
-        // overflow: "hidden",          // <-- remove this so dropdown isn't clipped
+        // overflow: "hidden",  // keep this removed so autocomplete dropdown isn't clipped
         boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
       }}
     >
@@ -218,11 +218,86 @@ export default function ActionItemsTable({
               />
             </td>
 
-            <td style={{ padding: 10 }}>{pretty(row.department)}</td>
-
-            <td style={{ padding: 10 }}>{pretty(row.classification)}</td>
-
+            {/* DEPARTMENT: dropdown */}
             <td style={{ padding: 10 }}>
+              <select
+                value={row.department || ""}
+                onChange={(e) =>
+                  updateField(row.id, "department", e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "4px 6px",
+                  borderRadius: "4px",
+                  border: "1px solid #C4C4C4",
+                  background: "#FFFFFF",
+                  fontSize: "13px",
+                }}
+              >
+                <option value="">Select Department</option>
+                <option value="BODY_PREP">Body Prep</option>
+                <option value="PRESS">Press</option>
+                <option value="GLAZELINE">Glazeline</option>
+                <option value="GLAZE_PREP">Glaze Prep</option>
+                <option value="KILN">Kiln</option>
+                <option value="LGV">LGV</option>
+                <option value="SORTING">Sorting</option>
+                <option value="MAINTENANCE">Maintenance</option>
+                <option value="ADMINISTRATION">Administration</option>
+                <option value="FACILITY">Facility</option>
+              </select>
+            </td>
+
+            {/* CLASSIFICATION: dropdown */}
+            <td style={{ padding: 10 }}>
+              <select
+                value={row.classification || ""}
+                onChange={(e) =>
+                  updateField(row.id, "classification", e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "4px 6px",
+                  borderRadius: "4px",
+                  border: "1px solid #C4C4C4",
+                  background: "#FFFFFF",
+                  fontSize: "13px",
+                }}
+              >
+                <option value="">Select Classification</option>
+                <option value="SAFETY">Safety</option>
+                <option value="CI">CI</option>
+                <option value="GENERAL">General</option>
+              </select>
+            </td>
+
+            {/* STATUS: dropdown + colored badge */}
+            <td style={{ padding: 10 }}>
+              <select
+                value={row.status || ""}
+                onChange={(e) =>
+                  updateField(row.id, "status", e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "4px 6px",
+                  borderRadius: "4px",
+                  border: "1px solid #C4C4C4",
+                  background: "#FFFFFF",
+                  fontSize: "13px",
+                  marginBottom: "4px",
+                }}
+              >
+                <option value="OPEN">Open</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DELAYED">Delayed</option>
+                <option value="CANCELED">Canceled</option>
+                <option value="DUPLICATE_SUBMISSION">
+                  Duplicate Submission
+                </option>
+                <option value="COMPLETE">Complete</option>
+                <option value="ON_HOLD">On Hold</option>
+              </select>
               <div style={badgeStyle(row.status)}>{pretty(row.status)}</div>
             </td>
 
