@@ -7,164 +7,159 @@ export default function LeaderWalk() {
   return (
     <div
       style={{
-        padding: "2rem",
-        maxWidth: "900px",
+        padding: "24px",
+        maxWidth: "1100px",
         margin: "0 auto",
       }}
     >
-      {/* Top Back Button */}
-      <div style={{ marginBottom: "1.5rem" }}>
+      {/* HEADER BAR */}
+      <div
+        style={{
+          background: "#333333",
+          padding: "16px 20px",
+          borderRadius: "8px",
+          marginBottom: "24px",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)",
+        }}
+      >
+        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
+          Leadership Tools
+        </h1>
+
         <button
           onClick={() => navigate("/dashboard")}
-          style={backButton}
+          style={{
+            padding: "8px 14px",
+            background: "#B30000",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600",
+          }}
         >
           ← Back to Dashboard
         </button>
       </div>
 
-      {/* Header Section */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "2rem",
-          gap: "1rem",
-        }}
-      >
-        <img
-          src="/logo2.png"
-          alt="Company Logo"
-          style={{ height: "70px", objectFit: "contain" }}
-        />
-        <h1
-          style={{
-            fontSize: "2.5rem",
-            margin: 0,
-            color: "#004aad",
-            fontWeight: "700",
-          }}
-        >
-          Leadership Tools
-        </h1>
-      </div>
-
-      {/* Subtitle */}
+      {/* SUBTITLE */}
       <p
         style={{
           fontSize: "1.3rem",
-          marginBottom: "2rem",
+          marginBottom: "20px",
           color: "#333",
+          fontWeight: "500",
         }}
       >
         Select a tool below.
       </p>
 
-      {/* Buttons Container */}
+      {/* TOOL GRID */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gap: "16px",
         }}
       >
         {/* Leadership Walk */}
-        <button
+        <ToolButton
+          label="🚶 Leadership Gemba Walk"
+          sub="Coming Soon"
           onClick={() => navigate("/leadership-walk")}
-          style={buttonPrimary}
-        >
-          🚶 Leadership Gemba Walk (Coming Soon)
-        </button>
+        />
 
         {/* Document Library */}
-        <button
+        <ToolButton
+          label="📁 Document Library"
           onClick={() => navigate("/documents")}
-          style={buttonPrimary}
-        >
-          📁 Document Library
-        </button>
+        />
 
         {/* Open Action Items */}
-        <button
+        <ToolButton
+          label="📋 Open Action Items"
+          sub="Coming Soon"
           onClick={() => navigate("/action-items")}
-          style={buttonPrimary}
-        >
-          📋 Open Action Items (Coming Soon)
-        </button>
+        />
 
         {/* Incident Investigation */}
-        <button
+        <ToolButton
+          label="⚠️ Incident Investigation"
+          sub="Coming Soon"
           onClick={() => navigate("/incident-investigation")}
-          style={buttonPrimary}
-        >
-          ⚠️ Incident Investigation (Coming Soon)
-        </button>
+        />
 
         {/* Continuous Improvement Tools */}
-        <button
+        <ToolButton
+          label="🔧 Continuous Improvement Tools"
+          sub="Coming Soon"
           onClick={() => navigate("/ci-tools")}
-          style={buttonPrimary}
-        >
-          🔧 Continuous Improvement Tools (Coming Soon)
-        </button>
+        />
 
         {/* Training Attendance Scanner */}
-        <button
+        <ToolButton
+          label="📷 Training Attendance Scanner"
+          color="#8a2be2"
           onClick={() => navigate("/training-scanner")}
-          style={{
-            ...buttonPrimary,
-            backgroundColor: "#8a2be2",
-          }}
-        >
-          📷 Training Attendance Scanner
-        </button>
+        />
 
         {/* Training Attendance Reports */}
-        <button
+        <ToolButton
+          label="📝 Training Attendance Reports"
           onClick={() => navigate("/training-attendance")}
-          style={buttonPrimary}
-        >
-          📝 Training Attendance Reports
-        </button>
+        />
 
-        <button disabled style={buttonDisabled}>
-          ✍️ Document Signatures (Coming Soon)
-        </button>
+        {/* Disabled Feature */}
+        <ToolButton
+          label="✍️ Document Signatures"
+          disabled
+          sub="Coming Soon"
+        />
       </div>
     </div>
   );
 }
 
-/* ------------------ STYLES ------------------ */
+/* ------------------ REUSABLE TOOL BUTTON ------------------ */
 
-const buttonPrimary = {
-  padding: "1rem",
-  fontSize: "1.4rem",
-  backgroundColor: "#004aad",
-  color: "white",
-  border: "none",
-  borderRadius: "10px",
-  cursor: "pointer",
-  fontWeight: "600",
-  boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-};
-
-const buttonDisabled = {
-  padding: "1rem",
-  fontSize: "1.4rem",
-  backgroundColor: "#999",
-  color: "white",
-  border: "none",
-  borderRadius: "10px",
-  opacity: 0.7,
-};
-
-const backButton = {
-  padding: "0.8rem 1.2rem",
-  fontSize: "1.2rem",
-  backgroundColor: "#e0e0e0",
-  color: "#333",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "600",
-};
+function ToolButton({ label, sub, onClick, disabled, color }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        padding: "18px 20px",
+        textAlign: "left",
+        background: disabled ? "#999" : color || "#800000",
+        color: "white",
+        border: "none",
+        borderRadius: "10px",
+        cursor: disabled ? "not-allowed" : "pointer",
+        fontWeight: "600",
+        fontSize: "1.3rem",
+        boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+        opacity: disabled ? 0.7 : 1,
+      }}
+    >
+      {label}
+      {sub && (
+        <span
+          style={{
+            fontSize: "0.9rem",
+            fontWeight: "400",
+            opacity: 0.9,
+          }}
+        >
+          {sub}
+        </span>
+      )}
+    </button>
+  );
+}
