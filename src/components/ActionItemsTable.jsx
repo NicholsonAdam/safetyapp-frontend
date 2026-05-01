@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import InlineCell from "./InlineCell";
 import EmployeeAutocomplete from "./EmployeeAutocomplete";
 
@@ -8,6 +9,29 @@ export default function ActionItemsTable({
   filters,
   setFilters,
 }) {
+  const [employees, setEmployees] = useState([]);
+  const [editingOwnerId, setEditingOwnerId] = useState(null);
+
+  // Load all employees once for ID → name mapping
+  useEffect(() => {
+    const loadEmployees = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/employees`);
+        const data = await res.json();
+        setEmployees(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to load employees:", err);
+      }
+    };
+    loadEmployees();
+  }, []);
+
+  const getEmployeeName = (id) => {
+    if (!id) return "";
+    const emp = employees.find((e) => e.employee_id === id);
+    return emp ? emp.name : String(id);
+  };
+
   const handleSort = (column) => {
     if (filters.sort === column) {
       setFilters((prev) => ({
@@ -33,6 +57,7 @@ export default function ActionItemsTable({
     reload();
   };
 
+  // Format ISO dates
   const formatDate = (value) => {
     if (!value) return "";
     const d = new Date(value);
@@ -40,6 +65,16 @@ export default function ActionItemsTable({
     return d.toLocaleDateString();
   };
 
+  // Convert ENUM → pretty label
+  const pretty = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  // Correct badge colors for ENUM values
   const badgeStyle = (status) => {
     const base = {
       padding: "4px 8px",
@@ -52,49 +87,24 @@ export default function ActionItemsTable({
     };
 
     switch (status) {
-      case "Open":
+      case "OPEN":
         return { ...base, background: "#f4b400" };
-      case "In Progress":
+      case "IN_PROGRESS":
         return { ...base, background: "#4285f4" };
-      case "Delayed":
+      case "DELAYED":
         return { ...base, background: "#B30000" };
-      case "Canceled":
+      case "CANCELED":
         return { ...base, background: "#5f6368" };
-      case "Duplicate Submission":
+      case "DUPLICATE_SUBMISSION":
         return { ...base, background: "#9aa0a6" };
-      case "Complete":
+      case "COMPLETE":
         return { ...base, background: "#0f9d58" };
-      case "On Hold":
+      case "ON_HOLD":
         return { ...base, background: "#ab47bc" };
       default:
         return { ...base, background: "#444" };
     }
   };
-
-  const departments = [
-    "Body Prep",
-    "Press",
-    "Glazeline",
-    "Glaze Prep",
-    "Kiln",
-    "LGV",
-    "Sorting",
-    "Maintenance",
-    "Administration",
-    "Facility",
-  ];
-
-  const classifications = ["Safety", "CI", "General"];
-
-  const statuses = [
-    "Open",
-    "In Progress",
-    "Delayed",
-    "Canceled",
-    "Duplicate Submission",
-    "Complete",
-    "On Hold",
-  ];
 
   return (
     <table
@@ -164,20 +174,35 @@ export default function ActionItemsTable({
             <td style={{ padding: 10 }}>{formatDate(row.date_submitted)}</td>
             <td style={{ padding: 10 }}>{formatDate(row.date_last_update)}</td>
 
-            {/* SUBMITTER: NOT EDITABLE */}
-            <td style={{ padding: 10 }}>{row.submitted_by_user_id}</td>
-
-            {/* OWNER: AUTOCOMPLETE (stores ID) */}
             <td style={{ padding: 10 }}>
-              <EmployeeAutocomplete
-                value={row.current_owner_user_id}
-                onSelect={(emp) =>
-                  updateField(row.id, "current_owner_user_id", emp.employee_id)
-                }
+              <InlineCell
+                value={row.submitted_by_user_id}
+                rowId={row.id}
+                field="submitted_by_user_id"
+                onSave={updateField}
               />
             </td>
 
-            {/* DESCRIPTION: INLINE EDIT */}
+            {/* OWNER: show name, click to edit with autocomplete */}
+            <td style={{ padding: 10 }}>
+              {editingOwnerId === row.id ? (
+                <EmployeeAutocomplete
+                  value={row.current_owner_user_id}
+                  onSelect={(emp) => {
+                    updateField(row.id, "current_owner_user_id", emp.employee_id);
+                    setEditingOwnerId(null);
+                  }}
+                />
+              ) : (
+                <div
+                  style={{ cursor: "pointer", color: "#333" }}
+                  onClick={() => setEditingOwnerId(row.id)}
+                >
+                  {getEmployeeName(row.current_owner_user_id)}
+                </div>
+              )}
+            </td>
+
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.description}
@@ -187,83 +212,14 @@ export default function ActionItemsTable({
               />
             </td>
 
-            {/* DEPARTMENT: DROPDOWN, SHOW EXISTING VALUE */}
+            <td style={{ padding: 10 }}>{pretty(row.department)}</td>
+
+            <td style={{ padding: 10 }}>{pretty(row.classification)}</td>
+
             <td style={{ padding: 10 }}>
-              <select
-                value={row.department || ""}
-                onChange={(e) =>
-                  updateField(row.id, "department", e.target.value)
-                }
-                style={{
-                  width: "100%",
-                  padding: "4px",
-                  borderRadius: "4px",
-                  border: "1px solid #C4C4C4",
-                  background: "#FFFFFF",
-                }}
-              >
-                <option value="">Select Department</option>
-                {departments.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
+              <div style={badgeStyle(row.status)}>{pretty(row.status)}</div>
             </td>
 
-            {/* CLASSIFICATION: DROPDOWN */}
-            <td style={{ padding: 10 }}>
-              <select
-                value={row.classification || ""}
-                onChange={(e) =>
-                  updateField(row.id, "classification", e.target.value)
-                }
-                style={{
-                  width: "100%",
-                  padding: "4px",
-                  borderRadius: "4px",
-                  border: "1px solid #C4C4C4",
-                  background: "#FFFFFF",
-                }}
-              >
-                <option value="">Select Classification</option>
-                {classifications.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </td>
-
-            {/* STATUS: DROPDOWN + COLOR BADGE */}
-            <td style={{ padding: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <select
-                  value={row.status || ""}
-                  onChange={(e) =>
-                    updateField(row.id, "status", e.target.value)
-                  }
-                  style={{
-                    padding: "4px",
-                    borderRadius: "4px",
-                    border: "1px solid #C4C4C4",
-                    background: "#FFFFFF",
-                  }}
-                >
-                  <option value="">Select Status</option>
-                  {statuses.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                {row.status && (
-                  <div style={badgeStyle(row.status)}>{row.status}</div>
-                )}
-              </div>
-            </td>
-
-            {/* NOTES: INLINE EDIT */}
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.notes}
