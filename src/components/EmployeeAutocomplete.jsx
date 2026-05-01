@@ -6,10 +6,35 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const isMulti = Array.isArray(value);
+  // ---------------------------------------------------------
+  // LOAD EMPLOYEE NAME WHEN value IS AN ID (TABLE DISPLAY)
+  // ---------------------------------------------------------
+  useEffect(() => {
+    const loadName = async () => {
+      if (!value || typeof value !== "number") return;
 
-  const inputValue = query;
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/employees/${value}`
+        );
 
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data && data.name) {
+          setQuery(data.name); // <-- SHOW NAME IN TABLE
+        }
+      } catch (err) {
+        console.error("Employee lookup failed:", err);
+      }
+    };
+
+    loadName();
+  }, [value]);
+
+  // ---------------------------------------------------------
+  // SEARCH EMPLOYEES
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!query) {
       setResults([]);
@@ -23,11 +48,6 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
             query
           )}`
         );
-
-        if (!res.ok) {
-          setResults([]);
-          return;
-        }
 
         const contentType = res.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
@@ -46,6 +66,9 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     return () => clearTimeout(delay);
   }, [query]);
 
+  // ---------------------------------------------------------
+  // CLOSE DROPDOWN ON OUTSIDE CLICK
+  // ---------------------------------------------------------
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -56,54 +79,10 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const removeChip = (id) => {
-    const updated = value.filter((v) => v !== id);
-    onSelect(updated);
-  };
-
   return (
     <div ref={containerRef} style={{ position: "relative", width: "100%" }}>
-      {isMulti && value.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "6px",
-            marginBottom: "6px",
-          }}
-        >
-          {value.map((id) => (
-            <div
-              key={id}
-              style={{
-                background: "#B30000",
-                color: "white",
-                padding: "4px 8px",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "12px",
-                fontWeight: "600",
-              }}
-            >
-              ID {id}
-              <span
-                style={{
-                  cursor: "pointer",
-                  fontWeight: "900",
-                }}
-                onClick={() => removeChip(id)}
-              >
-                ×
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
       <input
-        value={inputValue}
+        value={query}
         onChange={(e) => {
           setQuery(e.target.value);
           setOpen(true);
@@ -137,15 +116,8 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
             <div
               key={emp.employee_id}
               onClick={() => {
-                if (isMulti) {
-                  if (!value.includes(emp.employee_id)) {
-                    onSelect([...value, emp.employee_id]);
-                  }
-                  setQuery("");
-                } else {
-                  onSelect(emp);
-                  setQuery(emp.name);
-                }
+                onSelect(emp); // <-- PASS FULL EMPLOYEE OBJECT
+                setQuery(emp.name); // <-- SHOW NAME IN INPUT
                 setOpen(false);
               }}
               style={{
