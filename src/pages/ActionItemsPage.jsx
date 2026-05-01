@@ -10,12 +10,12 @@ export default function ActionItemsPage() {
   const [showModal, setShowModal] = useState(false);
   const [items, setItems] = useState([]);
 
-  // MULTI‑SELECT FILTER STATE
+  // SCALAR FILTER STATE (correct)
   const [filters, setFilters] = useState({
-    status: [],            // array
-    classification: [],    // array
-    department: [],        // array
-    owner: [],             // array
+    status: "",
+    classification: "",
+    department: "",
+    owner: "",
     search: "",
     sort: "id",
     direction: "asc",
@@ -25,12 +25,10 @@ export default function ActionItemsPage() {
   const loadItems = async () => {
     const params = new URLSearchParams();
 
-    // MULTI‑SELECT PARAMS
-    filters.status.forEach(s => params.append("status", s));
-    filters.classification.forEach(c => params.append("classification", c));
-    filters.department.forEach(d => params.append("department", d));
-    filters.owner.forEach(o => params.append("owner", o));
-
+    if (filters.status) params.append("status", filters.status);
+    if (filters.classification) params.append("classification", filters.classification);
+    if (filters.department) params.append("department", filters.department);
+    if (filters.owner) params.append("owner", filters.owner);
     if (filters.search) params.append("search", filters.search);
 
     params.append("sort", filters.sort);
@@ -113,11 +111,10 @@ export default function ActionItemsPage() {
           onClick={() => {
             const params = new URLSearchParams();
 
-            filters.status.forEach(s => params.append("status", s));
-            filters.classification.forEach(c => params.append("classification", c));
-            filters.department.forEach(d => params.append("department", d));
-            filters.owner.forEach(o => params.append("owner", o));
-
+            if (filters.status) params.append("status", filters.status);
+            if (filters.classification) params.append("classification", filters.classification);
+            if (filters.department) params.append("department", filters.department);
+            if (filters.owner) params.append("owner", filters.owner);
             if (filters.search) params.append("search", filters.search);
 
             params.append("sort", filters.sort);

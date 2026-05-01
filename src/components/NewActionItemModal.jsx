@@ -8,7 +8,7 @@ export default function NewActionItemModal({ onClose, onCreate }) {
     description: "",
     department: "",
     classification: "",
-    status: "OPEN", // backend enum
+    status: "Open",   // human readable
     notes: "",
   });
 
@@ -19,7 +19,6 @@ export default function NewActionItemModal({ onClose, onCreate }) {
   };
 
   const submit = () => {
-    // Required fields
     if (!form.submitted_by_user_id.trim()) {
       setError("Submitter ID is required.");
       return;
@@ -43,17 +42,12 @@ export default function NewActionItemModal({ onClose, onCreate }) {
 
     setError("");
 
-    // Normalize values for backend
     const payload = {
       ...form,
       submitted_by_user_id: form.submitted_by_user_id.trim(),
       description: form.description.trim(),
       notes: form.notes.trim(),
-
-      // Convert UI → backend enums
-      classification: form.classification.toUpperCase(),
-      department: form.department.toUpperCase().replace(" ", "_"),
-      status: form.status.toUpperCase().replace(" ", "_"),
+      // NO ENUM CONVERSION — backend expects human readable
     };
 
     onCreate(payload);
@@ -83,7 +77,6 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
         }}
       >
-        {/* HEADER */}
         <h2
           style={{
             marginBottom: 20,
@@ -150,16 +143,16 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           }}
         >
           <option value="">Select Department</option>
-          <option value="BODY PREP">Body Prep</option>
-          <option value="PRESS">Press</option>
-          <option value="GLAZELINE">Glazeline</option>
-          <option value="GLAZE PREP">Glaze Prep</option>
-          <option value="KILN">Kiln</option>
+          <option value="Body Prep">Body Prep</option>
+          <option value="Press">Press</option>
+          <option value="Glazeline">Glazeline</option>
+          <option value="Glaze Prep">Glaze Prep</option>
+          <option value="Kiln">Kiln</option>
           <option value="LGV">LGV</option>
-          <option value="SORTING">Sorting</option>
-          <option value="MAINTENANCE">Maintenance</option>
-          <option value="ADMINISTRATION">Administration</option>
-          <option value="FACILITY">Facility</option>
+          <option value="Sorting">Sorting</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Administration">Administration</option>
+          <option value="Facility">Facility</option>
         </select>
 
         {/* CLASSIFICATION */}
@@ -176,9 +169,9 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           }}
         >
           <option value="">Select Classification</option>
-          <option value="SAFETY">Safety</option>
+          <option value="Safety">Safety</option>
           <option value="CI">CI</option>
-          <option value="GENERAL">General</option>
+          <option value="General">General</option>
         </select>
 
         {/* STATUS */}
@@ -194,13 +187,13 @@ export default function NewActionItemModal({ onClose, onCreate }) {
             background: "#F5F5F5",
           }}
         >
-          <option value="OPEN">Open</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="DELAYED">Delayed</option>
-          <option value="CANCELED">Canceled</option>
-          <option value="DUPLICATE_SUBMISSION">Duplicate Submission</option>
-          <option value="COMPLETE">Complete</option>
-          <option value="ON_HOLD">On Hold</option>
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Delayed">Delayed</option>
+          <option value="Canceled">Canceled</option>
+          <option value="Duplicate Submission">Duplicate Submission</option>
+          <option value="Complete">Complete</option>
+          <option value="On Hold">On Hold</option>
         </select>
 
         {/* NOTES */}
@@ -225,7 +218,6 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           </div>
         )}
 
-        {/* BUTTONS */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <button
             onClick={submit}

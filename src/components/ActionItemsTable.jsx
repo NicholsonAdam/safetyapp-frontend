@@ -3,7 +3,6 @@ import EmployeeAutocomplete from "./EmployeeAutocomplete";
 
 export default function ActionItemsTable({
   items,
-  setItems,
   reload,
   filters,
   setFilters,
@@ -33,53 +32,10 @@ export default function ActionItemsTable({
     reload();
   };
 
-  // Format ISO dates
   const formatDate = (value) => {
     if (!value) return "";
     const d = new Date(value);
-    if (isNaN(d.getTime())) return value;
     return d.toLocaleDateString();
-  };
-
-  // Convert ENUM → pretty label
-  const pretty = (str) => {
-    if (!str) return "";
-    return str
-      .toLowerCase()
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-  };
-
-  // Correct badge colors for ENUM values
-  const badgeStyle = (status) => {
-    const base = {
-      padding: "4px 8px",
-      borderRadius: "12px",
-      color: "white",
-      fontSize: "12px",
-      display: "inline-block",
-      textAlign: "center",
-      fontWeight: "600",
-    };
-
-    switch (status) {
-      case "OPEN":
-        return { ...base, background: "#f4b400" };
-      case "IN_PROGRESS":
-        return { ...base, background: "#4285f4" };
-      case "DELAYED":
-        return { ...base, background: "#B30000" };
-      case "CANCELED":
-        return { ...base, background: "#5f6368" };
-      case "DUPLICATE_SUBMISSION":
-        return { ...base, background: "#9aa0a6" };
-      case "COMPLETE":
-        return { ...base, background: "#0f9d58" };
-      case "ON_HOLD":
-        return { ...base, background: "#ab47bc" };
-      default:
-        return { ...base, background: "#444" };
-    }
   };
 
   return (
@@ -150,15 +106,10 @@ export default function ActionItemsTable({
             <td style={{ padding: 10 }}>{formatDate(row.date_submitted)}</td>
             <td style={{ padding: 10 }}>{formatDate(row.date_last_update)}</td>
 
-            <td style={{ padding: 10 }}>
-              <InlineCell
-                value={row.submitted_by_user_id}
-                rowId={row.id}
-                field="submitted_by_user_id"
-                onSave={updateField}
-              />
-            </td>
+            {/* SUBMITTER — LOCKED */}
+            <td style={{ padding: 10 }}>{row.submitted_by_user_id}</td>
 
+            {/* OWNER — AUTOCOMPLETE (NAME-BASED) */}
             <td style={{ padding: 10 }}>
               <EmployeeAutocomplete
                 value={row.current_owner_user_id}
@@ -168,6 +119,7 @@ export default function ActionItemsTable({
               />
             </td>
 
+            {/* DESCRIPTION — INLINE EDIT */}
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.description}
@@ -177,20 +129,75 @@ export default function ActionItemsTable({
               />
             </td>
 
+            {/* DEPARTMENT — DROPDOWN */}
             <td style={{ padding: 10 }}>
-              {pretty(row.department)}
+              <select
+                value={row.department || ""}
+                onChange={(e) =>
+                  updateField(row.id, "department", e.target.value)
+                }
+                style={{
+                  padding: "6px",
+                  borderRadius: "6px",
+                  border: "1px solid #C4C4C4",
+                }}
+              >
+                <option value="">Select Department</option>
+                <option value="Body Prep">Body Prep</option>
+                <option value="Press">Press</option>
+                <option value="Glazeline">Glazeline</option>
+                <option value="Glaze Prep">Glaze Prep</option>
+                <option value="Kiln">Kiln</option>
+                <option value="LGV">LGV</option>
+                <option value="Sorting">Sorting</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Administration">Administration</option>
+                <option value="Facility">Facility</option>
+              </select>
             </td>
 
+            {/* CLASSIFICATION — DROPDOWN */}
             <td style={{ padding: 10 }}>
-              {pretty(row.classification)}
+              <select
+                value={row.classification || ""}
+                onChange={(e) =>
+                  updateField(row.id, "classification", e.target.value)
+                }
+                style={{
+                  padding: "6px",
+                  borderRadius: "6px",
+                  border: "1px solid #C4C4C4",
+                }}
+              >
+                <option value="">Select Classification</option>
+                <option value="Safety">Safety</option>
+                <option value="CI">CI</option>
+                <option value="General">General</option>
+              </select>
             </td>
 
+            {/* STATUS — DROPDOWN */}
             <td style={{ padding: 10 }}>
-              <div style={badgeStyle(row.status)}>
-                {pretty(row.status)}
-              </div>
+              <select
+                value={row.status || "Open"}
+                onChange={(e) => updateField(row.id, "status", e.target.value)}
+                style={{
+                  padding: "6px",
+                  borderRadius: "6px",
+                  border: "1px solid #C4C4C4",
+                }}
+              >
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Delayed">Delayed</option>
+                <option value="Canceled">Canceled</option>
+                <option value="Duplicate Submission">Duplicate Submission</option>
+                <option value="Complete">Complete</option>
+                <option value="On Hold">On Hold</option>
+              </select>
             </td>
 
+            {/* NOTES — INLINE EDIT */}
             <td style={{ padding: 10 }}>
               <InlineCell
                 value={row.notes}
