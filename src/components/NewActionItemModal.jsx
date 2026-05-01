@@ -8,7 +8,7 @@ export default function NewActionItemModal({ onClose, onCreate }) {
     description: "",
     department: "",
     classification: "",
-    status: "Open",   // human readable
+    status: "OPEN",   // ENUM
     notes: "",
   });
 
@@ -47,7 +47,7 @@ export default function NewActionItemModal({ onClose, onCreate }) {
       submitted_by_user_id: form.submitted_by_user_id.trim(),
       description: form.description.trim(),
       notes: form.notes.trim(),
-      // NO ENUM CONVERSION — backend expects human readable
+      // ENUMS are already correct — no conversion needed
     };
 
     onCreate(payload);
@@ -129,7 +129,7 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           }}
         />
 
-        {/* DEPARTMENT */}
+        {/* DEPARTMENT (ENUM VALUES) */}
         <select
           value={form.department}
           onChange={(e) => update("department", e.target.value)}
@@ -143,19 +143,19 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           }}
         >
           <option value="">Select Department</option>
-          <option value="Body Prep">Body Prep</option>
-          <option value="Press">Press</option>
-          <option value="Glazeline">Glazeline</option>
-          <option value="Glaze Prep">Glaze Prep</option>
-          <option value="Kiln">Kiln</option>
+          <option value="BODY_PREP">Body Prep</option>
+          <option value="PRESS">Press</option>
+          <option value="GLAZELINE">Glazeline</option>
+          <option value="GLAZE_PREP">Glaze Prep</option>
+          <option value="KILN">Kiln</option>
           <option value="LGV">LGV</option>
-          <option value="Sorting">Sorting</option>
-          <option value="Maintenance">Maintenance</option>
-          <option value="Administration">Administration</option>
-          <option value="Facility">Facility</option>
+          <option value="SORTING">Sorting</option>
+          <option value="MAINTENANCE">Maintenance</option>
+          <option value="ADMINISTRATION">Administration</option>
+          <option value="FACILITY">Facility</option>
         </select>
 
-        {/* CLASSIFICATION */}
+        {/* CLASSIFICATION (ENUM VALUES) */}
         <select
           value={form.classification}
           onChange={(e) => update("classification", e.target.value)}
@@ -169,12 +169,12 @@ export default function NewActionItemModal({ onClose, onCreate }) {
           }}
         >
           <option value="">Select Classification</option>
-          <option value="Safety">Safety</option>
+          <option value="SAFETY">Safety</option>
           <option value="CI">CI</option>
-          <option value="General">General</option>
+          <option value="GENERAL">General</option>
         </select>
 
-        {/* STATUS */}
+        {/* STATUS (ENUM VALUES) */}
         <select
           value={form.status}
           onChange={(e) => update("status", e.target.value)}
@@ -187,13 +187,13 @@ export default function NewActionItemModal({ onClose, onCreate }) {
             background: "#F5F5F5",
           }}
         >
-          <option value="Open">Open</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Delayed">Delayed</option>
-          <option value="Canceled">Canceled</option>
-          <option value="Duplicate Submission">Duplicate Submission</option>
-          <option value="Complete">Complete</option>
-          <option value="On Hold">On Hold</option>
+          <option value="OPEN">Open</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="DELAYED">Delayed</option>
+          <option value="CANCELED">Canceled</option>
+          <option value="DUPLICATE_SUBMISSION">Duplicate Submission</option>
+          <option value="COMPLETE">Complete</option>
+          <option value="ON_HOLD">On Hold</option>
         </select>
 
         {/* NOTES */}
