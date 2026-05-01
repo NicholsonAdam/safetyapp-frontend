@@ -6,20 +6,10 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  // Load the employee name when editing an existing row
-  useEffect(() => {
-    if (value && typeof value === "number") {
-      const loadName = async () => {
-        const res = await fetch(`/api/employees/${value}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setQuery(data.name || "");
-      };
-      loadName();
-    }
-  }, [value]);
+  const isMulti = Array.isArray(value);
 
-  // Fetch employees based on search query
+  const inputValue = query;
+
   useEffect(() => {
     if (!query) {
       setResults([]);
@@ -27,16 +17,35 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     }
 
     const fetchEmployees = async () => {
-      const res = await fetch(`/api/employees?search=${query}`);
-      const data = await res.json();
-      setResults(data);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/employees?search=${encodeURIComponent(
+            query
+          )}`
+        );
+
+        if (!res.ok) {
+          setResults([]);
+          return;
+        }
+
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          setResults([]);
+          return;
+        }
+
+        const data = await res.json();
+        setResults(Array.isArray(data) ? data : []);
+      } catch {
+        setResults([]);
+      }
     };
 
     const delay = setTimeout(fetchEmployees, 200);
     return () => clearTimeout(delay);
   }, [query]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -47,10 +56,54 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const removeChip = (id) => {
+    const updated = value.filter((v) => v !== id);
+    onSelect(updated);
+  };
+
   return (
     <div ref={containerRef} style={{ position: "relative", width: "100%" }}>
+      {isMulti && value.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "6px",
+            marginBottom: "6px",
+          }}
+        >
+          {value.map((id) => (
+            <div
+              key={id}
+              style={{
+                background: "#B30000",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "12px",
+                fontWeight: "600",
+              }}
+            >
+              ID {id}
+              <span
+                style={{
+                  cursor: "pointer",
+                  fontWeight: "900",
+                }}
+                onClick={() => removeChip(id)}
+              >
+                ×
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <input
-        value={query}
+        value={inputValue}
         onChange={(e) => {
           setQuery(e.target.value);
           setOpen(true);
@@ -84,8 +137,15 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
             <div
               key={emp.employee_id}
               onClick={() => {
-                onSelect(emp);
-                setQuery(emp.name);
+                if (isMulti) {
+                  if (!value.includes(emp.employee_id)) {
+                    onSelect([...value, emp.employee_id]);
+                  }
+                  setQuery("");
+                } else {
+                  onSelect(emp);
+                  setQuery(emp.name);
+                }
                 setOpen(false);
               }}
               style={{

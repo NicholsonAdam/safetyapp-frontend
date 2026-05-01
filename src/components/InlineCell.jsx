@@ -1,22 +1,20 @@
 import { useState, useEffect } from "react";
 
 export default function InlineCell({ value, rowId, field, onSave }) {
-  const safeValue = value == null ? "" : String(value);
-
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(safeValue);
+  const [draft, setDraft] = useState(value ?? "");
 
-  // Keep draft synced when parent updates row
   useEffect(() => {
-    setDraft(value == null ? "" : String(value));
+    setDraft(value ?? "");
   }, [value]);
 
   const commit = () => {
     setEditing(false);
 
-    const cleaned = (draft == null ? "" : String(draft)).trim();
+    const cleaned = String(draft ?? "").trim();
+    const original = String(value ?? "");
 
-    if (cleaned !== safeValue) {
+    if (cleaned !== original) {
       onSave(rowId, field, cleaned);
     }
   };
@@ -47,7 +45,7 @@ export default function InlineCell({ value, rowId, field, onSave }) {
         color: "#333",
       }}
     >
-      {safeValue}
+      {value}
     </div>
   );
 }
