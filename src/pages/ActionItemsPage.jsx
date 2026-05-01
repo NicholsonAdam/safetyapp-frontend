@@ -144,11 +144,13 @@ export default function ActionItemsPage() {
       {/* FILTERS */}
       <div
         style={{
-          background: "#F5F5F5",
-          padding: "16px",
-          borderRadius: "8px",
+          background: "#FFFFFF",
+          padding: "20px",
+          borderRadius: "10px",
+          border: "1px solid #E0E0E0",
+          borderTop: "4px solid #B30000",
           marginBottom: "20px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.20)",
         }}
       >
         <ActionItemsFilters
