@@ -2,73 +2,51 @@ import { useState, useEffect, useRef } from "react";
 
 export default function EmployeeAutocomplete({ value, onSelect }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  // ---------------------------------------------------------
-  // LOAD EMPLOYEE NAME WHEN value IS AN ID (TABLE DISPLAY)
-  // ---------------------------------------------------------
+  // Load ALL employees once
   useEffect(() => {
-    const loadName = async () => {
-      if (!value || typeof value !== "number") return;
-
+    const loadEmployees = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/employees/${value}`
-        );
-
-        if (!res.ok) return;
-
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/employees`);
         const data = await res.json();
-        if (data && data.name) {
-          setQuery(data.name); // <-- SHOW NAME IN TABLE
-        }
+        setEmployees(data);
       } catch (err) {
-        console.error("Employee lookup failed:", err);
+        console.error("Failed to load employees:", err);
       }
     };
+    loadEmployees();
+  }, []);
 
-    loadName();
-  }, [value]);
+  // When value is an ID, show the employee name
+  useEffect(() => {
+    if (typeof value === "number") {
+      const emp = employees.find((e) => e.employee_id === value);
+      if (emp) setQuery(emp.name);
+    }
+  }, [value, employees]);
 
-  // ---------------------------------------------------------
-  // SEARCH EMPLOYEES
-  // ---------------------------------------------------------
+  // Filter employees when typing
   useEffect(() => {
     if (!query) {
-      setResults([]);
+      setFiltered([]);
       return;
     }
 
-    const fetchEmployees = async () => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/employees?search=${encodeURIComponent(
-            query
-          )}`
-        );
+    const q = query.toLowerCase();
+    setFiltered(
+      employees.filter(
+        (e) =>
+          e.name.toLowerCase().includes(q) ||
+          String(e.employee_id).includes(q)
+      )
+    );
+  }, [query, employees]);
 
-        const contentType = res.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          setResults([]);
-          return;
-        }
-
-        const data = await res.json();
-        setResults(Array.isArray(data) ? data : []);
-      } catch {
-        setResults([]);
-      }
-    };
-
-    const delay = setTimeout(fetchEmployees, 200);
-    return () => clearTimeout(delay);
-  }, [query]);
-
-  // ---------------------------------------------------------
-  // CLOSE DROPDOWN ON OUTSIDE CLICK
-  // ---------------------------------------------------------
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -97,7 +75,7 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
         }}
       />
 
-      {open && results.length > 0 && (
+      {open && filtered.length > 0 && (
         <div
           style={{
             position: "absolute",
@@ -112,12 +90,12 @@ export default function EmployeeAutocomplete({ value, onSelect }) {
             zIndex: 9999,
           }}
         >
-          {results.map((emp) => (
+          {filtered.map((emp) => (
             <div
               key={emp.employee_id}
               onClick={() => {
-                onSelect(emp); // <-- PASS FULL EMPLOYEE OBJECT
-                setQuery(emp.name); // <-- SHOW NAME IN INPUT
+                onSelect(emp);
+                setQuery(emp.name);
                 setOpen(false);
               }}
               style={{
